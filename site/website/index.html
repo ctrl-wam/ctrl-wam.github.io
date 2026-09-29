@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CtrlWAM — Controllable World Action Models with Aligned Intent and Foresight</title>
+<meta name="description" content="CtrlWAM trains world action models on physically aligned noise: perturbed actions paired with their simulator-rendered consequences, warped video–action noise schedules, and structured multi-agent conditioning.">
+<link rel="icon" href="../media/logo/icon.png">
+<link rel="stylesheet" href="../vendor/katex/katex.min.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="../media/logo/logo-site.png" alt="CtrlWAM"></a>
+    <div class="links">
+      <a href="#overview">Overview</a><a href="#problem">Problem</a><a href="#method">Method</a><a href="#results">Results</a><a href="#ablations">Ablations</a><a href="#slides">Slides</a><a href="#cite">Citation</a>
+    </div>
+    <div class="cta"><a class="btn sm ghost" href="../index.html">Slide deck</a><a class="btn sm" href="#" aria-disabled="true" title="Paper PDF coming soon">Paper</a></div>
+    <div class="progress"></div>
+  </div>
+</nav>
+
+<!-- ======================================================= HERO -->
+<header class="hero" id="top">
+  <div class="anim bare hero-anim no-ctl" data-composition="TitleBackdrop" data-props='{}' data-loop="true"></div>
+  <div class="shade"></div>
+  <div class="wrap">
+    <div class="kicker"><span class="dot"></span>World action models · driving and manipulation</div>
+    <h1><span data-letters>Ctrl</span><span class="wam" data-letters>WAM</span></h1>
+    <p class="sub">Controllable World Action Models with Aligned Intent and Foresight</p>
+    <div class="pills"><span class="pill outline">Physically aligned noising</span><span class="pill outline">Warped video–action noise schedules</span><span class="pill outline">Structured multi-agent control</span></div>
+    <div class="actions"><a class="btn green" href="#method">How it works ↓</a><a class="btn light" href="../index.html">Open the slide deck</a><a class="btn light" href="#" aria-disabled="true">Paper (PDF)</a><a class="btn light" href="#" aria-disabled="true">Code (upon acceptance)</a></div>
+    <div class="meta">Driving on NVIDIA PhysicalAI-AV + NuRec · Manipulation on RoboTwin 2.0</div>
+    <div class="stats">
+      <div class="stat"><div class="v"><span data-count="0.981" data-from="1.023" data-decimals="3">1.023</span><span class="unit">m</span></div><span class="from">SFT baseline 1.023</span><div class="l">Cmd ADE ↓ · video follows the supplied command</div></div>
+      <div class="stat"><div class="v"><span data-count="0.513" data-from="0.538" data-decimals="3">0.538</span><span class="unit">m</span></div><span class="from">SFT baseline 0.538</span><div class="l">Self ADE ↓ · video–action consistency</div></div>
+      <div class="stat"><div class="v"><span data-count="18.94" data-from="10.07" data-decimals="2">10.07</span><span class="unit">%</span></div><span class="from">ego-only 10.07 %</span><div class="l">Agent-command compliance ↑</div></div>
+      <div class="stat"><div class="v"><span data-count="61.75" data-from="58.70" data-decimals="2">58.70</span></div><span class="from">SFT 58.70 · GT-Src 58.65</span><div class="l">WorldArena EWMScore ↑ (RoboTwin)</div></div>
+    </div>
+  </div>
+  <div class="scroll-cue">scroll<span></span></div>
+</header>
+
+<!-- ======================================================= OVERVIEW -->
+<section class="section" id="overview">
+  <div class="wrap">
+    <div class="two">
+      <div>
+        <p class="eyebrow reveal">Overview</p>
+        <h2 class="reveal" style="--d:.05s">Intent and foresight, <span class="accent">physically aligned.</span> One world action model.</h2>
+      </div>
+      <div>
+        <p class="lead reveal" style="--d:.1s;margin-top:14px">World action models jointly predict an agent's future <b>actions</b> (intent) and the <b>video</b> of what it will see (foresight). CtrlWAM trains them so that noised actions and noised video stay physically consistent, and lets a single model predict or follow commands for the ego agent <em>and</em> the agents around it.</p>
+        <details class="reveal" style="--d:.15s">
+          <summary style="cursor:pointer;font-weight:700;color:var(--navy)">Read the abstract</summary>
+          <p style="margin-top:12px;font-size:16px;color:var(--ink-2)">World action models (WAMs) jointly predict actions (intent) and visual future (foresight). Standard training adds noise to recorded actions and video simultaneously, but such training paradigms introduce a mismatch: perturbed actions imply counterfactual future visual, while the noised video remains tied to the GT recording. In low-noise regime, the scene geometry and even the dynamic behavior remain clearly visible from the noisy future frames despite the added noise.</p>
+          <p style="font-size:16px;color:var(--ink-2)">We present CtrlWAM, which executes perturbed actions in a simulator and pairs them with their noised visual consequences for joint WAM learning. To accommodate the different denoising requirements of video and actions, we introduce warped video–action noise schedules that aim to keep visual layout responsive as action predictions evolve. We further extend the action interface from ego-only control to a variable number of agent streams, allowing a unified model to represent predicted or commanded futures for multiple agents.</p>
+          <p style="font-size:16px;color:var(--ink-2)">Driving experiments show more accurate action forecasts, closer agreement between generated video and actions, and better following of supplied commands; robotics experiments show stronger motion fidelity and controllability. Matched controls support the benefit of off-path renders for command following and manipulation fidelity. Together, these findings contribute to a more controllable world action model.</p>
+        </details>
+      </div>
+    </div>
+    <div class="teaser-wrap reveal scale" style="--d:.1s;margin-top:40px">
+      <div id="teaser" class="teaser" data-media="../media/" aria-label="Animated teaser: standard noising vs aligned noising"></div>
+      <p class="caption"><b>Standard noising vs aligned noising.</b> Standard noising perturbs the action but leaves the recorded video in place: the noised action and the noised video disagree (✕). Aligned noising executes the perturbed action in a simulator, renders the views it produces, and noises <em>those</em> renders, so action and video agree (✓); both are still trained toward the recorded pair in the middle. Frames show the driving and manipulation domains together; press ↺ to replay.</p>
+    </div>
+    <div class="three stagger" style="margin-top:48px">
+      <div class="card"><div class="kicker">Joint prediction</div><h3>Actions + video, together</h3><p>Both future streams are denoised jointly; the imagined video should reflect the predicted intent. Tokens: <span class="tag video">video</span> <span class="tag action">ego action</span> <span class="tag gt">agents</span>.</p></div>
+      <div class="card"><div class="kicker">Forward dynamics</div><h3>Action-conditioned video</h3><p>Future actions are supplied clean as <b>commands</b>; only video is generated. This is where controllability is measured: does the video follow a rewritten command?</p></div>
+      <div class="card"><div class="kicker">Inverse dynamics</div><h3>Video-conditioned actions</h3><p>Clean future video, noised actions. A separately trained inverse dynamics model (IDM) also reads trajectories out of generated video for evaluation.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= PROBLEM (scrollytelling) -->
+<section class="section tint" id="problem">
+  <div class="wrap">
+    <p class="eyebrow reveal">The problem</p>
+    <h2 class="reveal" style="--d:.05s">Standard noising pairs a perturbed action with video of the <span class="accent">recorded</span> future</h2>
+    <p class="lead reveal" style="--d:.1s">Scroll through the three states. Perturbing the action changes the implied future — but Gaussian noise on the recorded frames never moves the car.</p>
+    <div class="scrolly">
+      <div class="sticky">
+        <div class="scene">
+          <div class="title-row"><span class="k">(a) Clean</span><span class="t">Recorded pair · safe pass</span></div>
+          <div class="frames">
+            <div class="frame"><img src="../media/schematic/c2.jpg" alt=""><div class="noise"></div><span class="lbl">t₁</span></div>
+            <div class="frame"><img src="../media/schematic/c3.jpg" alt=""><div class="noise"></div><span class="lbl">t₂</span></div>
+          </div>
+          <div class="bottom">
+            <svg class="road" viewBox="0 0 200 300" aria-hidden="true">
+              <rect width="200" height="300" fill="#B9BDC3"/><rect x="176" width="24" height="300" fill="#E4DCC8"/>
+              <line x1="66" y1="0" x2="66" y2="300" stroke="#fff" stroke-width="4" stroke-dasharray="16 14"/><line x1="132" y1="0" x2="132" y2="300" stroke="#fff" stroke-width="4" stroke-dasharray="16 14"/>
+              <rect x="118" y="86" width="30" height="54" rx="7" fill="#6B7280"/><rect x="123" y="94" width="20" height="14" rx="3" fill="#374151"/>
+              <path d="M99 196 V30" stroke="#3B6EF5" stroke-width="5" stroke-dasharray="12 9" fill="none"/><path d="M99 18 l-12 20 h24 z" fill="#3B6EF5"/>
+              <path id="p-noised" d="M99 196 C70 176 122 160 92 138 S66 96 104 78 S74 46 100 26" stroke="#E07B1F" stroke-width="5" fill="none" stroke-linecap="round"/>
+              <path id="p-denoised" d="M99 196 C104 160 116 130 128 100 L136 40" stroke="#C0392B" stroke-width="5" fill="none" stroke-linecap="round"/>
+              <rect id="p-ghost" x="112" y="126" width="30" height="54" rx="7" fill="#C0392B" opacity="0" transform="rotate(-12 127 153)" style="transition:opacity .4s"/>
+              <polygon id="p-star" points="128,84 134,98 149,96 138,106 143,120 128,112 113,120 118,106 107,96 122,98" fill="#F7C948" stroke="#E07B1F" stroke-width="2" style="transform-box:fill-box;transform-origin:center;transform:scale(0);transition:transform .45s cubic-bezier(.2,.7,.2,1)"/>
+              <rect x="84" y="200" width="30" height="54" rx="7" fill="#3B6EF5"/><rect x="89" y="208" width="20" height="14" rx="3" fill="#1E3A8A"/>
+            </svg>
+            <div class="verdicts">
+              <span class="verdict ok static" data-step="0">✓ video: safe pass</span>
+              <span class="verdict warn" data-step="1">video ≈ recorded future, action perturbed</span>
+              <span class="verdict bad" data-step="2">✕ action: collision with the neighbour</span>
+            </div>
+          </div>
+          <div class="band">The model recovers the clean pair, but gets <b>no supervision on the physical correspondence</b> between its intermediate action and video states.</div>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="card"><div class="kicker">(a) Clean</div><h3>The recorded pair agrees — at the clean endpoint only</h3><p>A recorded action–video pair specifies how the two modalities agree at σ = 0. It says nothing about how they should deviate <em>together</em> as noise is added.</p></div></div>
+        <div class="step"><div class="card"><div class="kicker" style="color:var(--video-dark)">(b) Noised</div><h3>Perturbed action, unchanged video</h3><p>Methods such as DreamZero corrupt actions and video with independent Gaussian noise. The noised action implies a different ego path and a different visual future — but the corrupted video remains tied to the recording. In the low-noise regime the scene layout and even the dynamics stay clearly visible.</p></div></div>
+        <div class="step"><div class="card"><div class="kicker" style="color:var(--red)">(c) Denoised</div><h3>Safe video, unsafe action</h3><p>Useful visual structure emerges early in denoising (DIDO: step-1 video features already give 97.7 % vs 98.4 % after four steps on LIBERO). Without alignment, an intermediate action estimate can veer toward an obstacle while the imagined video still depicts a safe pass.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= METHOD -->
+<section class="section" id="method">
+  <div class="wrap">
+    <p class="eyebrow reveal">Method</p>
+    <h2 class="reveal" style="--d:.05s">Three components, one training recipe</h2>
+    <p class="lead reveal" style="--d:.1s">Explore how CtrlWAM constructs physically corresponding inputs, paces video against actions, and represents surrounding agents.</p>
+    <div class="reveal" style="--d:.15s">
+      <div class="tabs"><button class="on" data-panel="panel-aligned"><span class="tag navy" style="margin-right:8px">01</span>Physically aligned noising</button><button data-panel="panel-warp"><span class="tag navy" style="margin-right:8px">02</span>Warped noise schedules</button><button data-panel="panel-agents"><span class="tag navy" style="margin-right:8px">03</span>Multi-agent control</button></div>
+
+      <div class="panel on" id="panel-aligned">
+        <h3>Pair every perturbed action with its rendered consequence</h3>
+        <div class="anim" data-composition="AlignedNoising" data-props='{}' data-poster="../media/site/teaser.png" style="aspect-ratio:1600/720"></div>
+        <p class="caption">Left: standard noising keeps the recorded future in the video. Right: the simulator executes the noised command, its render is noised, and both branches are still trained toward the recorded pair.</p>
+        <div class="two" style="margin-top:22px">
+          <div>
+            <ol class="steps">
+              <li><b>Sample the level.</b> Draw <span class="tex">t\in[0,1)</span>, set <span class="tex">\sigma_a = 1-t</span>, and form the perturbed command <span class="tex">\mathbf{a}^{\mathrm{cmd}}_t = t\,\mathbf{a}^\star + (1-t)\,\boldsymbol{\epsilon}_a</span>.</li>
+              <li><b>Execute and render.</b> A simulator runs the command — AlpaSim on NuRec 3DGS scenes for driving, RoboTwin 2.0 for manipulation. We store the executed trajectory <span class="tex">\mathbf{a}_t</span> and the render latents <span class="tex">\mathbf{r}</span>.</li>
+              <li><b>Noise the render.</b> <span class="tex">\mathbf{v}_{\sigma_v} = \sigma_v\,\boldsymbol{\epsilon}_v + (1-\sigma_v)\,\mathbf{r}</span>. The input now pairs a perturbed action with a corrupted view of <em>its</em> consequences: <b>physical correspondence</b>.</li>
+              <li><b>Supervise toward the recording.</b> Targets are the recorded actions and video at the same timestamps, so the model learns to correct both the behavioural and the visual discrepancy.</li>
+            </ol>
+          </div>
+          <div>
+            <div class="card tint-grey flat"><div class="kicker">Denoising target off the Gaussian path</div>
+              <div class="eq"><span class="tex">\mathbf{v}^\ast=\dfrac{\mathbf{x}_\sigma-\mathbf{x}^{\mathrm{GT}}}{\sigma},\qquad \mathbf{v}^\ast_v=(\boldsymbol{\epsilon}_v-\mathbf{v}^{\mathrm{GT}})+\dfrac{1-\sigma_v}{\sigma_v}\,(\mathbf{r}-\mathbf{v}^{\mathrm{GT}})</span></div>
+              <p>The second term is the <b>render discrepancy</b>: it steers supervision from the rendered alternative future back to the recording. Endpoint weighting <span class="tex">\sigma^2\lVert\mathbf{v}_\theta-\mathbf{v}^\ast\rVert^2=\lVert\hat{\mathbf{x}}_0-\mathbf{x}^{\mathrm{GT}}\rVert^2</span> keeps low-noise levels from dominating; each window also contributes a recorded anchor (~20 %) trained with the standard objective.</p></div>
+            <div class="card tint-green flat" style="margin-top:14px"><div class="kicker">Why keep the recording as the target?</div><p>Using the perturbed rollout as the target would teach the model to reproduce that alternative future. Keeping the recording turns the simulated deviation into an <b>input to recover from</b>.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-warp">
+        <h3>Hold the video at higher noise while the actions settle</h3>
+        <div class="two">
+          <div class="anim" data-composition="WarpSchedule" data-props='{}' data-poster="../media/site/denoising.png" style="aspect-ratio:900/720"></div>
+          <div>
+            <div class="eq"><span class="tex">\sigma_v=\mathrm{warp}(\sigma_a;\varsigma)=\dfrac{\varsigma\,\sigma_a}{1+(\varsigma-1)\,\sigma_a}</span></div>
+            <ul class="list">
+              <li><span class="tex">\varsigma=1</span> recovers the shared schedule <span class="tex">\sigma_v=\sigma_a</span>.</li>
+              <li>For <span class="tex">\varsigma&gt;1</span>, at a fixed action noise level the video input carries <b>more Gaussian noise and less rendered content</b>; the two levels stay deterministically coupled.</li>
+              <li>Each predicted modality gets its own timestep embedding; actions supplied as conditioning stay fixed.</li>
+              <li><b>Intended effect:</b> leave room for changes in scene layout while the action is uncertain, then let the video settle into detail refinement as the action converges.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="explorer" id="warp-explorer" style="margin-top:26px">
+          <div class="row"><span class="lab">Try the warp</span><div class="seg"><button data-zeta="1">ς = 1</button><button data-zeta="2">ς = 2</button><button data-zeta="3">ς = 3</button><button data-zeta="5">ς = 5</button></div></div>
+          <div class="warp-grid">
+            <div class="chart warp-chart" data-aspect="1.15"></div>
+            <div>
+              <div class="row"><span class="lab">warp strength ς</span><input type="range" id="w-zeta" min="1" max="8" step="0.5" value="5"><span class="readout" id="w-zeta-v">5.0</span></div>
+              <div class="row"><span class="lab">action noise σₐ</span><input type="range" id="w-sigma" min="0" max="1" step="0.01" value="0.5"><span class="readout" id="w-sigma-v">0.50</span></div>
+              <div class="bars">
+                <div class="bar" id="w-bar-a"><span>Action noise σₐ</span><div class="track"><i style="background:var(--action)"></i></div><span class="val">0.50</span></div>
+                <div class="bar" id="w-bar-v"><span>Video noise σᵥ</span><div class="track"><i style="background:var(--video)"></i></div><span class="val">0.83</span></div>
+              </div>
+              <p class="warp-note">At σₐ = <b id="w-sigma-v2"><span id="w-sv">0.83</span></b> of video noise the render still contributes <b id="w-kept">17 %</b> of the input: the layout stays open to revision while the action is uncertain. Move the sliders, or watch the probe walk the denoising direction.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-agents">
+        <h3>Predict <span class="accent">or</span> command every agent in the scene</h3>
+        <div class="anim" data-composition="MultiAgentMask" data-props='{}' data-poster="../media/site/model.png" style="aspect-ratio:1500/620"></div>
+        <div class="two" style="margin-top:22px">
+          <ul class="list">
+            <li>One <b>ego block</b> plus <span class="tex">K</span> <b>agent blocks</b>, each with history and future tokens (14 + 64 rows at 0.1 s).</li>
+            <li><b>No commands</b> → the model jointly predicts ego, agents and video; predicted agent futures act as intent estimates that inform the ego action.</li>
+            <li><b>Commands</b> → the agent's future tokens are supplied clean; the model predicts the video (and any remaining agents).</li>
+            <li><span class="tex">K=0</span> recovers the ego-only model <b>exactly</b>.</li>
+          </ul>
+          <div class="card tint-grey flat"><div class="kicker">Encoding</div><p>Agent histories store ego-frame positions at <span class="tex">t_0</span> (scaled by 20 m); futures are unicycle controls in each actor's local frame. Actors are selected by visibility in the front camera (≤ 60 m, ≥ 12 px, not occluded), up to <span class="tex">K_{\max}=8</span>; a shared agent projection and per-actor spatial rotary positions place them on the latent grid.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= DENOISING (scroll-scrubbed) -->
+<section class="section tint" id="denoising" style="padding-bottom:0">
+  <div class="wrap">
+    <p class="eyebrow reveal">Observation · scroll to denoise</p>
+    <h2 class="reveal" style="--d:.05s">Video commits to a layout early; the action keeps changing</h2>
+    <p class="lead reveal" style="--d:.1s">Scrolling drives the denoiser. In both driving and manipulation the visual future is recognisable while σ is still high — the explicitly predicted trajectory is still moving. Under a shared schedule the video can therefore commit before the action settles.</p>
+  </div>
+  <div class="wrap scrub">
+    <div class="stage">
+      <div class="anim scrubbed" data-composition="DenoisingProgress" data-props='{}' data-poster="../media/site/denoising.png" style="aspect-ratio:1700/760"></div>
+      <div class="readout"><span class="lab">pure noise</span><div class="bar"><i></i></div><span>clean</span></div>
+      <div class="hint">keep scrolling — the frame index follows your scroll position (joint generation traces, 35 / 30 UniPC steps)</div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= ARCHITECTURE -->
+<section class="section" id="architecture">
+  <div class="wrap">
+    <div class="two">
+      <div>
+        <p class="eyebrow reveal">Model</p>
+        <h2 class="reveal" style="--d:.05s">One diffusion transformer, three token streams</h2>
+        <p class="lead reveal" style="--d:.1s">A shared transformer processes video, ego-action and optional agent-action tokens, conditioned on observed history. Future tokens are denoised as prediction targets or supplied clean as conditions — the same network serves joint prediction, action-conditioned video and video-conditioned actions.</p>
+        <div class="stagger">
+          <div class="card tint-amber flat" style="margin-bottom:12px"><div class="kicker" style="color:var(--video-dark)">Video</div><p>Future frames → causal VAE (4× time, 16× space) → latent tokens. Noised in forward dynamics and joint mode, clean for inverse dynamics.</p></div>
+          <div class="card tint-blue flat" style="margin-bottom:12px"><div class="kicker" style="color:var(--action-dark)">Ego action</div><p>Unicycle controls (acceleration, curvature) or 14-D joint positions; 64 future rows. Noised for prediction, clean when supplied as a command.</p></div>
+          <div class="card tint-green flat"><div class="kicker" style="color:var(--gt-dark)">Agents (optional)</div><p>0…K agent blocks through a shared agent encoder/decoder; variable length. Backbone: Cosmos 3-Nano (16B), language pathway frozen.</p></div>
+        </div>
+      </div>
+      <div class="reveal from-right figure zoomable" style="--d:.1s"><img src="../media/figures/CtrlWAM-model-figure-v7.png" alt="CtrlWAM architecture"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= RESULTS -->
+<section class="section tint" id="results">
+  <div class="wrap">
+    <p class="eyebrow reveal">Results · driving</p>
+    <h2 class="reveal" style="--d:.05s">Better command following, consistency and forecasting</h2>
+    <p class="lead reveal" style="--d:.1s">1,156 held-out clips from PhysicalAI-AV. In <b>Joint mode</b> the model predicts video and actions together; in <b>forward dynamics</b> the future actions are supplied as commands. CtrlWAM-S is the ego-only model, CtrlWAM-M the multi-agent model, trained with the same recipe, data and budget.</p>
+    <div class="tbl-wrap reveal"><table class="tbl rows-reveal">
+      <thead><tr class="group"><th></th><th colspan="3">Joint mode</th><th colspan="3">Forward dynamics</th></tr>
+      <tr><th>Model</th><th><span class="up">PSNR (dB)</span></th><th><span class="dn">Self ADE (m)</span></th><th><span class="dn">Rollout ADE (m)</span></th><th><span class="up">PSNR (dB)</span></th><th><span class="dn">Cmd ADE (m)</span></th><th><span class="dn">Cmd FDE (m)</span></th></tr></thead>
+      <tbody>
+        <tr class="muted"><td>Cosmos 3-Nano (zero-shot)</td><td>19.58</td><td>6.212</td><td>8.267</td><td>20.05</td><td>1.600</td><td>4.040</td></tr>
+        <tr class="sep"><td>SFT baseline</td><td>20.38</td><td>0.538</td><td>2.920</td><td>21.23</td><td>1.023</td><td>2.803</td></tr>
+        <tr><td>CtrlWAM-S (ego-only)</td><td>20.34</td><td><u>0.521</u></td><td><u>2.848</u></td><td>21.23</td><td><u>1.001</u></td><td><u>2.722</u></td></tr>
+        <tr class="ours"><td>CtrlWAM-M (multi-agent)</td><td><b>20.42</b></td><td><b>0.513</b></td><td><b>2.804</b></td><td><b>21.28</b></td><td><b>0.981</b></td><td><b>2.671</b></td></tr>
+      </tbody></table></div>
+    <p class="caption reveal">Self ADE compares the IDM read-out of predicted video with the model's own action trajectory (video–action consistency). Rollout ADE compares the generated actions with the recording. Cmd ADE/FDE compare the IDM read-out with the supplied command. Bold = best, underline = second best.</p>
+
+    <div style="height:56px"></div>
+    <p class="eyebrow reveal">Results · counterfactual ego control</p>
+    <h2 class="reveal" style="--d:.05s">Change the command, keep the scene — the video follows</h2>
+    <p class="lead reveal" style="--d:.1s">Scene history, text prompt and sampling noise are held fixed; only the ego command changes. Stopping halts forward viewpoint progression, acceleration advances the ego past the parked cars.</p>
+    <div class="anim reveal" data-composition="EgoCounterfactual" data-props='{}' data-poster="../media/figures/CtrlWAM_counterfactual_qualitative_ego_3x6.png" style="aspect-ratio:1700/560"></div>
+
+    <div class="explorer reveal" id="cf-explorer" style="margin-top:26px">
+      <div class="row"><span class="lab">Explore the clip</span><div class="seg"></div></div>
+      <div class="cf-grid">
+        <div>
+          <div class="cf-view"><span class="t">t = 0.0 s</span><div class="bev"><img src="../media/egocf/multi_agent_factual/bev.png" alt=""></div></div>
+          <div class="row" style="margin-top:14px;margin-bottom:0"><button class="play" aria-label="play">▶</button><input type="range" id="cf-time" min="0" max="32" value="0"><span class="readout" id="cf-t" style="min-width:90px">t = 0.0 s</span></div>
+        </div>
+        <div class="cf-side">
+          <div class="metric"><span>Command deviation from the recording</span><b id="cf-dev">recorded</b></div>
+          <div class="metric"><span>IDM read-out vs command (Cmd ADE)</span><b id="cf-ade">0.91 m</b></div>
+          <div class="metric"><span>PSNR vs the real video</span><b id="cf-psnr">19.9 dB</b></div>
+          <p class="desc" id="cf-desc"></p>
+          <p class="desc">Top-down inset: the commanded ego path in the t₀ frame (10 m rings), magenta when rewritten. Generated by the multi-agent CtrlWAM model in forward dynamics; one clip at 10.7 m/s, 5 Hz frames over 6.4 s.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="two" style="margin-top:40px">
+      <div class="reveal"><div class="grow chart" data-aspect="1.35" data-chart='{"type":"line","x":{"min":0,"max":12,"ticks":[0,2,4,6,8,10,12],"label":"Perturbation level: mean deviation of the command from the recording (m)","labelDy":48},"y":{"min":0,"max":9,"ticks":[0,2,4,6,8],"label":"Cmd ADE: IDM read-out vs command (m)","labelDx":52},"tickFs":14,"labelFs":15,"margin":{"l":76,"r":24,"t":20,"b":66},"annotations":[{"x":0,"text":"factual"},{"x":4.0,"text":"low"},{"x":7.0,"text":"mid"},{"x":11.0,"text":"high"}],"legend":{"x":96,"y":36,"fs":14,"gap":24},"series":[{"name":"shared schedule, GT pairs (no renders)","color":"#8A94A0","dash":true,"width":3,"r":5,"points":[[0,2.79],[4.0,3.51],[7.0,5.56],[11.0,8.34]]},{"name":"aligned pairs, ς = 1 (shared)","color":"#B5473A","width":3,"r":5,"points":[[0,1.47],[4.0,1.82],[7.0,3.06],[11.0,4.87]]},{"name":"aligned pairs, warped ς = 2","color":"#8FC24A","width":3,"r":5,"points":[[0,1.27],[4.0,1.63],[7.0,2.68],[11.0,4.66]]},{"name":"aligned pairs, warped ς = 3","color":"#3E9457","width":3,"r":5,"points":[[0,1.29],[4.0,1.59],[7.0,2.64],[11.0,4.30]]},{"name":"aligned pairs, warped ς = 5","color":"#1F6B3F","width":3,"r":5,"points":[[0,1.33],[4.0,1.59],[7.0,2.67],[11.0,4.15]]}]}'></div></div>
+      <div class="reveal from-right" style="--d:.1s">
+        <h3>Warped schedules follow modified commands more closely</h3>
+        <ul class="list">
+          <li><b>100 held-out clips</b>; each level averages four rewritten commands: brake to stop, accelerate, nudge left, nudge right.</li>
+          <li>Severity = how far the command deviates from the recording: <b>4 / 7 / 11 m</b> (low / mid / high). Low / mid / high use decelerations of 1 / 2 / 3 m/s², accelerations of 0.75 / 1.5 / 3 m/s² and lateral offsets of 2 / 3.5 / 5 m.</li>
+          <li>Warped schedules (ς = 2, 3, 5) beat the shared schedule at <b>every level</b>, and the gap widens as perturbations grow.</li>
+          <li>Training on <b>GT pairs</b> (real frames, no off-path renders) degrades fastest: the rendered consequences are what teach command following.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="height:56px"></div>
+    <p class="eyebrow reveal">Results · multi-agent control</p>
+    <h2 class="reveal" style="--d:.05s">A dedicated channel for commanding <span class="accent">surrounding</span> vehicles</h2>
+    <div class="two">
+      <div class="reveal"><div class="grow chart" data-aspect="1.3" data-chart='{"type":"bar","categories":["Cosmos 3-Nano\nzero-shot","SFT\nbaseline","CtrlWAM-S\nego-only","CtrlWAM-M\nmulti-agent"],"values":[9.13,10.56,10.07,18.94],"colors":["#9AA3AF","#4A72B5","#4A72B5","#5E8F00"],"highlight":3,"decimals":2,"valueSuffix":" %","y":{"min":0,"max":22,"ticks":[0,5,10,15,20],"label":"VLM compliance with the agent command (%) ↑"},"margin":{"l":70,"r":16,"t":30,"b":70}}'></div></div>
+      <div class="reveal from-right" style="--d:.1s">
+        <p class="lead" style="font-size:18px">Scene history, the ego command and sampling noise are held fixed while a selected agent's future trajectory is rewritten. <b>Gemini 3.8 Flash</b> rates agreement between the generated video and the supplied agent command (0–1, reported in %). Only CtrlWAM-M can receive the command; the other models are scored on agreement without conditioning.</p>
+        <div class="figure zoomable"><img src="../media/figures/CtrlWAM_multiagent_qualitative.png" alt="Counterfactual agent control"></div>
+        <p class="caption"><b>Counterfactual control of the lead vehicle.</b> Top: factual agent trajectory. Bottom: the same scene with the agent commanded to stop — the generated video shows it halting in front of the ego. Right: unchanged ego path (grey), factual (green) and rewritten (magenta) agent command. Mean compliance rises from 10.07 % (ego-only) to <b>18.94 %</b>.</p>
+      </div>
+    </div>
+
+    <div style="height:56px"></div>
+    <p class="eyebrow reveal">Results · robotic manipulation</p>
+    <h2 class="reveal" style="--d:.05s">Highest score in <span class="accent">all six</span> WorldArena categories</h2>
+    <p class="lead reveal" style="--d:.1s">RoboTwin 2.0 bimanual manipulation, 1,000 held-out episodes, WorldArena Track-1. Each arm starts from a common 2,000-iteration checkpoint and receives 2,000 more iterations using aligned renders (CtrlWAM), real frames in place of renders (GT-Src) or standard SFT. EWMScore is 100 × the mean of the 15 individual metrics.</p>
+    <div class="two">
+      <div class="tbl-wrap reveal"><table class="tbl rows-reveal">
+        <thead><tr><th>Category</th><th>Cosmos 3<br>zero-shot</th><th>Cosmos 3<br>SFT</th><th>GT-Src</th><th>CtrlWAM</th><th style="color:var(--muted)">Oracle</th></tr></thead>
+        <tbody>
+          <tr><td>Visual quality</td><td>0.447</td><td>0.560</td><td><u>0.563</u></td><td><b>0.576</b></td><td style="color:var(--muted)">0.598</td></tr>
+          <tr><td>Motion quality</td><td>0.247</td><td><u>0.316</u></td><td>0.306</td><td><b>0.327</b></td><td style="color:var(--muted)">0.348</td></tr>
+          <tr><td>Content consistency</td><td>0.413</td><td><u>0.650</u></td><td>0.620</td><td><b>0.665</b></td><td style="color:var(--muted)">0.662</td></tr>
+          <tr><td>Physics adherence</td><td>0.258</td><td>0.456</td><td><u>0.480</u></td><td><b>0.540</b></td><td style="color:var(--muted)">0.782</td></tr>
+          <tr><td>3D accuracy</td><td>0.812</td><td>0.884</td><td><u>0.899</u></td><td><b>0.921</b></td><td style="color:var(--muted)">0.956</td></tr>
+          <tr><td>Controllability</td><td>0.635</td><td>0.774</td><td><u>0.788</u></td><td><b>0.819</b></td><td style="color:var(--muted)">0.869</td></tr>
+          <tr class="ours sep"><td>EWMScore</td><td>44.88</td><td><u>58.70</u></td><td>58.65</td><td><b>61.75</b></td><td style="color:var(--muted)">66.92</td></tr>
+        </tbody></table>
+        <p class="caption">Bold = best, underline = second best; Oracle scores the recorded videos and is excluded from ranking. Individual metrics do not uniformly favour aligned training (continued SFT has slightly higher image and aesthetic quality); the aggregate gain comes from JEPA similarity, trajectory accuracy, interaction quality and instruction following.</p>
+      </div>
+      <div class="reveal"><div class="grow chart" data-aspect="1.15" style="--d:.1s" data-chart='{"type":"groupbar","categories":["Visual\nquality","Motion\nquality","Content\nconsist.","Physics\nadherence","3D\naccuracy","Control-\nlability"],"series":[{"name":"SFT","color":"#4A72B5","values":[0.560,0.316,0.650,0.456,0.884,0.774]},{"name":"GT-Src","color":"#E8A33D","values":[0.563,0.306,0.620,0.480,0.899,0.788]},{"name":"CtrlWAM","color":"#5E8F00","values":[0.576,0.327,0.665,0.540,0.921,0.819],"label":true}],"ref":{"name":"Oracle","color":"#0B1A3A","values":[0.598,0.348,0.662,0.782,0.956,0.869]},"valueLabels":true,"decimals":3,"y":{"min":0,"max":1,"ticks":[0,0.25,0.5,0.75,1]},"margin":{"l":50,"r":8,"t":48,"b":60}}'></div></div>
+    </div>
+
+    <div class="anim reveal" data-composition="RoboTwinRollout" data-props='{}' data-poster="../media/site/robotwin.png" style="aspect-ratio:1600/480;margin-top:34px"></div>
+    <div class="explorer reveal" id="rt-explorer" style="margin-top:22px">
+      <div class="row"><span class="lab">Explore episodes</span><select aria-label="episode"></select><button class="play" aria-label="play">▶</button><input type="range" id="rt-frame" min="0" max="13" value="0"></div>
+      <div class="rt-grid"></div>
+      <div class="rt-instr"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= ABLATIONS -->
+<section class="section" id="ablations">
+  <div class="wrap">
+    <p class="eyebrow reveal">Ablations · driving, joint mode, eight-level set</p>
+    <h2 class="reveal" style="--d:.05s">Warping helps when the video shows <span class="accent">rendered consequences</span></h2>
+    <div class="two">
+      <div class="reveal">
+        <h3>Shared vs warped, by visual source</h3>
+        <div class="tbl-wrap"><table class="tbl rows-reveal">
+          <thead><tr><th>Visual source</th><th>Schedule</th><th><span class="up">PSNR (dB)</span></th><th><span class="dn">Self ADE (m)</span></th><th><span class="dn">Rollout ADE (m)</span></th></tr></thead>
+          <tbody>
+            <tr><td>GT-Src (real frames)</td><td>shared</td><td>20.67</td><td class="r3">0.845</td><td class="r2">2.968</td></tr>
+            <tr><td>GT-Src (real frames)</td><td>warped ς = 5</td><td>20.58</td><td>0.864</td><td>3.045</td></tr>
+            <tr class="sep"><td>Rendering</td><td>shared</td><td class="r2">21.21</td><td>0.916</td><td>3.153</td></tr>
+            <tr><td>Rendering</td><td>warped ς = 5</td><td>20.87</td><td class="r2">0.798</td><td class="r3">3.019</td></tr>
+            <tr class="sep"><td>Cleaned (Difix3D+)</td><td>shared</td><td class="r1">21.23</td><td>0.915</td><td>3.128</td></tr>
+            <tr class="ours"><td>Cleaned (Difix3D+)</td><td>warped ς = 5</td><td class="r3">21.19</td><td class="r1">0.786</td><td class="r1">2.881</td></tr>
+          </tbody></table></div>
+        <div class="legend"><span><span class="sw" style="background:#AED6C0"></span>best</span><span><span class="sw" style="background:#D0E8DC"></span>second</span><span><span class="sw" style="background:#EAF4EE"></span>third</span><span>by metric, across all six configurations</span></div>
+        <p class="caption">GT-Src performs better with the shared schedule, whereas Rendering and Cleaned favour the warp for action errors — the warp delays video denoising, which is misaligned with the GT-pair training path. Cleaned + warped gives the lowest errors of all (Self ADE 0.915 → 0.786, Rollout ADE 3.128 → 2.881 m). PSNR slightly favours shared scheduling: the cost of holding video at higher noise, small next to the ADE gains. Rendering = raw simulator frames; Cleaned = Difix3D+ with the timestamp-paired real frame as reference.</p>
+      </div>
+      <div class="reveal from-right" style="--d:.1s">
+        <h3>Warp strength sweep (Rendering inputs)</h3>
+        <div class="tbl-wrap"><table class="tbl rows-reveal">
+          <thead><tr><th>Warp ς</th><th><span class="dn">Self ADE (m)</span></th><th><span class="dn">Rollout ADE (m)</span></th></tr></thead>
+          <tbody><tr><td>1 (shared)</td><td>0.916</td><td>3.153</td></tr><tr><td>2</td><td>0.935</td><td>3.119</td></tr><tr><td>3</td><td><u>0.862</u></td><td><u>3.081</u></td></tr><tr class="ours"><td>5</td><td><b>0.798</b></td><td><b>3.019</b></td></tr></tbody></table></div>
+        <div class="card tint-grey flat" style="margin-top:16px"><p>Raising ς from 1 to 5 lowers Self ADE from 0.916 to 0.798 m; the intermediate ς = 2 is slightly worse, so the benefit appears at selected strengths.</p><p style="font-size:14px;color:var(--ink-2)">Caveats: warped rows in the source table use ~20 % anchors vs ~11 % for shared rows; intermediate warps rescale video weights. Attribution to the warp alone is therefore limited.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= SLIDES -->
+<section class="section dark" id="slides">
+  <div class="wrap">
+    <div class="slides-card">
+      <a class="shot reveal scale" href="../index.html"><span class="badge">HTML slide deck</span><img src="../media/site/deck-title.jpg" alt="CtrlWAM slide deck"></a>
+      <div class="reveal from-right" style="--d:.1s">
+        <p class="eyebrow">Presentation</p>
+        <h2>The talk, as an editable HTML deck</h2>
+        <p class="lead">23 slides with speaker notes, the same live animations, build steps and an in-browser editor. Works offline from the same folder as this page.</p>
+        <div class="actions" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px"><a class="btn green" href="../index.html">Open the deck</a><a class="btn light" href="../index.html?edit">Open in edit mode</a></div>
+        <p style="font-size:14px;color:#93A1BD"><span class="kbd">→</span> next · <span class="kbd">O</span> overview · <span class="kbd">N</span> notes · <span class="kbd">E</span> edit · <span class="kbd">⌘P</span> export PDF</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= CITATION -->
+<section class="section" id="cite">
+  <div class="wrap">
+    <div class="two">
+      <div>
+        <p class="eyebrow reveal">Conclusion</p>
+        <h2 class="reveal" style="--d:.05s">Physically aligned denoising for controllable world action models</h2>
+        <p class="lead reveal" style="--d:.1s">CtrlWAM makes the relationship between an action deviation and the observation it produces part of the denoising supervision. Warped schedules keep visual layout responsive while actions evolve, and multi-agent streams allow surrounding futures to be predicted or supplied as commands.</p>
+        <p class="caption reveal" style="--d:.15s"><b>Limitations.</b> Aligned noising needs a simulator that can execute perturbed actions; the multi-agent extension is shown for driving only; offline metrics do not establish closed-loop safety.</p>
+      </div>
+      <div class="reveal from-right" style="--d:.1s">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><h3 style="margin:0">Citation</h3><button class="btn sm ghost" data-copy="#bib">Copy BibTeX</button></div>
+<pre class="bib" id="bib">@misc{ctrlwam2026,
+  title = {CtrlWAM: Controllable World Action Models with Aligned Intent and Foresight},
+  year  = {2026},
+  note  = {Preprint}
+}</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer"><div class="wrap"><span>CtrlWAM · Controllable World Action Models with Aligned Intent and Foresight.</span><span>Animations built with Remotion · figures reconstructed from the original frames · <a href="#top">Top ↑</a></span></div></footer>
+
+<div class="lightbox"><img src="" alt=""><div class="hint">Click anywhere or press Esc to close</div></div>
+
+<script src="../vendor/katex/katex.min.js"></script>
+<script src="../vendor/ctrlwam-anim.js"></script>
+<script src="../deck/charts.js"></script>
+<script src="data.js"></script>
+<script src="teaser-data.js"></script>
+<script src="site.js"></script>
+<script src="teaser.js"></script>
+</body>
+</html>

@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="site/vendor/katex/katex.min.css">
+<script defer src="site/vendor/katex/katex.min.js"></script>
+<style>@font-face{font-family:"Latin Modern Math";src:url("https://cdn.jsdelivr.net/npm/mathjax-full@3.2.2/es5/output/chtml/fonts/woff-v2/MathJax_Math-Italic.woff") format("woff");font-style:italic;font-display:swap;}@font-face{font-family:"Latin Modern Math";src:url("https://cdn.jsdelivr.net/npm/mathjax-full@3.2.2/es5/output/chtml/fonts/woff-v2/MathJax_Main-Regular.woff") format("woff");font-style:normal;font-display:swap;}</style>
+<style>math{font-family:"Latin Modern Math","Computer Modern","CMU Serif","Cambria Math",serif;} body{margin:0;background:transparent;} a{color:#0B1A3A;} a:hover{color:#88CC02;} .katex{line-height:1 !important;} .katex .strut{display:none !important;} [contenteditable="true"]{outline:1.5px solid #4A72B5;outline-offset:2px;border-radius:2px;}</style>
+</helmet>
+
+<div ref="{{ wrapRef }}" style="margin:0;overflow:hidden;width:100%;display:block">
+<div style="transform-origin:0 0" ref="{{ scaleRef }}">
+<div ref="{{ canvasRef }}" data-screen-label="Warp schedule figure" onPointerDown="{{ clearSel }}" onContextMenu="{{ noMenu }}" style="position:relative;width:600px;height:1200px;box-sizing:border-box;background:#FFFFFF;border:2px solid #D9D9D9;border-radius:28px;overflow:hidden;font-family:-apple-system,'Helvetica Neue',Helvetica,sans-serif;color:#0B1A3A;user-select:none">
+
+  <sc-for list="{{ panels }}" as="pn" hint-placeholder-count="4">
+    <div onPointerDown="{{ pn.down }}" data-x="{{ pn.x }}" data-y="{{ pn.y }}" data-w="{{ pn.w }}" data-h="{{ pn.h }}" data-fill="{{ pn.fill }}" data-stroke="{{ pn.stroke }}" data-prad="{{ pn.radius }}" data-dash="{{ pn.dashed }}" style="position:absolute;box-sizing:border-box;border-width:1px;border-style:solid;border-radius:16px;touch-action:none"></div>
+  </sc-for>
+  <sc-for list="{{ texts }}" as="t" hint-placeholder-count="4">
+    <div data-ph="{{ t.ph }}" onPointerDown="{{ t.down }}" style="position:absolute;z-index:2;box-sizing:border-box;touch-action:none;text-align:center;line-height:1.2;white-space:nowrap" data-x="{{ t.x }}" data-y="{{ t.y }}" data-w="{{ t.w }}" data-fs="{{ t.fs }}" data-fw="{{ t.fw }}" data-fst="{{ t.fst }}" data-col="{{ t.color }}" data-al="{{ t.align }}" data-rot="{{ t.rot }}">
+      <span data-field="text" data-tex="{{ t.text }}" data-bg="{{ t.bg }}" onDoubleClick="{{ t.editOn }}" onBlur="{{ t.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text;padding:0 4px;border-radius:3px"></span>
+    </div>
+  </sc-for>
+
+  <sc-for list="{{ tokens }}" as="k" hint-placeholder-count="4">
+    <div onPointerDown="{{ k.down }}" data-x="{{ k.x }}" data-y="{{ k.y }}" data-w="{{ k.w }}" data-h="{{ k.h }}" style="position:absolute;width:72px;height:44px;touch-action:none">
+      <sc-if value="{{ k.stack }}" hint-placeholder-val="{{ false }}">
+        <div data-fill="{{ k.fill }}" data-stroke="{{ k.stroke }}" data-dash="{{ k.dashed }}" style="position:absolute;left:24px;top:-24px;width:72px;height:44px;box-sizing:border-box;border-width:2px;border-radius:8px"></div>
+        <div data-fill="{{ k.fill }}" data-stroke="{{ k.stroke }}" data-dash="{{ k.dashed }}" style="position:absolute;left:16px;top:-16px;width:72px;height:44px;box-sizing:border-box;border-width:2px;border-radius:8px"></div>
+        <div data-fill="{{ k.fill }}" data-stroke="{{ k.stroke }}" data-dash="{{ k.dashed }}" style="position:absolute;left:8px;top:-8px;width:72px;height:44px;box-sizing:border-box;border-width:2px;border-radius:8px"></div>
+      </sc-if>
+      <div data-fill="{{ k.fill }}" data-stroke="{{ k.stroke }}" data-dash="{{ k.dashed }}" data-round="{{ k.round }}" data-fg="{{ k.color }}" data-split="{{ k.split }}" data-split2="{{ k.fill2 }}" data-line="{{ k.line }}" style="position:absolute;inset:0;box-sizing:border-box;border-radius:8px;border-width:2px;display:flex;align-items:center;justify-content:center;font-family:'Latin Modern Math','CMU Serif','Cambria Math',serif;font-size:20px;line-height:1;overflow:hidden">
+        <sc-if value="{{ k.noise }}" hint-placeholder-val="{{ false }}">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56" preserveAspectRatio="none" width="68" height="40" style="position:absolute;left:0;top:0;pointer-events:none">
+            <g fill="{{ k.color }}" fill-opacity="0.5">
+              <sc-for list="{{ k.dots }}" as="d" hint-placeholder-count="0"><circle cx="{{ d.cx }}" cy="{{ d.cy }}" r="{{ d.r }}"></circle></sc-for>
+            </g>
+          </svg>
+        </sc-if>
+        <span data-field="tex" data-tex="{{ k.tex }}" onDoubleClick="{{ k.editOn }}" onBlur="{{ k.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text;white-space:nowrap;min-width:10px;position:relative;display:flex;align-items:center;justify-content:center;height:100%;width:100%;text-align:center"></span>
+      </div>
+    </div>
+  </sc-for>
+
+  <sc-for list="{{ curves }}" as="cv" hint-placeholder-count="2">
+    <svg data-ph="{{ cv.ph }}" onPointerDown="{{ cv.down }}" xmlns="http://www.w3.org/2000/svg" data-x="{{ cv.x }}" data-y="{{ cv.y }}" data-z="{{ cv.z }}" width="{{ cv.w }}" height="{{ cv.h }}" viewBox="{{ cv.vb }}" style="position:absolute;overflow:visible;touch-action:none">
+      <path d="{{ cv.d }}" fill="none" stroke="transparent" stroke-width="14"></path>
+      <path d="{{ cv.d }}" fill="none" stroke="{{ cv.stroke }}" stroke-width="{{ cv.sw }}" stroke-dasharray="{{ cv.dashArr }}" stroke-linecap="round" stroke-linejoin="round"></path>
+      <path d="{{ cv.arrowD }}" fill="{{ cv.stroke }}" stroke="none"></path>
+      <sc-for list="{{ cv.dotList }}" as="d" hint-placeholder-count="0">
+        <circle cx="{{ d.cx }}" cy="{{ d.cy }}" r="{{ d.r }}" fill="{{ d.fill }}" stroke="{{ d.stroke }}" stroke-width="{{ d.sw }}"></circle>
+      </sc-for>
+      <sc-for list="{{ cv.handles }}" as="hd" hint-placeholder-count="0">
+        <circle data-ui="1" onPointerDown="{{ hd.down }}" cx="{{ hd.x }}" cy="{{ hd.y }}" r="7" fill="#FFFFFF" stroke="#4A72B5" stroke-width="2" style="cursor:grab"></circle>
+      </sc-for>
+    </svg>
+  </sc-for>
+
+  <sc-for list="{{ imgs }}" as="m" hint-placeholder-count="3">
+    <div onPointerDown="{{ m.down }}" onDragOver="{{ m.dragOver }}" onDrop="{{ m.drop }}" onDoubleClick="{{ m.pick }}" data-x="{{ m.x }}" data-y="{{ m.y }}" data-w="{{ m.w }}" data-h="{{ m.h }}" data-rot="{{ m.rot }}" style="position:absolute;touch-action:none;z-index:1">
+      <sc-if value="{{ m.stack3 }}" hint-placeholder-val="{{ false }}">
+        <div data-src="{{ m.src }}" data-stroke="{{ m.color }}" data-fit="{{ m.fit }}" data-rad="{{ m.radius }}" data-bw="{{ m.borderW }}" data-scale="{{ m.scale }}" data-ghost="{{ m.ghostDash }}" style="position:absolute;left:16px;top:-16px;width:100%;height:100%;box-sizing:border-box;border-width:2px;border-style:solid;border-radius:8px;background-color:#FFFFFF;background-repeat:no-repeat;background-position:center;background-size:cover;pointer-events:none"></div>
+        <div data-src="{{ m.src }}" data-stroke="{{ m.color }}" data-fit="{{ m.fit }}" data-rad="{{ m.radius }}" data-bw="{{ m.borderW }}" data-scale="{{ m.scale }}" data-ghost="{{ m.ghostDash }}" style="position:absolute;left:8px;top:-8px;width:100%;height:100%;box-sizing:border-box;border-width:2px;border-style:solid;border-radius:8px;background-color:#FFFFFF;background-repeat:no-repeat;background-position:center;background-size:cover;pointer-events:none"></div>
+      </sc-if>
+      <sc-if value="{{ m.hasSrc }}" hint-placeholder-val="{{ false }}">
+        <div data-src="{{ m.src }}" data-stroke="{{ m.color }}" data-fit="{{ m.fit }}" data-rad="{{ m.radius }}" data-bw="{{ m.borderW }}" data-tbg="{{ m.tbg }}" data-scale="{{ m.scale }}" data-ar="{{ m.ar }}" style="position:absolute;inset:0;box-sizing:border-box;border-width:2px;border-style:solid;border-radius:8px;background-color:transparent;background-repeat:no-repeat;background-position:center;background-size:cover;pointer-events:none"></div>
+      </sc-if>
+      <sc-if value="{{ m.noSrc }}" hint-placeholder-val="{{ true }}">
+        <div data-stroke="{{ m.color }}" data-fg="{{ m.color }}" style="position:absolute;inset:0;box-sizing:border-box;border-width:2px;border-style:dashed;border-radius:8px;background:rgba(255,255,255,0.85);display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;line-height:1.25;padding:4px">
+          <span data-field="label" data-tex="{{ m.label }}" onDoubleClick="{{ m.editOn }}" onBlur="{{ m.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text"></span>
+        </div>
+      </sc-if>
+    </div>
+  </sc-for>
+
+  <sc-for list="{{ svgs }}" as="s" hint-placeholder-count="3">
+    <svg data-ph="{{ s.ph }}" onPointerDown="{{ s.down }}" onDragOver="{{ s.dragOver }}" onDrop="{{ s.drop }}" onDoubleClick="{{ s.pick }}" xmlns="http://www.w3.org/2000/svg" data-x="{{ s.x }}" data-y="{{ s.y }}" data-rot="{{ s.rot }}" data-z="{{ s.z }}" data-hitsvg="{{ s.hit }}" width="{{ s.w }}" height="{{ s.h }}" viewBox="{{ s.vb }}" style="position:absolute;overflow:visible;touch-action:none">
+      <rect x="0" y="0" width="{{ s.w }}" height="{{ s.h }}" fill="transparent" data-hit="{{ s.hit }}"></rect>
+      <sc-for list="{{ s.paths }}" as="p" hint-placeholder-count="1">
+        <path d="{{ p.d }}" fill="{{ p.fill }}" stroke="{{ p.stroke }}" stroke-width="{{ p.sw }}" stroke-dasharray="{{ p.dash }}" stroke-linecap="round" stroke-linejoin="round"></path>
+      </sc-for>
+      <sc-for list="{{ s.dots }}" as="d" hint-placeholder-count="0">
+        <circle cx="{{ d.cx }}" cy="{{ d.cy }}" r="{{ d.r }}" fill="{{ d.fill }}" stroke="{{ d.stroke }}" stroke-width="{{ d.sw }}"></circle>
+      </sc-for>
+    </svg>
+  </sc-for>
+
+  <sc-for list="{{ boxes }}" as="b" hint-placeholder-count="2">
+    <div onPointerDown="{{ b.down }}" data-x="{{ b.x }}" data-y="{{ b.y }}" data-w="{{ b.w }}" data-h="{{ b.h }}" data-z="{{ b.z }}" data-fill="{{ b.fill }}" data-stroke="{{ b.stroke }}" data-fg="{{ b.color }}" data-dash="{{ b.dashed }}" style="position:absolute;box-sizing:border-box;border-width:2px;border-style:solid;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;text-align:center;padding:4px 10px">
+      <span data-field="title" data-tex="{{ b.title }}" data-fs="{{ b.fs }}" data-fw="{{ b.fw }}" onDoubleClick="{{ b.editOn }}" onBlur="{{ b.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text;line-height:1.15;white-space:pre-wrap"></span>
+      <sc-if value="{{ b.hasSub }}" hint-placeholder-val="{{ false }}">
+        <span data-field="sub" data-tex="{{ b.sub }}" data-fs="{{ b.subFs }}" onDoubleClick="{{ b.editOn }}" onBlur="{{ b.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text;line-height:1.2;margin-top:6px;color:#3A3A3A"></span>
+      </sc-if>
+    </div>
+  </sc-for>
+
+  <sc-for list="{{ callouts }}" as="c" hint-placeholder-count="2">
+    <div onPointerDown="{{ c.down }}" data-x="{{ c.x }}" data-y="{{ c.y }}" data-w="{{ c.w }}" data-h="{{ c.h }}" style="position:absolute;box-sizing:border-box;border:2px solid #C9CCD1;border-radius:12px;background:#FAFAFA;display:flex;align-items:center;gap:10px;padding:0 12px;touch-action:none">
+      <div style="flex:none;width:36px;height:36px;border-radius:50%;box-sizing:border-box;border:2px solid #C9A227;background:#FBF3D3;color:#B8901F;font-size:19px;font-weight:600;display:flex;align-items:center;justify-content:center">
+        <span data-field="num" data-tex="{{ c.num }}" onDoubleClick="{{ c.editOn }}" onBlur="{{ c.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text"></span>
+      </div>
+      <div style="display:flex;flex-direction:column;justify-content:flex-start;line-height:1.3;font-size:13px;gap:4px;height:100%;box-sizing:border-box;padding-top:9px">
+        <span data-field="title" data-tex="{{ c.title }}" data-fg="{{ c.color }}" data-fw="{{ c.fw }}" data-fs="{{ c.fs }}" onDoubleClick="{{ c.editOn }}" onBlur="{{ c.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text"></span>
+        <span data-field="body" data-tex="{{ c.body }}" onDoubleClick="{{ c.editOn }}" onBlur="{{ c.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text;color:#3A3A3A"></span>
+      </div>
+    </div>
+  </sc-for>
+
+  <sc-for list="{{ legends }}" as="l" hint-placeholder-count="3">
+    <div onPointerDown="{{ l.down }}" data-x="{{ l.x }}" data-y="{{ l.y }}" style="position:absolute;display:flex;align-items:center;gap:14px;touch-action:none;font-size:19px;color:#3A3A3A">
+      <div data-fill="{{ l.fill }}" data-stroke="{{ l.stroke }}" data-dash="{{ l.dashed }}" style="width:38px;height:28px;box-sizing:border-box;border-width:2px;border-radius:6px"></div>
+      <span data-field="text" data-tex="{{ l.text }}" onDoubleClick="{{ l.editOn }}" onBlur="{{ l.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text"></span>
+    </div>
+  </sc-for>
+
+  <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+    <div data-ui="1" data-rot="{{ selBox.rot }}" style="position:absolute;pointer-events:none;border:1.5px dashed #4A72B5;border-radius:6px;box-sizing:border-box" data-x="{{ selBox.x }}" data-y="{{ selBox.y }}" data-w="{{ selBox.w }}" data-h="{{ selBox.h }}">
+      <sc-if value="{{ selCanRot }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:50%;top:-26px;width:1.5px;height:20px;margin-left:-0.75px;background:#4A72B5"></div>
+        <div onPointerDown="{{ rotDown }}" title="Drag to rotate" style="position:absolute;left:50%;top:-36px;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:#fff;border:2px solid #4A72B5;box-sizing:border-box;cursor:grab;pointer-events:auto;touch-action:none"></div>
+      </sc-if>
+    </div>
+  </sc-if>
+  <div ref="{{ flowRef }}" style="position:absolute;inset:0;z-index:6;pointer-events:none"></div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  static VIEW_ONLY = true;
+  clearSel = () => {};
+  flowRef = React.createRef();
+  startFlow() {
+    const host = this.flowRef.current; if (!host || this._flowRaf) return;
+    const BLUE = '#466A96', RED = '#B5473A';
+    const ox = 20 + 90, oy = 110, W = 400, inv = v => v / (60 - 59 * v), P = (sa, sv) => [ox + W * sa, oy + W * (1 - sv)];
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg'); svg.setAttribute('width', 600); svg.setAttribute('height', 600); svg.style.cssText = 'position:absolute;left:0;top:0;overflow:visible'; host.appendChild(svg);
+    const mkS = (tag, attrs) => { const el = document.createElementNS(svgNS, tag); for (const k in attrs) el.setAttribute(k, attrs[k]); svg.appendChild(el); return el; };
+    // drawing heads: blue dot + arrow along the implied curve; red dot along the shared diagonal
+    const dotB = mkS('circle', { r: 8, fill: BLUE, stroke: '#fff', 'stroke-width': 2.5, opacity: 0 });
+    const arrowB = mkS('path', { d: 'M0 0 L-16 -8 L-12 0 L-16 8 Z', fill: BLUE, opacity: 0 });
+    const dotR = mkS('circle', { r: 8, fill: RED, stroke: '#fff', 'stroke-width': 2.5, opacity: 0 });
+    const canvas = host.parentElement;
+    const items = ph => [...canvas.querySelectorAll('[data-ph="' + ph + '"]')];
+    // clip-paths to "draw" the static curves progressively (left→right in x for blue; along diagonal for red)
+    const T = 8000, cl = (v, a, b) => Math.max(a, Math.min(b, v)), ease = t => 1 - Math.pow(1 - t, 3);
+    let t0 = performance.now(), last = 0, done = false;
+    const btn = document.createElement('button'); btn.type = 'button'; btn.title = 'Replay'; btn.textContent = '\u21BA'; btn.style.cssText = 'position:absolute;right:14px;bottom:14px;width:40px;height:40px;border-radius:999px;border:1.5px solid #C9D5CF;background:#fff;color:#0B1A3A;font:700 20px/1 system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif;cursor:pointer;pointer-events:auto;opacity:0;transition:opacity .3s;box-shadow:0 4px 12px rgba(11,26,58,.12)'; host.appendChild(btn);
+    btn.onclick = () => { done = false; t0 = performance.now(); btn.style.opacity = 0; if (!this._flowRaf) this._flowRaf = requestAnimationFrame(tick); };
+    const tick = now => {
+      if (done) { this._flowRaf = 0; return; }
+      this._flowRaf = requestAnimationFrame(tick);
+      if (now - last < 33) return; last = now;
+      const u = Math.min(1, (now - t0) / T); if (u >= 1) { done = true; btn.style.opacity = 1; }
+      const p1 = ease(cl((u - .04) / .30, 0, 1));     // blue implied curve: pure noise → clean
+      const p2 = ease(cl((u - .40) / .26, 0, 1));     // red applied schedule
+      const p3 = cl((u - .72) / .12, 0, 1);           // mismatch arrow + label
+      const hold = 1;
+      // blue curve: reveal via clip from the top-right (pure noise) downward to the origin (clean)
+      items(1).forEach(el => { const big = el.tagName === 'svg' && +el.getAttribute('width') === 400; if (big) { const [cx] = P(inv(1 - p1), 1 - p1); el.style.clipPath = 'inset(-20px -20px -20px ' + (cx - ox) + 'px)'; el.style.opacity = p1 > 0 ? hold : 0; } else { el.style.opacity = (p1 >= 1 ? 1 : 0) * hold; el.style.transition = 'opacity .4s'; } });
+      items(2).forEach(el => { const big = el.tagName === 'svg' && +el.getAttribute('width') === 400; if (big) { el.style.clipPath = 'inset(-20px -20px -20px ' + (W * (1 - p2)) + 'px)'; el.style.opacity = p2 > 0 ? hold : 0; } else { el.style.opacity = (p2 >= 1 ? 1 : 0) * hold; el.style.transition = 'opacity .4s'; } });
+      items(3).forEach(el => { el.style.opacity = p3 * hold; });
+      // heads
+      const sv1 = 1 - p1, [xb, yb] = P(inv(sv1), sv1); dotB.setAttribute('opacity', 0);
+      const v0 = cl(sv1 + .02, 0, 1), [x0, y0] = P(inv(v0), v0), ang = Math.atan2(yb - y0, xb - x0) * 180 / Math.PI;
+      arrowB.setAttribute('transform', 'translate(' + xb + ' ' + yb + ') rotate(' + ang + ')'); arrowB.setAttribute('opacity', p1 > 0 && p1 < 1 ? 1 : 0);
+      const sv2 = 1 - p2, [xr, yr] = P(sv2, sv2); dotR.setAttribute('cx', xr); dotR.setAttribute('cy', yr); dotR.setAttribute('opacity', p2 > 0 && p2 < 1 ? 1 : 0);
+    };
+    this._flowRaf = requestAnimationFrame(tick);
+  }
+
+  wrapRef = React.createRef(); scaleRef = React.createRef(); canvasRef = React.createRef();
+  standalone = (() => { try { return window.self === window.top; } catch (e) { return true; } })();
+  static C = {
+    o: { fg: '#D8742A', fill: '#FCE9DB', st: '#E0894A' },
+    b: { fg: '#3A63A8', fill: '#E3ECF7', st: '#4A72B5' },
+    g: { fg: '#4C7A3B', fill: '#E8F0E2', st: '#5E8A4C' },
+    y: { fg: '#B8901F', fill: '#FBF3D3', st: '#D4B24C' }
+  };
+  static curveGeom(cv) {
+    const P = cv.pts; if (!P || P.length < 2) return { d: '', arrowD: '', dotList: [] };
+    const seg = []; // catmull-rom → cubic beziers
+    for (let i = 0; i < P.length - 1; i++) { const p0 = P[i - 1] || P[i], p1 = P[i], p2 = P[i + 1], p3 = P[i + 2] || p2; seg.push([p1, [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6], p2]); }
+    const bez = (s, t) => { const u = 1 - t; return [u * u * u * s[0][0] + 3 * u * u * t * s[1][0] + 3 * u * t * t * s[2][0] + t * t * t * s[3][0], u * u * u * s[0][1] + 3 * u * u * t * s[1][1] + 3 * u * t * t * s[2][1] + t * t * t * s[3][1]]; };
+    let d = `M${P[0][0]} ${P[0][1]}`; seg.forEach(s => { d += ` C ${s[1][0].toFixed(1)} ${s[1][1].toFixed(1)} ${s[2][0].toFixed(1)} ${s[2][1].toFixed(1)} ${s[3][0]} ${s[3][1]}`; });
+    const samples = []; seg.forEach(s => { for (let k = 0; k <= 24; k++) samples.push(bez(s, k / 24)); });
+    const cum = [0]; for (let i = 1; i < samples.length; i++) cum.push(cum[i - 1] + Math.hypot(samples[i][0] - samples[i - 1][0], samples[i][1] - samples[i - 1][1]));
+    const L = cum[cum.length - 1]; const at = f => { const target = f * L; let i = cum.findIndex(c => c >= target); if (i <= 0) return samples[0]; const a = samples[i - 1], b = samples[i], r = (target - cum[i - 1]) / ((cum[i] - cum[i - 1]) || 1); return [a[0] + (b[0] - a[0]) * r, a[1] + (b[1] - a[1]) * r]; };
+    const n = cv.dots || 0, hollow = !!cv.hollow, r = cv.dotR || 5;
+    const dotList = []; for (let i = 0; i < n; i++) { const span = cv.dotSpan != null ? cv.dotSpan : (cv.arrow ? 0.74 : 0.82); const f = n === 1 ? 0.5 : 0.06 + span * i / (n - 1); const p = at(f); dotList.push({ cx: +p[0].toFixed(1), cy: +p[1].toFixed(1), r, fill: hollow ? '#FFFFFF' : cv.stroke, stroke: hollow ? cv.stroke : undefined, sw: hollow ? 2.5 : undefined }); }
+    let arrowD = ''; if (cv.arrow) { const e = samples[samples.length - 1], q = at(Math.max(0, 1 - 8 / L)); const ang = Math.atan2(e[1] - q[1], e[0] - q[0]); const s = (5 + (cv.sw || 3) * 2.2) * (cv.headScale || 1); const pt = (dx, dy) => `${(e[0] + dx * Math.cos(ang) - dy * Math.sin(ang)).toFixed(1)} ${(e[1] + dx * Math.sin(ang) + dy * Math.cos(ang)).toFixed(1)}`; arrowD = `M${pt(2, 0)} L${pt(-s * 1.6, -s * 0.75)} L${pt(-s * 1.6, s * 0.75)} Z`; }
+    return { d, arrowD, dotList };
+  }
+  static arrowGeom(len, col, dir, dash) { return dir === 'v'
+      ? { w: 20, h: len, paths: [{ d: `M10 0 V${len - 10}`, stroke: col, sw: 3, dash }, { d: `M2 ${len - 12} L10 ${len} L18 ${len - 12} Z`, fill: col, stroke: 'none' }] }
+      : { w: len, h: 20, paths: [{ d: `M0 10 H${len - 10}`, stroke: col, sw: 3, dash }, { d: `M${len - 12} 2 L${len} 10 L${len - 12} 18 Z`, fill: col, stroke: 'none' }] }; }
+  static noiseDots(seed) { let sd = 0; for (const ch of String(seed)) sd = (sd * 31 + ch.charCodeAt(0)) % 2147483648; sd = sd || 7; const rnd = () => { sd = (sd * 1103515245 + 12345) % 2147483648; return sd / 2147483648; }; const out = []; let g = 0; while (out.length < 40 && g++ < 2000) { const px = rnd() * 56, py = rnd() * 56; if (px + py > 58) out.push({ cx: +px.toFixed(1), cy: +py.toFixed(1), r: +(0.7 + rnd() * 1.1).toFixed(1) }); } return out; }
+  static SAVED = null;
+  static KEY = 'ctrlwam-warp-schedule-v3-saved';
+  static loadSaved() { return null; } static _loadSavedOrig() { let sv = null; try { const ls = JSON.parse(localStorage.getItem(Component.KEY) || 'null'); sv = ls || Component.SAVED; } catch (e) { sv = Component.SAVED; } return sv ? Component.migrate(sv) : sv; }
+  static migrate(sv) { if (!sv.w28) return { ...sv, w28: true, items: Component.defaults(), canvasW: 600, canvasH: 1200, frame: false }; return sv; }
+  static carIcon(it, blue) { const vert = it.h > it.w; const w = vert ? Math.round(it.h * 1.1) : Math.round(it.w * 1.1), h = Math.round(w * 64 / 120); const cx = it.x + it.w / 2, cy = it.y + it.h / 2; return { id: it.id, type: 'svg', x: Math.round(cx - w / 2), y: Math.round(cy - h / 2), w, h, vb: '0 0 120 64', rot: vert ? -90 : (blue ? -25 : 0), dots: [], paths: blue ? Component.CAR_PATHS_B : Component.CAR_PATHS }; }
+  static carPaths(p) { return [
+      { d: 'M18 2 h20 a3 3 0 0 1 3 3 v5 h-26 v-5 a3 3 0 0 1 3 -3 z M82 2 h20 a3 3 0 0 1 3 3 v5 h-26 v-5 a3 3 0 0 1 3 -3 z M15 54 h26 v5 a3 3 0 0 1 -3 3 h-20 a3 3 0 0 1 -3 -3 z M79 54 h26 v5 a3 3 0 0 1 -3 3 h-20 a3 3 0 0 1 -3 -3 z', fill: p.wheel, stroke: 'none' },
+      { d: 'M14 8 H102 Q116 8 118 22 V42 Q116 56 102 56 H14 Q5 56 5 44 V20 Q5 8 14 8 Z', fill: p.body, stroke: p.line, sw: 3 },
+      { d: 'M28 16 Q24 32 28 48 L46 51 V13 Z', fill: p.glass, stroke: p.glassLine, sw: 1.5 },
+      { d: 'M74 13 L94 18 Q98 32 94 46 L74 51 Z', fill: p.glass, stroke: p.glassLine, sw: 1.5 },
+      { d: 'M49 14 h22 a3 3 0 0 1 3 3 v30 a3 3 0 0 1 -3 3 h-22 a3 3 0 0 1 -3 -3 v-30 a3 3 0 0 1 3 -3 z', fill: p.roof, stroke: p.roofLine, sw: 1.5 },
+      { d: 'M48 9.5 h26 v3.5 h-26 z M48 51 h26 v3.5 h-26 z', fill: p.glass, stroke: 'none' },
+      { d: 'M72 3.5 h9 a2 2 0 0 1 2 2 v3.5 h-11 z M72 55 h11 v3.5 a2 2 0 0 1 -2 2 h-9 z', fill: p.body, stroke: p.line, sw: 1.5 },
+      { d: 'M110 14 h5 v10 h-5 z M110 40 h5 v10 h-5 z', fill: '#F3F1E4', stroke: p.line, sw: 1 },
+      { d: 'M6 15 h4 v9 h-4 z M6 40 h4 v9 h-4 z', fill: p.tail, stroke: p.line, sw: 1 }
+    ]; }
+  static ROBOT_PATHS = [
+      { d: 'M36 33 L50 30 L64 64 L50 67 Z', fill: '#8A9BB3', stroke: '#2E4468', sw: 2.5 },
+      { d: 'M30 82 h52 a4 4 0 0 1 4 4 v4 a3 3 0 0 1 -3 3 h-54 a3 3 0 0 1 -3 -3 v-4 a4 4 0 0 1 4 -4 z', fill: '#8A9BB3', stroke: '#2E4468', sw: 2.5 },
+      { d: 'M37 82 L47 61 Q48 58 51 58 H63 Q66 58 67 61 L77 82 Z', fill: '#F2D46A', stroke: '#A87A16', sw: 2.5 },
+      { d: 'M57 71 a4.5 4.5 0 1 0 0.01 0 z', fill: '#8A9BB3', stroke: '#2E4468', sw: 2 },
+      { d: 'M80 14 h5 a2 2 0 0 1 2 2 v10 a2 2 0 0 1 -2 2 h-5 z', fill: '#3D5578', stroke: '#2E4468', sw: 2 },
+      { d: 'M85 17 L92 7 L102 11 L99 15 L92 12 L88 19 Z', fill: '#8A9BB3', stroke: '#2E4468', sw: 2.2 },
+      { d: 'M85 25 L92 35 L102 31 L99 27 L92 30 L88 23 Z', fill: '#8A9BB3', stroke: '#2E4468', sw: 2.2 },
+      { d: 'M50 17 H74 V28 H50 Z', fill: '#F2D46A', stroke: '#A87A16', sw: 2.5 },
+      { d: 'M71 12 h8 a4 4 0 0 1 4 4 v10 a4 4 0 0 1 -4 4 h-8 a4 4 0 0 1 -4 -4 v-10 a4 4 0 0 1 4 -4 z', fill: '#F2D46A', stroke: '#A87A16', sw: 2.5 },
+      { d: 'M40 25 a12.5 12.5 0 1 0 0.01 0 z', fill: '#F2D46A', stroke: '#A87A16', sw: 2.5 },
+      { d: 'M40 25 a5.5 5.5 0 1 0 0.01 0 z', fill: '#8A9BB3', stroke: '#2E4468', sw: 2 }
+    ];
+  static CAR_PATHS = Component.carPaths({ wheel: '#2F3A22', body: '#A9BF86', line: '#4B6222', glass: '#3E5626', glassLine: '#2E4218', roof: '#BDD09F', roofLine: '#6E8A3E', tail: '#9B2A21' });
+  static CAR_PATHS_B = Component.carPaths({ wheel: '#222A3A', body: '#7C9CC8', line: '#1E2D4A', glass: '#2E3A55', glassLine: '#1E2D4A', roof: '#A3BBDB', roofLine: '#4F6A96', tail: '#D2342A' });
+  saveDefault = async () => {
+    const { items, canvasW, canvasH, bg, frame } = this.state; const s = { items, canvasW, canvasH, bg, frame, w28: true };
+    const json = JSON.stringify(s);
+    try { localStorage.setItem(Component.KEY, json); } catch (e) {}
+    try {
+      let src = await (await fetch(location.href, { cache: 'no-store' })).text();
+      const re = /static SAVED = (null|\{[\s\S]*?\});\n  static KEY/; if (!re.test(src)) throw new Error('marker');
+      src = src.replace(re, () => 'static SAVED = ' + json + ';\n  static KEY');
+      const b = new Blob([src], { type: 'text/html' }); const u = URL.createObjectURL(b); this.dl(u, (location.pathname.split('/').pop() || 'CtrlWAM-Warp-Schedule-Figure-v3.html')); setTimeout(() => URL.revokeObjectURL(u), 2000);
+      this.setState({ saveMsg: 'Saved in this browser · downloaded HTML has this layout baked in — replace your file with it' });
+    } catch (e) { this.setState({ saveMsg: 'Saved in this browser (reopens with this layout here)' }); }
+  };
+  static defaults() {
+    let n = 0; const id = () => 'i' + (++n);
+    const INK = '#0B1A3A', RED = '#B5473A', BLUE = '#466A96', GREY = '#5B6773', G2 = '#8FB56A', G3 = '#5E9470', G5 = '#2E5A3C', DOT = '#1F3A2C', GRID = '#E6EBE8', PBG = '#FBFBFC', PST = '#C9D5CF';
+    const T = (x, y, w, text, fs, color, o = {}) => ({ id: id(), type: 'text', x, y, w, text, fs, color, fw: o.fw || 400, fst: o.it ? 'italic' : 'normal', align: o.align || 'center', rot: o.rot || 0 });
+    const TC = (cx, yb, text, fs, color, o = {}) => T(cx - 200, yb - fs, 400, text, fs, color, o);
+    const TL = (x, yb, text, fs, color, o = {}) => T(x, yb - fs, 320, text, fs, color, { ...o, align: 'left' });
+    const TR = (x, yb, text, fs, color, o = {}) => T(x - 200, yb - fs, 200, text, fs, color, { ...o, align: 'right' });
+    const P = (x, y, w, h, fill, stroke) => ({ id: id(), type: 'panel', x, y, w, h, fill, stroke, radius: 0 });
+    const S = (x, y, w, h, paths, dots = []) => ({ id: id(), type: 'svg', x, y, w, h, paths, dots });
+    const CV = (x, y, w, h, pts, stroke, o = {}) => ({ id: id(), type: 'curve', x, y, w, h, pts, stroke, sw: 3.5, dashStyle: 'solid', arrow: false, dots: 0, dotR: 5, hollow: false, z: 1, ...o });
+    const warp = k => s => k * s / (1 + (k - 1) * s);
+    const fpts = (f, ss) => ss.map(s => [+(400 * s).toFixed(1), +(400 - 400 * f(s)).toFixed(1)]);
+    const SG = [0, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
+    const SB = [0, 0.002, 0.004, 0.007, 0.01, 0.015, 0.02, 0.03, 0.045, 0.07, 0.1, 0.15, 0.22, 0.32, 0.45, 0.6, 0.8, 1];
+    const dot = (x, y, fill) => S(x - 6, y - 6, 12, 12, [], [{ cx: 6, cy: 6, r: 6, fill }]);
+    const sw = (x, y, col, dash, w = 30) => S(x, y - 4, w, 8, [{ d: `M0 4 H${w}`, stroke: col, sw: 4, dash }]);
+    const arr = (x1, y1, x2, y2, col) => CV(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1) || 1, Math.abs(y2 - y1) || 1, [[x1 - Math.min(x1, x2), y1 - Math.min(y1, y2)], [x2 - Math.min(x1, x2), y2 - Math.min(y1, y2)]], col, { sw: 2.5, arrow: true, headScale: 0.8 });
+    const plot = (ox, xl) => [
+      P(ox + 90, 110, 400, 400, PBG, PST), { ...S(ox + 90, 110, 400, 400, [{ d: 'M200 0 V400 M0 200 H400', stroke: GRID, sw: 1 }]), z: 0, hit: 'none' },
+      TR(ox + 70, 115, '1', 16, INK), TR(ox + 70, 315, '0.5', 16, INK), TR(ox + 70, 515, '0', 16, INK),
+      TC(ox + 90, 535, '0', 16, INK), TC(ox + 290, 535, '0.5', 16, INK), TC(ox + 490, 535, '1', 16, INK),
+      TC(ox + 290, 570, xl, 19, INK),
+      CV(ox + 90, 110, 400, 400, [[0, 400], [400, 0]], RED),
+      TR(ox + 490, 98, 'Pure noise', 16, INK, { it: true }), TL(ox + 106, 530, 'Clean', 16, INK, { it: true })
+    ];
+    const ax = 20, bx = 600;
+    const items = [
+      // (a)
+      TC(ax + 254, 34, '(a) Standard noising schedule', 27, INK, { fw: 700 }),
+      sw(ax + 28, 62, RED), TL(ax + 64, 67, 'Applied noise', 17, INK),
+      sw(ax + 190, 62, BLUE, '9 6'), TL(ax + 226, 67, 'Video-implied action uncertainty', 17, INK),
+      ...plot(ax, 'Action noise / uncertainty, $\\sigma_a$'),
+      TC(ax + 28, 310, 'Video noise / uncertainty, $\\sigma_v$', 19, INK, { rot: -90 }),
+      arr(ax + 268, 304, ax + 240, 332, RED),
+      CV(ax + 90, 110, 400, 400, fpts(warp(60), SB), BLUE, { dashStyle: 'dashed' }),
+      S(ax + 110, 220, 256, 20, [{ d: 'M10 10 H246', stroke: GREY, sw: 2.5 }, { d: 'M0 10 L12 4 L12 16 Z', fill: GREY, stroke: 'none' }, { d: 'M256 10 L244 4 L244 16 Z', fill: GREY, stroke: 'none' }]),
+      { ...S(ax + 225, 217, 26, 26, [{ d: 'M0 0 H26 V26 H0 Z', fill: PBG, stroke: 'none' }, { d: 'M4 4 L22 22 M22 4 L4 22', stroke: GREY, sw: 3.5, cap: 'round' }]), z: 2 },
+      TC(ax + 238, 256, 'Denoising mismatch', 17, GREY, { fw: 600 }),
+      dot(ax + 490, 110, BLUE), dot(ax + 90, 510, DOT),
+      TL(ax + 228, 410, 'Action uncertainty drops early', 17, BLUE, { fw: 700 }), TL(ax + 228, 434, 'Video still refines detail', 15, BLUE),
+      
+      '__B__',
+      TC(bx + 254, 34, '(b) Warped noising schedule', 27, INK, { fw: 700 }),
+      sw(bx + 47, 62, RED), TL(bx + 83, 67, 'Shared', 17, INK),
+      sw(bx + 162, 62, G2), TL(bx + 198, 67, '$\\varsigma = 2$', 17, INK),
+      sw(bx + 270, 62, G3), TL(bx + 306, 67, '$\\varsigma = 3$', 17, INK),
+      sw(bx + 378, 62, G5), TL(bx + 414, 67, '$\\varsigma = 5$', 17, INK),
+      ...plot(bx, 'Action noise / uncertainty, $\\sigma_a$'),
+      TC(bx + 28, 310, 'Video noise / uncertainty, $\\sigma_v$', 19, INK, { rot: -90 }),
+      CV(bx + 90, 110, 400, 400, fpts(warp(2), SG), G2), CV(bx + 90, 110, 400, 400, fpts(warp(3), SG), G3), CV(bx + 90, 110, 400, 400, fpts(warp(5), SG), G5),
+      S(bx + 268, 268, 20, 38, [{ d: 'M10 8 V30', stroke: G5, sw: 3 }, { d: 'M10 0 L4 10 L16 10 Z', fill: G5, stroke: 'none' }, { d: 'M10 38 L4 28 L16 28 Z', fill: G5, stroke: 'none' }]),
+      TL(bx + 228, 410, 'Higher video noise', 17, G5, { fw: 700 }), TL(bx + 228, 434, 'Keeps layout adaptable', 15, G5),
+      TR(bx + 470, 300, 'Stronger warp $\\uparrow$', 17, G5),
+      dot(bx + 490, 110, DOT), dot(bx + 90, 510, DOT),
+      { ...TL(bx + 92, 136, '$\\sigma_v = \\dfrac{\\varsigma\\,\\sigma_a}{1 + (\\varsigma - 1)\\,\\sigma_a}$', 18, INK), z: 2 }
+    ];
+    const k = items.indexOf('__B__');
+    return items.slice(0, k).map(it => {
+      if (it.type === 'text' && it.text === '(a) Standard noising schedule') return { ...it, text: 'Standard noising schedule' };
+      if (it.type === 'curve' && it.stroke === RED && it.pts.length === 2 && it.w === 400) return { ...it, ph: 2 };              // applied (shared) schedule
+      if (it.type === 'curve' && it.stroke === BLUE) return { ...it, ph: 1 };                                                   // video-implied curve
+      if (it.type === 'curve' && it.stroke === RED && it.arrow) return { ...it, ph: 2 };                                       // red arrow onto diagonal
+      if (it.type === 'svg' && it.y === 220 && it.w === 256) return { ...it, ph: 3 };                                          // mismatch double arrow
+      if (it.type === 'svg' && it.y === 217 && it.w === 26) return { ...it, ph: 3 };                                           // cross mark
+      if (it.type === 'text' && it.text === 'Denoising mismatch') return { ...it, ph: 3 };
+      if (it.type === 'text' && (it.text === 'Action uncertainty drops early' || it.text === 'Video still refines detail')) return { ...it, ph: 1 };
+      if (it.type === 'svg' && it.y === 58 && it.x === ax + 28) return { ...it, ph: 2 };                                       // legend swatch red
+      if (it.type === 'text' && it.text === 'Applied noise') return { ...it, ph: 2 };
+      if (it.type === 'svg' && it.y === 58 && it.x === ax + 190) return { ...it, ph: 1 };                                      // legend swatch blue
+      if (it.type === 'text' && it.text === 'Video-implied action uncertainty') return { ...it, ph: 1 };
+      if (it.type === 'svg' && it.w === 12 && it.x === ax + 490 - 6) return { ...it, ph: 1 };                                  // blue dot at pure noise
+      return it;
+    });
+  }
+  state = (() => { const sv = Component.loadSaved(); return { items: sv ? sv.items : Component.defaults(), sel: null, canvasW: 600, canvasH: 600, fit: true, frame: false, bg: '#FFFFFF', showPanel: false, scale: 1, copyMsg: '', saveMsg: '' }; })();
+  past = []; future = [];
+  snap() { this.past.push(this.state.items); if (this.past.length > 100) this.past.shift(); this.future = []; }
+  undo = () => { if (!this.past.length) return; this.future.push(this.state.items); this.setState({ items: this.past.pop(), sel: null }); };
+  redo = () => { if (!this.future.length) return; this.past.push(this.state.items); this.setState({ items: this.future.pop(), sel: null }); };
+  componentDidMount() {
+    this.ro = new ResizeObserver(() => this.measure()); this.ro.observe(this.wrapRef.current); this.measure();
+    this.applyStyles(); this.startFlow();
+    this.keyHandler = e => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !this.typing()) { e.preventDefault(); e.shiftKey ? this.redo() : this.undo(); return; } if ((e.key === 'Delete' || e.key === 'Backspace') && this.state.sel && !this.typing()) { e.preventDefault(); this.delSel(); } };
+    
+  }
+  typing() { const a = document.activeElement; return !!a && (a.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)); }
+  componentWillUnmount() { cancelAnimationFrame(this._flowRaf); this.ro && this.ro.disconnect();  }
+  componentDidUpdate() { this.applyStyles(); }
+  measure() { const el = this.wrapRef.current; const w = el ? (el.clientWidth || (el.parentElement && el.parentElement.clientWidth) || this.state.canvasW) : this.state.canvasW; const s = this.state.fit ? Math.min(1, w / this.state.canvasW) : 1; const hh = Math.round(this.state.canvasH * s) + 'px'; if (el && el.style.height !== hh) requestAnimationFrame(() => { el.style.height = hh; }); if (Math.abs(s - this.state.scale) > 0.001) this.setState({ scale: s }); }
+  // data-* attrs carry live values; apply them as styles so the template stays paint-first
+  applyStyles() {
+    const root = this.canvasRef.current; if (!root) return;
+    root.style.width = this.state.canvasW + 'px'; root.style.height = this.state.canvasH + 'px'; root.style.background = this.state.bg;
+    root.style.border = this.state.frame ? '2px solid #D9D9D9' : 'none'; root.style.borderRadius = this.state.frame ? '28px' : '0';
+    const sc = this.scaleRef.current; if (sc) { sc.style.transform = `scale(${this.state.scale})`; sc.style.width = this.state.canvasW + 'px'; sc.style.height = (this.state.canvasH * this.state.scale) + 'px'; sc.parentElement.style.height = (this.state.canvasH * this.state.scale) + 'px'; }
+    root.querySelectorAll('[data-x]').forEach(el => { el.style.left = el.dataset.x + 'px'; el.style.top = el.dataset.y + 'px'; });
+    root.querySelectorAll('[data-w]').forEach(el => { if (el.dataset.w && el.dataset.w !== 'undefined') el.style.width = el.dataset.w + 'px'; });
+    root.querySelectorAll('[data-h]').forEach(el => { if (el.dataset.h && el.dataset.h !== 'undefined') el.style.height = el.dataset.h + 'px'; });
+    root.querySelectorAll('[data-rot]').forEach(el => { const r = parseFloat(el.dataset.rot || 0); el.style.transform = r ? `rotate(${r}deg)` : ''; el.style.transformOrigin = 'center'; });
+    root.querySelectorAll('[data-h]').forEach(el => { if (el.dataset.h && el.dataset.h !== 'undefined') el.style.height = el.dataset.h + 'px'; });
+    root.querySelectorAll('[data-fs]').forEach(el => { if (+el.dataset.fs) el.style.fontSize = el.dataset.fs + 'px'; });
+    root.querySelectorAll('[data-fw]').forEach(el => { el.style.fontWeight = el.dataset.fw; });
+    root.querySelectorAll('[data-fst]').forEach(el => { el.style.fontStyle = el.dataset.fst; });
+    root.querySelectorAll('[data-col]').forEach(el => { el.style.color = el.dataset.col; });
+    root.querySelectorAll('[data-fg]').forEach(el => { el.style.color = el.dataset.fg; });
+    root.querySelectorAll('[data-fill]').forEach(el => { el.style.background = el.dataset.fill; });
+    root.querySelectorAll('[data-bg]').forEach(el => { el.style.background = (el.dataset.bg && el.dataset.bg !== 'undefined') ? el.dataset.bg : ''; });
+    root.querySelectorAll('[data-stroke]').forEach(el => { el.style.borderColor = el.dataset.stroke; });
+    root.querySelectorAll('[data-dash]').forEach(el => { el.style.borderStyle = el.dataset.dash === 'true' ? 'dashed' : 'solid'; });
+    root.querySelectorAll('[data-split]').forEach(el => { if (el.dataset.split !== 'true') return; const lw = parseFloat(el.dataset.line || 0); el.style.background = lw > 0 ? `linear-gradient(to bottom right, ${el.dataset.fill} calc(50% - ${lw / 2}px), rgba(46,46,46,0.45) calc(50% - ${lw / 2}px), rgba(46,46,46,0.45) calc(50% + ${lw / 2}px), ${el.dataset.split2} calc(50% + ${lw / 2}px))` : `linear-gradient(to bottom right, ${el.dataset.fill} 50%, ${el.dataset.split2} 50%)`; });
+    root.querySelectorAll('[data-src]').forEach(el => { const f = el.dataset.fit || 'cover'; const sc = parseFloat(el.dataset.scale || 100) / 100; el.style.backgroundImage = el.dataset.src ? `url("${el.dataset.src}")` : 'none'; el.style.backgroundColor = el.dataset.tbg === 'false' ? '#fff' : 'transparent'; el.style.backgroundSize = f === 'fill' ? `${sc * 100}% ${sc * 100}%` : sc === 1 ? f : f === 'cover' ? `${sc * 100}% auto` : (el.dataset.ar && parseFloat(el.dataset.ar) < (el.offsetWidth / Math.max(1, el.offsetHeight)) ? `auto ${sc * 100}%` : `${sc * 100}% auto`); el.style.borderRadius = (el.dataset.rad || 8) + 'px'; el.style.borderWidth = (el.dataset.bw === undefined ? 2 : el.dataset.bw) + 'px'; });
+    root.querySelectorAll('[data-z]').forEach(el => { el.style.zIndex = el.dataset.z; });
+    root.querySelectorAll('[data-ghost]').forEach(el => { el.style.borderStyle = el.dataset.ghost === 'true' ? 'dashed' : 'solid'; });
+    root.querySelectorAll('[data-hit]').forEach(el => { el.style.pointerEvents = el.dataset.hit; });
+    root.querySelectorAll('[data-hitsvg]').forEach(el => { const none = el.dataset.hitsvg === 'none'; el.style.pointerEvents = none ? 'none' : 'auto'; el.querySelectorAll('path,circle').forEach(c => { c.style.pointerEvents = none ? 'visiblePainted' : ''; }); });
+    root.querySelectorAll('[data-prad]').forEach(el => { if (el.dataset.prad && el.dataset.prad !== 'undefined') el.style.borderRadius = el.dataset.prad + 'px'; });
+    root.querySelectorAll('[data-round]').forEach(el => { el.style.borderRadius = el.dataset.round === 'true' ? '50%' : '8px'; });
+    root.querySelectorAll('[data-al]').forEach(el => { el.style.textAlign = el.dataset.al; });
+    this.renderTex(root);
+  }
+  renderTex(root) {
+    if (!window.katex) { if (!this.texPoll) this.texPoll = setInterval(() => { if (window.katex) { clearInterval(this.texPoll); this.texPoll = null; this.applyStyles(); } }, 100); return; }
+    root.querySelectorAll('[data-tex]').forEach(el => {
+      if (el.isContentEditable) return; const src = el.dataset.tex || ''; if (el.dataset.rendered === src) return;
+      el.dataset.rendered = src; el.innerHTML = Component.richHtml(src, el.dataset.field === 'tex');
+    });
+  }
+
+  static async katexCss() {
+    if (Component._kcss) return Component._kcss;
+    const base = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/';
+    let css = await (await fetch(base + 'katex.min.css')).text();
+    const urls = [...new Set([...css.matchAll(/url\((fonts\/[^)]+?\.woff2)\)/g)].map(m => m[1]))];
+    for (const u of urls) {
+      try { const b = await (await fetch(base + u)).blob(); const d = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(b); }); css = css.split('url(' + u + ')').join('url(' + d + ')'); } catch (e) {}
+    }
+    css = css.replace(/url\(fonts\/[^)]+\.(woff|ttf)\) format\("(woff|truetype)"\),?/g, '').replace(/,\s*;/g, ';');
+    return (Component._kcss = css);
+  }
+  static richHtml(src, forceMath = false) {
+    const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\n/g, '<br>');
+    const math = (t, display) => { try { return window.katex.renderToString(t, { output: 'html', throwOnError: false, displayMode: display }); } catch (e) { return esc(t); } };
+    if (forceMath && !/\$/.test(src)) return math(src, false);
+    if (!/\$/.test(src)) return (src.indexOf('\\') === -1 && !/[\^_{}]/.test(src)) ? esc(src) : math(src, false);
+    return src.split(/(\$[^$]+\$)/g).map(p => p.startsWith('$') && p.endsWith('$') && p.length > 1 ? math(p.slice(1, -1), false) : esc(p)).join('');
+  }
+  upd(id, patch) { this.setState(s => ({ items: s.items.map(it => it.id === id ? { ...it, ...patch } : it) })); }
+  listen(move) {
+    const up = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up); };
+    window.addEventListener('pointermove', move); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
+  }
+  down = it => e => { if (Component.VIEW_ONLY) return; return this._downOrig(it)(e); };
+  _downOrig = it => e => {
+    if (e.target.isContentEditable) return;
+    if (e.button === 2) { e.preventDefault(); e.stopPropagation(); this.setState({ sel: it.id }, () => this.delSel()); return; }
+    e.stopPropagation(); e.preventDefault();
+    if (document.activeElement && document.activeElement.isContentEditable) document.activeElement.blur();
+    this.setState({ sel: it.id });
+    const sx = e.clientX, sy = e.clientY, ox = it.x, oy = it.y, sc = this.state.scale; let moved = false;
+    this.listen(ev => { if (!moved) { moved = true; this.snap(); } this.upd(it.id, { x: Math.round(ox + (ev.clientX - sx) / sc), y: Math.round(oy + (ev.clientY - sy) / sc) }); });
+  };
+  editOn = e => { const el = e.currentTarget; el.textContent = el.dataset.tex || ''; el.contentEditable = 'true'; el.focus(); const r = document.createRange(); r.selectNodeContents(el); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); };
+  editOff = id => e => { const el = e.currentTarget; el.contentEditable = 'false'; const v = el.innerText.replace(/\n$/, ''); el.dataset.rendered = ''; if (v !== (el.dataset.tex || '')) this.snap(); this.upd(id, { [el.dataset.field]: v }); this.forceUpdate(); };
+  clearSel = e => { this.closeMenus(); if (e.target === this.canvasRef.current) this.setState({ sel: null }); };
+  dupSel = () => { const it = this.state.items.find(i => i.id === this.state.sel); if (!it) return; this.snap(); const c = { ...it, id: 'i' + Date.now(), x: it.x + 20, y: it.y + 20 }; this.setState(s => ({ items: [...s.items, c], sel: c.id })); };
+  delSel = () => { if (!this.state.sel) return; this.snap(); this.setState(s => ({ items: s.items.filter(i => i.id !== s.sel), sel: null })); };
+  readImg(file, cb) { if (!file || !file.type.startsWith('image/')) return; const fr = new FileReader(); fr.onload = () => { const im = new Image(); im.onload = () => cb(fr.result, im.naturalWidth / im.naturalHeight); im.src = fr.result; }; fr.readAsDataURL(file); }
+  applyImg = (id, src, ar) => { const it = this.state.items.find(i => i.id === id); if (!it) return; this.snap(); const p = { src, ar }; if (it.keepAR !== false && ar) p.h = Math.round(it.w / ar); this.upd(id, p); };
+  pickFor = id => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.onchange = () => this.readImg(inp.files[0], (src, ar) => this.applyImg(id, src, ar)); inp.click(); };
+  replaceWithImg = (id, src, ar) => { const it = this.state.items.find(i => i.id === id); if (!it) return; this.snap(); const w = it.w, h = ar ? Math.round(w / ar) : it.h; const cx = it.x + it.w / 2, cy = it.y + it.h / 2; const img = { id: it.id, type: 'img', x: Math.round(cx - w / 2), y: Math.round(cy - h / 2), w, h, rot: it.rot || 0, src, label: 'image', color: '#8A8F98', tint: '#F4F4F4', stack: false, borderW: 0, tbg: true, fit: 'contain', keepAR: true }; this.setState(s => ({ items: s.items.map(i => i.id === id ? img : i) })); };
+  pickReplace = id => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.onchange = () => this.readImg(inp.files[0], (src, ar) => this.replaceWithImg(id, src, ar)); inp.click(); };
+  replaceSel = () => this.state.sel && this.pickReplace(this.state.sel);
+  iconHandlers = it => ({
+    dragOver: e => { e.preventDefault(); e.stopPropagation(); },
+    drop: e => { e.preventDefault(); e.stopPropagation(); this.readImg(e.dataTransfer.files[0], (src, ar) => this.replaceWithImg(it.id, src, ar)); },
+    pick: e => { e.stopPropagation(); this.pickReplace(it.id); }
+  });
+  imgHandlers = it => ({
+    dragOver: e => { e.preventDefault(); e.stopPropagation(); },
+    drop: e => { e.preventDefault(); e.stopPropagation(); this.readImg(e.dataTransfer.files[0], (src, ar) => this.applyImg(it.id, src, ar)); },
+    pick: e => { if (e.target.isContentEditable) return; e.stopPropagation(); this.pickFor(it.id); }
+  });
+  rotDown = e => {
+    e.stopPropagation(); e.preventDefault(); const it = this.state.items.find(i => i.id === this.state.sel); if (!it) return;
+    const r = this.canvasRef.current.getBoundingClientRect(), sc = this.state.scale; const w = it.w || 60, h = it.h || 60; const cx = r.left + (it.x + w / 2) * sc, cy = r.top + (it.y + h / 2) * sc;
+    const a0 = Math.atan2(e.clientY - cy, e.clientX - cx), r0 = it.rot || 0; let moved = false;
+    this.listen(ev => { if (!moved) { moved = true; this.snap(); } let deg = r0 + (Math.atan2(ev.clientY - cy, ev.clientX - cx) - a0) * 180 / Math.PI; if (ev.shiftKey) deg = Math.round(deg / 15) * 15; deg = Math.round(((deg + 180) % 360 + 360) % 360 - 180); this.upd(it.id, { rot: deg }); });
+  };
+  ptDown = (it, i) => e => { if (Component.VIEW_ONLY) return;
+    e.stopPropagation(); e.preventDefault(); this.setState({ sel: it.id });
+    const sx = e.clientX, sy = e.clientY, ox = it.pts[i][0], oy = it.pts[i][1], sc = this.state.scale; let moved = false;
+    this.listen(ev => { if (!moved) { moved = true; this.snap(); } const cur = this.state.items.find(q => q.id === it.id); if (!cur) return; const pts = cur.pts.map((p, j) => j === i ? [Math.round(ox + (ev.clientX - sx) / sc), Math.round(oy + (ev.clientY - sy) / sc)] : p); this.upd(it.id, { pts }); });
+  };
+  addPt = () => { const it = this.state.items.find(i => i.id === this.state.sel); if (!it || it.type !== 'curve') return; this.snap(); const a = it.pts[it.pts.length - 2], b = it.pts[it.pts.length - 1]; const pts = [...it.pts.slice(0, -1), [Math.round((a[0] + b[0]) / 2), Math.round((a[1] + b[1]) / 2)], b]; this.upd(it.id, { pts }); };
+  delPt = () => { const it = this.state.items.find(i => i.id === this.state.sel); if (!it || it.type !== 'curve' || it.pts.length <= 2) return; this.snap(); this.upd(it.id, { pts: [...it.pts.slice(0, -2), it.pts[it.pts.length - 1]] }); };
+  addCurve = () => { this.snap(); const c = { id: 'i' + Date.now(), type: 'curve', x: 300, y: 300, w: 200, h: 80, pts: [[0, 60], [70, 10], [140, 20], [200, 60]], stroke: '#3A63A8', sw: 3.5, dashStyle: 'solid', arrow: true, dots: 0, dotR: 5, hollow: false }; this.setState(s => ({ items: [...s.items, c], sel: c.id })); };
+  pickSel = () => this.state.sel && this.pickFor(this.state.sel);
+  clearSelImg = () => { this.snap(); this.upd(this.state.sel, { src: '' }); };
+  addImg = () => { this.snap(); const c = { id: 'i' + Date.now(), type: 'img', x: 100, y: 100, w: 160, h: 110, label: 'drop image', color: '#8A8F98', tint: '#F4F4F4', stack: false }; this.setState(s => ({ items: [...s.items, c], sel: c.id })); };
+  setF = (k, parse) => e => { const v = parse ? parse(e) : e.target.value; this.snap(); this.upd(this.state.sel, { [k]: v }); };
+  numv = e => parseFloat(e.target.value) || 0; chkv = e => e.target.checked;
+  setSelSw = this.setF('sw', this.numv); setSelDashStyle = this.setF('dashStyle'); setSelArrow = this.setF('arrow', this.chkv); setSelDots = this.setF('dots', this.numv); setSelDotR = this.setF('dotR', this.numv); setSelHollow = this.setF('hollow', this.chkv);
+  setSelBorderW = this.setF('borderW', this.numv); setSelLine = this.setF('line', this.numv); setSelFit = this.setF('fit'); setSelArrowLen = e => { const it = this.state.items.find(i => i.id === this.state.sel); if (!it || it.kind !== 'arrow') return; const len = Math.max(12, parseFloat(e.target.value) || 12); this.snap(); this.upd(it.id, { alen: len, ...Component.arrowGeom(len, it.acol, it.dir, it.adash) }); }; setSelRot = this.setF('rot', this.numv); setSelScale = this.setF('scale', this.numv); setSelTbg = this.setF('tbg', this.chkv); setSelRadius = this.setF('radius', this.numv); setSelKeepAR = this.setF('keepAR', this.chkv);
+  setSelW = this.setF('w', this.numv); setSelH = this.setF('h', this.numv); setSelFs = this.setF('fs', this.numv);
+  setSelBold = e => { this.snap(); this.upd(this.state.sel, { fw: e.target.checked ? 700 : 400 }); };
+  setSelStroke = this.setF('stroke'); setSelDashed = this.setF('dashed', this.chkv); setSelNoise = this.setF('noise', this.chkv); setSelStack = this.setF('stack', this.chkv); setSelRound = this.setF('round', this.chkv);
+  setSelText = e => { const it = this.state.items.find(i => i.id === this.state.sel); if (!it) return; this.snap(); this.upd(it.id, { [Component.textField(it)]: e.target.value }); };
+  static textField(it) { return it.type === 'token' ? 'tex' : it.type === 'img' ? 'label' : (it.type === 'box' || it.type === 'callout') ? 'title' : 'text'; }
+  setSelX = e => this.snap() || this.upd(this.state.sel, { x: parseFloat(e.target.value) || 0 });
+  setSelY = e => this.snap() || this.upd(this.state.sel, { y: parseFloat(e.target.value) || 0 });
+  setSelColor = e => { const it = this.state.items.find(i => i.id === this.state.sel); if (!it) return; const c = e.target.value; const p = {}; this.snap(); if ('color' in it) p.color = c; if (it.type === 'curve') p.stroke = c; if (it.type === 'svg') p.paths = it.paths.map(q => ({ ...q, stroke: q.stroke === 'none' ? 'none' : c, fill: q.fill && q.fill !== 'none' ? c : q.fill })), p.dots = it.dots.map(d => ({ ...d, fill: c })); this.upd(it.id, p); };
+  setSelSplit = e => this.snap() || this.upd(this.state.sel, { split: e.target.checked });
+  setSelFill = e => this.snap() || this.upd(this.state.sel, { fill: e.target.value });
+  setSelFill2 = e => this.snap() || this.upd(this.state.sel, { fill2: e.target.value });
+  togglePanel = () => this.setState(s => ({ showPanel: !s.showPanel }));
+  resetAll = () => { try { localStorage.removeItem(Component.KEY); } catch (e) {} this.snap(); this.setState({ items: Component.defaults(), sel: null, canvasW: 600, canvasH: 1200, bg: '#FFFFFF', frame: true }, () => this.measure()); };
+  setCanvasW = e => this.setState({ canvasW: Math.max(200, parseInt(e.target.value) || 600) }, () => this.measure());
+  setCanvasH = e => this.setState({ canvasH: Math.max(200, parseInt(e.target.value) || 1200) });
+  setFit = e => this.setState({ fit: e.target.checked }, () => this.measure());
+  setFrame = e => this.setState({ frame: e.target.checked });
+  setBg = e => this.setState({ bg: e.target.value });
+  async exportSvg() {
+    const css = await Component.katexCss();
+    const src = this.canvasRef.current, W = this.state.canvasW, H = this.state.canvasH;
+    const clone = src.cloneNode(true);
+    clone.querySelectorAll('[data-ui]').forEach(n => n.remove());
+    clone.querySelectorAll('[contenteditable]').forEach(n => n.removeAttribute('contenteditable'));
+    clone.querySelectorAll('*').forEach(n => { n.style.cursor = ''; });
+    await Component.inlineImages(clone);
+    clone.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+    const html = new XMLSerializer().serializeToString(clone);
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><foreignObject x="0" y="0" width="${W}" height="${H}"><div xmlns="http://www.w3.org/1999/xhtml"><style>${css}</style>${html}</div></foreignObject></svg>`;
+  }
+  static async toDataUrl(url) { if (!url || /^data:/.test(url)) return url; if (Component._durl && Component._durl[url]) return Component._durl[url]; const b = await (await fetch(url)).blob(); const d = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(b); }); (Component._durl = Component._durl || {})[url] = d; return d; }
+  static async inlineImages(root) {
+    const jobs = [];
+    root.querySelectorAll('[style]').forEach(el => { const bi = el.style.backgroundImage; const m = bi && bi.match(/url\(["']?([^"')]+)["']?\)/); if (m && !/^data:/.test(m[1])) jobs.push(Component.toDataUrl(m[1]).then(d => { el.style.backgroundImage = 'url("' + d + '")'; }).catch(() => {})); });
+    root.querySelectorAll('img').forEach(el => { const s = el.getAttribute('src'); if (s && !/^data:/.test(s)) jobs.push(Component.toDataUrl(s).then(d => el.setAttribute('src', d)).catch(() => {})); });
+    root.querySelectorAll('image').forEach(el => { const s = el.getAttribute('href') || el.getAttribute('xlink:href'); if (s && !/^data:/.test(s)) jobs.push(Component.toDataUrl(s).then(d => el.setAttribute('href', d)).catch(() => {})); });
+    await Promise.all(jobs);
+  }
+  static async makePdf(canvas, W, H) {
+    const pw = canvas.width, ph = canvas.height, g = canvas.getContext('2d'); const px = g.getImageData(0, 0, pw, ph).data; const rgb = new Uint8Array(pw * ph * 3);
+    for (let i = 0, j = 0; i < px.length; i += 4, j += 3) { rgb[j] = px[i]; rgb[j + 1] = px[i + 1]; rgb[j + 2] = px[i + 2]; }
+    let data, filter;
+    if (typeof CompressionStream !== 'undefined') { data = new Uint8Array(await new Response(new Blob([rgb]).stream().pipeThrough(new CompressionStream('deflate'))).arrayBuffer()); filter = '/FlateDecode'; }
+    else { const b = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.95)); data = new Uint8Array(await b.arrayBuffer()); filter = '/DCTDecode'; }
+    const enc = new TextEncoder(), parts = [], offs = []; let len = 0; const push = s => { const u = typeof s === 'string' ? enc.encode(s) : s; parts.push(u); len += u.length; };
+    push('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
+    const obj = (n, body) => { offs[n] = len; push(n + ' 0 obj\n' + body + '\nendobj\n'); };
+    obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+    obj(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+    obj(3, '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + W + ' ' + H + '] /Resources << /XObject << /Im0 5 0 R >> >> /Contents 4 0 R >>');
+    const content = 'q ' + W + ' 0 0 ' + H + ' 0 0 cm /Im0 Do Q';
+    obj(4, '<< /Length ' + content.length + ' >>\nstream\n' + content + '\nendstream');
+    offs[5] = len; push('5 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + pw + ' /Height ' + ph + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter ' + filter + ' /Length ' + data.length + ' >>\nstream\n'); push(data); push('\nendstream\nendobj\n');
+    const xref = len; let x = 'xref\n0 6\n0000000000 65535 f \n'; for (let i = 1; i <= 5; i++) x += String(offs[i]).padStart(10, '0') + ' 00000 n \n';
+    push(x + 'trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n' + xref + '\n%%EOF\n');
+    return new Blob(parts, { type: 'application/pdf' });
+  }
+  async exportParts() { return [await this.exportSvg(), this.state.canvasW, this.state.canvasH, 3]; }
+  async toPngBlob(svg, W, H, k) { const im = new Image(); await new Promise((r, j) => { im.onload = r; im.onerror = j; im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); }); const c = document.createElement('canvas'); c.width = W * k; c.height = H * k; const g = c.getContext('2d'); g.scale(k, k); g.drawImage(im, 0, 0); return new Promise(r => c.toBlob(r, 'image/png')); }
+  copyPng = async () => { this.closeMenus(); try { const [svg, W, H, k] = await this.exportParts(); const p = this.toPngBlob(svg, W, H, k); await navigator.clipboard.write([new ClipboardItem({ 'image/png': p })]); this.flash('PNG copied'); } catch (e) { this.flash('Copy failed: ' + e.message); } };
+  copySvg = async () => { this.closeMenus(); try { const [svg] = await this.exportParts(); await navigator.clipboard.writeText(svg); this.flash('SVG copied'); } catch (e) { this.flash('Copy failed: ' + e.message); } };
+  flash(m) { this.setState({ copyMsg: m }); clearTimeout(this._fl); this._fl = setTimeout(() => this.setState({ copyMsg: '' }), 2500); }
+  dl(url, name) { const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); }
+  toggleSaveMenu = () => this.setState(s => ({ saveMenu: !s.saveMenu, copyMenu: false }));
+  toggleCopyMenu = () => this.setState(s => ({ copyMenu: !s.copyMenu, saveMenu: false }));
+  closeMenus() { if (this.state.saveMenu || this.state.copyMenu) this.setState({ saveMenu: false, copyMenu: false }); }
+  savePdf = async () => {
+    this.closeMenus();
+    try {
+      this.flash('Building PDF…');
+      const [svg, W, H, k] = await this.exportParts();
+      const im = new Image(); await new Promise((r, j) => { im.onload = r; im.onerror = j; im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); });
+      const c = document.createElement('canvas'); c.width = W * k; c.height = H * k; const g = c.getContext('2d'); g.fillStyle = '#FFFFFF'; g.fillRect(0, 0, c.width, c.height); g.scale(k, k); g.drawImage(im, 0, 0);
+      const blob = await Component.makePdf(c, W, H); const url = URL.createObjectURL(blob); this.dl(url, 'CtrlWAM-Warp-Schedule-Figure-v3.pdf'); setTimeout(() => URL.revokeObjectURL(url), 5000);
+      this.flash('PDF saved (' + Math.round(blob.size / 1024) + ' KB)');
+    } catch (e) { this.flash('PDF failed: ' + e.message); }
+  };
+  savePdfVector = async () => {
+    this.closeMenus();
+    try {
+      const css = await Component.katexCss();
+      const src = this.canvasRef.current, W = this.state.canvasW, H = this.state.canvasH;
+      const clone = src.cloneNode(true);
+      clone.querySelectorAll('[data-ui]').forEach(n => n.remove());
+      clone.querySelectorAll('[contenteditable]').forEach(n => n.removeAttribute('contenteditable'));
+      clone.querySelectorAll('*').forEach(n => { n.style.cursor = ''; });
+      await Component.inlineImages(clone);
+      clone.style.position = 'relative'; clone.style.left = '0'; clone.style.top = '0'; clone.style.margin = '0'; clone.style.transform = 'none'; clone.style.border = 'none'; clone.style.borderRadius = '0';
+      const font = (this.state.font) || "-apple-system,'Helvetica Neue',Helvetica,sans-serif";
+      const win = window.open('', '_blank'); if (!win) throw new Error('popup blocked');
+      win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>CtrlWAM model figure v7</title><style>' + css + '@page{size:' + W + 'px ' + H + 'px;margin:0}html,body{margin:0;padding:0;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}body{width:' + W + 'px;height:' + H + 'px;overflow:hidden;font-family:' + font + '}.katex{line-height:1 !important}.katex .strut{display:none !important}</style></head><body></body></html>');
+      win.document.body.appendChild(win.document.importNode(clone, true));
+      win.document.close();
+      const go = () => setTimeout(() => win.print(), 400);
+      if (win.document.fonts && win.document.fonts.ready) win.document.fonts.ready.then(go); else go();
+      this.flash('In the print dialog choose “Save as PDF”, paper = default, margins = none');
+    } catch (e) { this.flash('PDF failed: ' + e.message); }
+  };
+  saveSvg = async () => { this.closeMenus(); const b = new Blob([await this.exportSvg()], { type: 'image/svg+xml' }); const u = URL.createObjectURL(b); this.dl(u, 'CtrlWAM-model-figure-v6.svg'); setTimeout(() => URL.revokeObjectURL(u), 2000); };
+  savePng = async () => {
+    this.closeMenus();
+    const svg = await this.exportSvg(), W = this.state.canvasW, H = this.state.canvasH, k = 3;
+    const im = new Image();
+    im.onload = () => { const c = document.createElement('canvas'); c.width = W * k; c.height = H * k; const g = c.getContext('2d'); g.scale(k, k); g.drawImage(im, 0, 0); this.dl(c.toDataURL('image/png'), 'CtrlWAM-model-figure-v6.png'); };
+    im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  };
+  renderVals() {
+    const { items, sel, canvasW, canvasH, fit, frame, bg, showPanel } = this.state; const C2 = Component.C;
+    const wrap = it => ({ ...it, down: this.down(it), editOn: this.editOn, editOff: this.editOff(it.id) });
+    const by = t => items.filter(i => i.type === t).map(wrap);
+    const tokens = by('token').map(k => ({ ...k, dashed: String(k.dashed), round: String(!!k.round), split: String(!!k.split), line: k.line || 0, stack: !!k.stack, noise: !!k.noise, dots: k.dots || Component.noiseDots(k.id), fill2: k.fill2 || C2.b.fill }));
+    const boxes = by('box').map(b => ({ ...b, hasSub: !!b.sub, dashed: String(!!b.dashed) }));
+    const legends = by('legend').map(l => ({ ...l, dashed: String(l.dashed) }));
+    const svgs = by('svg').map(s => ({ ...s, ...(s.vb ? this.iconHandlers(s) : {}), rot: s.rot || 0, z: s.z || 0, hit: s.z ? 'none' : 'auto', vb: s.vb || `0 0 ${s.w} ${s.h}`, paths: s.paths.map(p => ({ fill: 'none', dash: undefined, ...p })) }));
+    const selIt = items.find(i => i.id === sel);
+    const dims = it => { if (!it) return { x: 0, y: 0, w: 0, h: 0 }; if (it.type === 'token') return { w: 60, h: 60 }; if (it.type === 'panel') return { w: it.w, h: it.h }; if (it.type === 'text') return { w: it.w, h: it.fs * 1.3 }; if (it.type === 'legend') return { w: 220, h: 30 }; return { w: it.w, h: it.h }; };
+    const d = dims(selIt);
+    return { flowRef: this.flowRef,
+      curves: by('curve').map(cv => { const g = Component.curveGeom(cv); const ds = cv.dashStyle === 'dashed' ? `${cv.sw * 3} ${cv.sw * 2.2}` : cv.dashStyle === 'dotted' ? `0.1 ${cv.sw * 2.6}` : undefined; return { ...cv, ...g, vb: `0 0 ${cv.w} ${cv.h}`, dashArr: ds, z: sel === cv.id ? 3 : (cv.z ?? 0), handles: sel === cv.id ? cv.pts.map((p, i) => ({ x: p[0], y: p[1], down: this.ptDown(cv, i) })) : [] }; }),
+      panels: by('panel').map(p => ({ ...p, dashed: String(!!p.dashed) })), texts: by('text'), tokens, imgs: by('img').map(m => ({ ...m, ...this.imgHandlers(m), hasSrc: !!m.src, noSrc: !m.src, stack3: !!m.stack3, ghostDash: String(!m.src), rot: m.rot || 0, scale: m.scale == null ? 100 : m.scale, tbg: String(m.tbg !== false), borderW: m.borderW == null ? 2 : m.borderW, fit: m.fit || 'cover', radius: m.radius == null ? 8 : m.radius })), svgs, boxes, callouts: by('callout'), legends,
+      addCurve: this.addCurve, addPt: this.addPt, delPt: this.delPt, selIsCurve: !!selIt && selIt.type === 'curve', selSw: selIt && selIt.sw || 3, selDashStyle: selIt && selIt.dashStyle || 'solid', selArrow: !!(selIt && selIt.arrow), selDots: selIt && selIt.dots || 0, selDotR: selIt && selIt.dotR || 5, selHollow: !!(selIt && selIt.hollow), setSelSw: this.setSelSw, setSelDashStyle: this.setSelDashStyle, setSelArrow: this.setSelArrow, setSelDots: this.setSelDots, setSelDotR: this.setSelDotR, setSelHollow: this.setSelHollow, addImg: this.addImg, pickSel: this.pickSel, clearSelImg: this.clearSelImg, selIsImg: !!selIt && selIt.type === 'img', selBorderW: selIt && selIt.borderW != null ? selIt.borderW : 2, setSelBorderW: this.setSelBorderW, selFit: selIt && selIt.fit || 'cover', selRadius: selIt && selIt.radius != null ? selIt.radius : 8, selKeepAR: !selIt || selIt.keepAR !== false, setSelFit: this.setSelFit, setSelRadius: this.setSelRadius, setSelKeepAR: this.setSelKeepAR,
+      selIsIcon: !!selIt && selIt.type === 'svg' && !!selIt.vb, replaceSel: this.replaceSel, selIsArrow: !!selIt && selIt.kind === 'arrow', selArrowLen: selIt && selIt.alen || 0, setSelArrowLen: this.setSelArrowLen, selScale: selIt && selIt.scale != null ? selIt.scale : 100, selCanRot: !!selIt && (selIt.type === 'img' || selIt.type === 'svg'), selRot: selIt && selIt.rot || 0, selTbg: !!selIt && selIt.tbg !== false, hasSel: !!selIt, selType: selIt ? selIt.type : '', selHasSize: !!selIt && 'w' in selIt && 'h' in selIt && selIt.type !== 'text', selHasFs: !!selIt && ('fs' in selIt), selHasColor: !!selIt && (('color' in selIt) || selIt.type === 'svg' || selIt.type === 'curve'), selHasStroke: !!selIt && ('stroke' in selIt) && selIt.type !== 'curve', selHasFill: !!selIt && ('fill' in selIt), selHasDash: !!selIt && (('dashed' in selIt) || selIt.type === 'panel' || selIt.type === 'box'), selHasText: !!selIt && selIt.type !== 'panel' && selIt.type !== 'svg' && selIt.type !== 'curve',
+      selW: selIt && selIt.w || 0, selH: selIt && selIt.h || 0, selFs: selIt && selIt.fs || 0, selBold: !!selIt && +selIt.fw >= 600, selStroke: selIt && selIt.stroke || '#000000', selDashed: !!(selIt && selIt.dashed), selNoise: !!(selIt && selIt.noise), selStack: !!(selIt && selIt.stack), selRound: !!(selIt && selIt.round), selText: selIt ? (selIt[Component.textField(selIt)] || '') : '',
+      setSelW: this.setSelW, setSelH: this.setSelH, setSelRot: this.setSelRot, setSelScale: this.setSelScale, setSelTbg: this.setSelTbg, setSelFs: this.setSelFs, setSelBold: this.setSelBold, setSelStroke: this.setSelStroke, setSelDashed: this.setSelDashed, setSelNoise: this.setSelNoise, setSelStack: this.setSelStack, setSelRound: this.setSelRound, setSelText: this.setSelText, selIsToken: !!selIt && selIt.type === 'token', selLine: selIt && selIt.line || 0, setSelLine: this.setSelLine, selSplit: !!(selIt && selIt.split), selFill: selIt && selIt.fill || '#ffffff', selFill2: selIt && selIt.fill2 || C2.b.fill, setSelSplit: this.setSelSplit, setSelFill: this.setSelFill, setSelFill2: this.setSelFill2, selX: selIt ? selIt.x : 0, selY: selIt ? selIt.y : 0, selColor: selIt ? (selIt.color || selIt.stroke || '#000000') : '#000000',
+      selBox: selIt ? { x: selIt.x - 4, y: selIt.y - 4, w: d.w + 8, h: d.h + 8, rot: selIt.rot || 0 } : { x: 0, y: 0, w: 0, h: 0, rot: 0 }, rotDown: this.rotDown,
+      canvasW, canvasH, fit, frame, bg, showPanel,
+      saveDefault: this.saveDefault, saveMsg: this.state.saveMsg, undo: this.undo, redo: this.redo, noUndo: !this.past.length, noRedo: !this.future.length, saveSvg: this.saveSvg, savePng: this.savePng, savePdfVector: this.savePdfVector, savePdf: this.savePdf, saveMenu: !!this.state.saveMenu, copyMenu: !!this.state.copyMenu, toggleSaveMenu: this.toggleSaveMenu, toggleCopyMenu: this.toggleCopyMenu, copyPng: this.copyPng, copySvg: this.copySvg, copyMsg: this.state.copyMsg, togglePanel: this.togglePanel, resetAll: this.resetAll,
+      setCanvasW: this.setCanvasW, setCanvasH: this.setCanvasH, setFit: this.setFit, setFrame: this.setFrame, setBg: this.setBg,
+      dupSel: this.dupSel, delSel: this.delSel, setSelX: this.setSelX, setSelY: this.setSelY, setSelColor: this.setSelColor, clearSel: this.clearSel, noMenu: e => e.preventDefault(),
+      wrapRef: this.wrapRef, scaleRef: this.scaleRef, canvasRef: this.canvasRef
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="site/vendor/katex/katex.min.css">
+<script defer src="site/vendor/katex/katex.min.js"></script>
+<style>@font-face{font-family:"Latin Modern Math";src:url("https://cdn.jsdelivr.net/npm/mathjax-full@3.2.2/es5/output/chtml/fonts/woff-v2/MathJax_Math-Italic.woff") format("woff");font-style:italic;font-display:swap;}@font-face{font-family:"Latin Modern Math";src:url("https://cdn.jsdelivr.net/npm/mathjax-full@3.2.2/es5/output/chtml/fonts/woff-v2/MathJax_Main-Regular.woff") format("woff");font-style:normal;font-display:swap;}</style>
+<style>math{font-family:"Latin Modern Math","Computer Modern","CMU Serif","Cambria Math",serif;} body{margin:0;background:transparent;} a{color:#0B1A3A;} a:hover{color:#88CC02;} .katex{line-height:1 !important;} .katex .strut{display:none !important;} [contenteditable="true"]{outline:1.5px solid #4A72B5;outline-offset:2px;border-radius:2px;}</style>
+</helmet>
+
+<div ref="{{ wrapRef }}" style="margin:0;overflow:hidden;width:100%;display:block">
+<div style="transform-origin:0 0" ref="{{ scaleRef }}">
+<div ref="{{ canvasRef }}" data-screen-label="CtrlWAM Teaser Figure v5 (bottom)" onPointerDown="{{ clearSel }}" onContextMenu="{{ noMenu }}" style="position:relative;width:1450px;height:496px;box-sizing:border-box;background:#FFFFFF;border:1px solid #DCE2EC;border-radius:16px;overflow:hidden;font-family:system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;color:#2E2E2E;user-select:none">
+
+  <sc-for list="{{ panels }}" as="pn" hint-placeholder-count="4">
+    <div onPointerDown="{{ pn.down }}" data-x="{{ pn.x }}" data-y="{{ pn.y }}" data-w="{{ pn.w }}" data-h="{{ pn.h }}" data-fill="{{ pn.fill }}" data-stroke="{{ pn.stroke }}" data-prad="{{ pn.radius }}" data-dash="{{ pn.dashed }}" style="position:absolute;box-sizing:border-box;border-width:2px;border-style:solid;border-radius:16px;touch-action:none"></div>
+  </sc-for>
+  <sc-for list="{{ persps }}" as="pg" hint-placeholder-count="0">
+    <svg xmlns="http://www.w3.org/2000/svg" data-x="{{ pg.x }}" data-y="{{ pg.y }}" data-prad="{{ pg.radius }}" width="{{ pg.w }}" height="{{ pg.h }}" viewBox="{{ pg.vb }}" visibility="{{ pg.vis }}" style="position:absolute;overflow:hidden;pointer-events:none">
+      <defs><radialGradient id="{{ pg.gid }}" cx="{{ pg.gcx }}" cy="{{ pg.gcy }}" r="0.75"><stop offset="0" stop-color="#FFFFFF" stop-opacity="1"></stop><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"></stop></radialGradient><clipPath id="{{ pg.cid }}"><rect x="0" y="{{ pg.clipY }}" width="{{ pg.w }}" height="{{ pg.clipH }}"></rect></clipPath></defs>
+      <g clip-path="{{ pg.clipRef }}">
+      <rect x="0" y="0" width="{{ pg.w }}" height="{{ pg.h }}" fill="{{ pg.gfill }}" opacity="{{ pg.glowOp }}"></rect>
+      <sc-for list="{{ pg.paths }}" as="p" hint-placeholder-count="0">
+        <path d="{{ p.d }}" fill="{{ p.fill }}" stroke="{{ p.stroke }}" stroke-width="{{ p.sw }}" opacity="{{ p.op }}" stroke-linecap="round"></path>
+      </sc-for>
+      </g>
+    </svg>
+  </sc-for>
+  <sc-for list="{{ texts }}" as="t" hint-placeholder-count="4">
+    <div onPointerDown="{{ t.down }}" style="position:absolute;z-index:2;box-sizing:border-box;touch-action:none;text-align:center;line-height:1.2;white-space:nowrap" data-x="{{ t.x }}" data-y="{{ t.y }}" data-w="{{ t.w }}" data-rot="{{ t.rot }}" data-fs="{{ t.fs }}" data-fw="{{ t.fw }}" data-fst="{{ t.fst }}" data-ff="{{ t.ff }}" data-col="{{ t.color }}" data-al="{{ t.align }}">
+      <span data-field="text" data-tex="{{ t.text }}" onDoubleClick="{{ t.editOn }}" onBlur="{{ t.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text;padding:0 2px"></span>
+    </div>
+  </sc-for>
+
+  <sc-for list="{{ tokens }}" as="k" hint-placeholder-count="4">
+    <div onPointerDown="{{ k.down }}" data-x="{{ k.x }}" data-y="{{ k.y }}" style="position:absolute;width:60px;height:60px;touch-action:none">
+      <sc-if value="{{ k.stack }}" hint-placeholder-val="{{ false }}">
+        <div data-fill="{{ k.fill }}" data-stroke="{{ k.stroke }}" data-dash="{{ k.dashed }}" style="position:absolute;left:30px;top:-30px;width:60px;height:60px;box-sizing:border-box;border-width:2px;border-radius:8px"></div>
+        <div data-fill="{{ k.fill }}" data-stroke="{{ k.stroke }}" data-dash="{{ k.dashed }}" style="position:absolute;left:20px;top:-20px;width:60px;height:60px;box-sizing:border-box;border-width:2px;border-radius:8px"></div>
+        <div data-fill="{{ k.fill }}" data-stroke="{{ k.stroke }}" data-dash="{{ k.dashed }}" style="position:absolute;left:10px;top:-10px;width:60px;height:60px;box-sizing:border-box;border-width:2px;border-radius:8px"></div>
+      </sc-if>
+      <div data-fill="{{ k.fill }}" data-stroke="{{ k.stroke }}" data-dash="{{ k.dashed }}" data-round="{{ k.round }}" data-fg="{{ k.color }}" data-split="{{ k.split }}" data-split2="{{ k.fill2 }}" data-line="{{ k.line }}" style="position:absolute;inset:0;box-sizing:border-box;border-radius:8px;border-width:2px;display:flex;align-items:center;justify-content:center;font-family:'Latin Modern Math','CMU Serif','Cambria Math',serif;font-size:24px;line-height:1;overflow:hidden">
+        <sc-if value="{{ k.noise }}" hint-placeholder-val="{{ false }}">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56" width="56" height="56" style="position:absolute;left:0;top:0;pointer-events:none">
+            <g fill="{{ k.color }}" fill-opacity="0.5">
+              <sc-for list="{{ k.dots }}" as="d" hint-placeholder-count="0"><circle cx="{{ d.cx }}" cy="{{ d.cy }}" r="{{ d.r }}"></circle></sc-for>
+            </g>
+          </svg>
+        </sc-if>
+        <span data-field="tex" data-tex="{{ k.tex }}" onDoubleClick="{{ k.editOn }}" onBlur="{{ k.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text;white-space:nowrap;min-width:10px;position:relative;display:flex;align-items:center;justify-content:center;height:100%;width:100%;text-align:center"></span>
+      </div>
+    </div>
+  </sc-for>
+
+  <sc-for list="{{ curves }}" as="cv" hint-placeholder-count="2">
+    <svg onPointerDown="{{ cv.down }}" xmlns="http://www.w3.org/2000/svg" data-x="{{ cv.x }}" data-y="{{ cv.y }}" data-z="{{ cv.z }}" width="{{ cv.w }}" height="{{ cv.h }}" viewBox="{{ cv.vb }}" style="position:absolute;overflow:visible;touch-action:none">
+      <path d="{{ cv.d }}" fill="none" stroke="transparent" stroke-width="14"></path>
+      <path d="{{ cv.d }}" fill="none" stroke="{{ cv.stroke }}" stroke-width="{{ cv.sw }}" stroke-dasharray="{{ cv.dashArr }}" stroke-linecap="round" stroke-linejoin="round"></path>
+      <path d="{{ cv.arrowD }}" fill="{{ cv.stroke }}" stroke="none"></path>
+      <sc-for list="{{ cv.dotList }}" as="d" hint-placeholder-count="0">
+        <circle cx="{{ d.cx }}" cy="{{ d.cy }}" r="{{ d.r }}" fill="{{ d.fill }}" stroke="{{ d.stroke }}" stroke-width="{{ d.sw }}"></circle>
+      </sc-for>
+      <sc-for list="{{ cv.handles }}" as="hd" hint-placeholder-count="0">
+        <circle data-ui="1" onPointerDown="{{ hd.down }}" cx="{{ hd.x }}" cy="{{ hd.y }}" r="7" fill="#FFFFFF" stroke="#4A72B5" stroke-width="2" style="cursor:grab"></circle>
+      </sc-for>
+    </svg>
+  </sc-for>
+
+  <sc-for list="{{ links }}" as="lk" hint-placeholder-count="0">
+    <svg onPointerDown="{{ lk.down }}" xmlns="http://www.w3.org/2000/svg" data-x="{{ lk.x }}" data-y="{{ lk.y }}" data-z="{{ lk.z }}" width="{{ lk.w }}" height="{{ lk.h }}" viewBox="{{ lk.vb }}" style="position:absolute;overflow:visible;cursor:pointer;touch-action:none">
+      <path d="{{ lk.d }}" fill="none" stroke="transparent" stroke-width="12"></path>
+      <path d="{{ lk.d }}" fill="none" stroke="{{ lk.stroke }}" stroke-width="{{ lk.sw }}" stroke-dasharray="{{ lk.dashArr }}" stroke-linecap="round"></path>
+      <path d="{{ lk.markD }}" fill="none" stroke="{{ lk.stroke }}" stroke-width="3.5" stroke-linecap="round"></path>
+      <path d="{{ lk.arrowD }}" fill="{{ lk.stroke }}" stroke="none"></path>
+    </svg>
+  </sc-for>
+
+  <sc-for list="{{ imgs }}" as="m" hint-placeholder-count="3">
+    <div title="Drop an image here or double-click to replace" onPointerDown="{{ m.down }}" onDragOver="{{ m.dragOver }}" onDrop="{{ m.drop }}" onDoubleClick="{{ m.pick }}" data-x="{{ m.x }}" data-y="{{ m.y }}" data-w="{{ m.w }}" data-h="{{ m.h }}" data-rot="{{ m.rot }}" style="position:absolute;touch-action:none;z-index:1">
+      <sc-if value="{{ m.hasSrc }}" hint-placeholder-val="{{ false }}">
+<div data-src="{{ m.src }}" data-stroke="{{ m.color }}" data-dash="{{ m.dashed }}" data-fit="{{ m.fit }}" data-rad="{{ m.radius }}" data-bw="{{ m.borderW }}" data-tbg="{{ m.tbg }}" data-scale="{{ m.scale }}" data-ar="{{ m.ar }}" style="position:absolute;inset:0;box-sizing:border-box;border-width:2px;border-style:solid;border-radius:8px;background-color:transparent;background-repeat:no-repeat;background-position:center;background-size:cover;pointer-events:none"></div>
+      </sc-if>
+      <sc-if value="{{ m.noSrc }}" hint-placeholder-val="{{ true }}">
+        <div data-stroke="{{ m.color }}" data-fg="{{ m.color }}" data-dash="{{ m.phDash }}" data-fill="{{ m.phFill }}" style="position:absolute;inset:0;box-sizing:border-box;border-width:2px;border-style:dashed;border-radius:8px;background:rgba(255,255,255,0.85);display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px;line-height:1.2;padding:3px;overflow:hidden">
+          <sc-if value="{{ m.hasIcon }}" hint-placeholder-val="{{ false }}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="{{ m.iconVb }}" data-x="{{ m.iconX }}" data-y="{{ m.iconY }}" data-w="{{ m.iconW }}" data-h="{{ m.iconH }}" style="position:absolute;width:70%;height:70%;pointer-events:none">
+              <sc-for list="{{ m.iconPaths }}" as="p" hint-placeholder-count="0"><path d="{{ p.d }}" fill="{{ p.fill }}" stroke="{{ p.stroke }}" stroke-width="{{ p.sw }}" stroke-linecap="round" stroke-linejoin="round"></path></sc-for>
+            </svg>
+          </sc-if>
+          <span data-field="label" data-hid="{{ m.hasIcon }}" data-tex="{{ m.label }}" onDoubleClick="{{ m.editOn }}" onBlur="{{ m.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text"></span>
+        </div>
+      </sc-if>
+    </div>
+  </sc-for>
+
+  <sc-for list="{{ sliders }}" as="sl" hint-placeholder-count="0">
+    <svg onPointerDown="{{ sl.down }}" xmlns="http://www.w3.org/2000/svg" data-x="{{ sl.x }}" data-y="{{ sl.y }}" width="{{ sl.w }}" height="{{ sl.h }}" viewBox="{{ sl.vb }}" style="position:absolute;overflow:visible;touch-action:none">
+      <rect x="0" y="12" width="{{ sl.w }}" height="8" rx="4" fill="{{ sl.track }}"></rect>
+      <rect x="0" y="12" width="{{ sl.fillW }}" height="8" rx="4" fill="{{ sl.color }}"></rect>
+      <circle onPointerDown="{{ sl.knobDown }}" cx="{{ sl.fillW }}" cy="16" r="8" fill="{{ sl.color }}" stroke="#FFFFFF" stroke-width="2.5" style="cursor:ew-resize"></circle>
+    </svg>
+  </sc-for>
+
+  <sc-for list="{{ svgs }}" as="s" hint-placeholder-count="3">
+    <svg onPointerDown="{{ s.down }}" onDragOver="{{ s.dragOver }}" onDrop="{{ s.drop }}" onDoubleClick="{{ s.pick }}" xmlns="http://www.w3.org/2000/svg" data-x="{{ s.x }}" data-y="{{ s.y }}" data-rot="{{ s.rot }}" data-z="{{ s.z }}" data-hitsvg="{{ s.hit }}" width="{{ s.w }}" height="{{ s.h }}" viewBox="{{ s.vb }}" style="position:absolute;overflow:visible;touch-action:none">
+      <rect x="0" y="0" width="{{ s.w }}" height="{{ s.h }}" fill="transparent" data-hit="{{ s.hit }}"></rect>
+      <sc-for list="{{ s.paths }}" as="p" hint-placeholder-count="1">
+        <path d="{{ p.d }}" fill="{{ p.fill }}" stroke="{{ p.stroke }}" stroke-width="{{ p.sw }}" stroke-dasharray="{{ p.dash }}" stroke-linecap="round" stroke-linejoin="round"></path>
+      </sc-for>
+      <sc-for list="{{ s.dots }}" as="d" hint-placeholder-count="0">
+        <circle cx="{{ d.cx }}" cy="{{ d.cy }}" r="{{ d.r }}" fill="{{ d.fill }}" stroke="{{ d.stroke }}" stroke-width="{{ d.sw }}"></circle>
+      </sc-for>
+    </svg>
+  </sc-for>
+
+  <sc-for list="{{ boxes }}" as="b" hint-placeholder-count="2">
+    <div onPointerDown="{{ b.down }}" data-x="{{ b.x }}" data-y="{{ b.y }}" data-w="{{ b.w }}" data-h="{{ b.h }}" data-fill="{{ b.fill }}" data-stroke="{{ b.stroke }}" data-fg="{{ b.color }}" data-dash="{{ b.dashed }}" data-prad="{{ b.radius }}" style="position:absolute;box-sizing:border-box;border-width:2px;border-style:solid;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;text-align:center;padding:4px 10px">
+      <span data-field="title" data-tex="{{ b.title }}" data-fs="{{ b.fs }}" data-fw="{{ b.fw }}" data-ff="{{ b.ff }}" onDoubleClick="{{ b.editOn }}" onBlur="{{ b.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text;line-height:1.15;white-space:pre-wrap"></span>
+      <sc-if value="{{ b.hasSub }}" hint-placeholder-val="{{ false }}">
+        <span data-field="sub" data-tex="{{ b.sub }}" data-fs="{{ b.subFs }}" onDoubleClick="{{ b.editOn }}" onBlur="{{ b.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text;line-height:1.2;margin-top:6px;color:#3A3A3A"></span>
+      </sc-if>
+    </div>
+  </sc-for>
+
+  <sc-for list="{{ callouts }}" as="c" hint-placeholder-count="2">
+    <div onPointerDown="{{ c.down }}" data-x="{{ c.x }}" data-y="{{ c.y }}" data-w="{{ c.w }}" data-h="{{ c.h }}" style="position:absolute;box-sizing:border-box;border:2px solid #C9CCD1;border-radius:12px;background:#FAFAFA;display:flex;align-items:center;gap:10px;padding:0 12px;touch-action:none">
+      <div style="flex:none;width:36px;height:36px;border-radius:50%;box-sizing:border-box;border:2px solid #C9A227;background:#FBF3D3;color:#B8901F;font-size:19px;font-weight:600;display:flex;align-items:center;justify-content:center">
+        <span data-field="num" data-tex="{{ c.num }}" onDoubleClick="{{ c.editOn }}" onBlur="{{ c.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text"></span>
+      </div>
+      <div style="display:flex;flex-direction:column;justify-content:flex-start;line-height:1.3;font-size:13px;gap:4px;height:100%;box-sizing:border-box;padding-top:9px">
+        <span data-field="title" data-tex="{{ c.title }}" data-fg="{{ c.color }}" data-fw="{{ c.fw }}" data-fs="{{ c.fs }}" data-ff="{{ c.ff }}" onDoubleClick="{{ c.editOn }}" onBlur="{{ c.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text"></span>
+        <span data-field="body" data-tex="{{ c.body }}" onDoubleClick="{{ c.editOn }}" onBlur="{{ c.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text;color:#3A3A3A"></span>
+      </div>
+    </div>
+  </sc-for>
+
+  <sc-for list="{{ legends }}" as="l" hint-placeholder-count="3">
+    <div onPointerDown="{{ l.down }}" data-x="{{ l.x }}" data-y="{{ l.y }}" data-ff="{{ l.ff }}" data-fs="{{ l.fs }}" style="position:absolute;display:flex;align-items:center;gap:14px;touch-action:none;font-size:19px;color:#3A3A3A;white-space:nowrap">
+      <div data-fill="{{ l.fill }}" data-stroke="{{ l.stroke }}" data-dash="{{ l.dashed }}" style="width:34px;height:26px;box-sizing:border-box;border-width:2px;border-radius:6px"></div>
+      <span data-field="text" data-tex="{{ l.text }}" onDoubleClick="{{ l.editOn }}" onBlur="{{ l.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text"></span>
+    </div>
+  </sc-for>
+
+  <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+    <div data-ui="1" data-rot="{{ selBox.rot }}" style="position:absolute;pointer-events:none;border:1.5px dashed #4A72B5;border-radius:6px;box-sizing:border-box" data-x="{{ selBox.x }}" data-y="{{ selBox.y }}" data-w="{{ selBox.w }}" data-h="{{ selBox.h }}">
+      <sc-if value="{{ selCanRot }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:50%;top:-26px;width:1.5px;height:20px;margin-left:-0.75px;background:#4A72B5"></div>
+        <div onPointerDown="{{ rotDown }}" title="Drag to rotate" style="position:absolute;left:50%;top:-36px;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:#fff;border:2px solid #4A72B5;box-sizing:border-box;cursor:grab;pointer-events:auto;touch-action:none"></div>
+      </sc-if>
+    </div>
+  </sc-if>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  static VIEW_ONLY = true;
+  clearSel = () => {};
+
+  static SITE_IMG = {
+    'nb0-d': 'site/media/egocf/multi_agent_nudge_left/raw/f32.jpg', 'nb0-r': 'site/media/robotwin/ep104/ctrlwam/f0135.jpg',
+    'nb1-d': 'site/media/egocf/multi_agent_stop/raw/f22.jpg',       'nb1-r': 'site/media/robotwin/ep104/ctrlwam/f0250.jpg',
+    'cb0-d': 'site/media/egocf/real/raw/f32.jpg',                   'cb0-r': 'site/media/robotwin/ep104/gt/f0135.jpg',
+    'cb1-d': 'site/media/egocf/real/raw/f22.jpg',                   'cb1-r': 'site/media/robotwin/ep104/gt/f0250.jpg',
+    'driving scene': 'site/media/egocf/real/raw/f12.jpg', 'driving frame#0': 'site/media/egocf/real/raw/f22.jpg', 'driving frame#1': 'site/media/egocf/real/raw/f40.jpg',
+    'robotics scene': 'site/media/robotwin/ep104/gt/f0000.jpg', 'robotics frame#0': 'site/media/robotwin/ep104/gt/f0125.jpg', 'robotics frame#1': 'site/media/robotwin/ep104/gt/f0315.jpg'
+  };
+  static SITE_KEY = 'ctrlwam-teaser-figure-view-images';
+  // Fill empty slots with site media; user drops (persisted per slot) win.
+  static siteImages(items) {
+    items = items.map(it => (it.type === 'text' && it.text === 'Corrective learning') ? { ...it, text: 'Physically aligned noising', fs: Math.min(it.fs || 28, 26) } : it);
+    let ov = {}; try { ov = JSON.parse(localStorage.getItem(Component.SITE_KEY) || '{}'); } catch (e) {}
+    const seen = {};
+    return items.map(it => {
+      if (it.type !== 'img' || it.label === 'logo') return it;
+      const lb = it.x >= 940 ? it.label : ''; const n = seen[lb] = (seen[lb] || 0); seen[lb]++;
+      const key = Component.SITE_IMG[it.id] ? it.id : (Component.SITE_IMG[it.label + '#' + n] ? it.label + '#' + n : it.label);
+      const src = ov[it.id] || (it.src && !/^data:/.test(it.src) ? it.src : null) || Component.SITE_IMG[key];
+      if (!src) return it;
+      return { ...it, src, fit: 'cover', borderW: it.borderW == null ? 2 : it.borderW, tbg: false, keepAR: false, siteKey: it.id };
+    });
+  }
+
+  wrapRef = React.createRef(); scaleRef = React.createRef(); canvasRef = React.createRef();
+  standalone = (() => { try { return window.self === window.top; } catch (e) { return true; } })();
+  static C = {
+    o: { fg: '#A6593F', fill: '#F5E8E1', st: '#BA7962' },
+    b: { fg: '#466A96', fill: '#EAF0F7', st: '#7794B5' },
+    g: { fg: '#477454', fill: '#E9F1E8', st: '#76977C' },
+    y: { fg: '#33465C', fill: '#F3F5F4', st: '#C9D5CF' }
+  };
+  // Semantic palette: terracotta = perturbed / mismatch, blue = recorded,
+  // sage = aligned. Secondary panels share quiet surfaces and navy headings.
+  // Apply to editable item data so PNG, SVG and PDF exports use the same colors.
+  static COLOR_MAP = {
+    '#E8641B': '#A6593F', '#D8742A': '#A6593F', '#E0894A': '#BA7962',
+    '#FCEDE4': '#FAF4F0', '#FCE9DB': '#F5E8E1', '#F9DDCB': '#F0DED4',
+    '#FDF3EC': '#FCF8F5', '#D0312D': '#B25950',
+    '#3A6FD8': '#466A96', '#3A63A8': '#466A96', '#4A72B5': '#7794B5',
+    '#EAF1FB': '#F1F5FA', '#E3ECF7': '#EAF0F7', '#D3E2F6': '#DFE8F3',
+    '#4C9A3B': '#477454', '#4C7A3B': '#477454', '#5E8A4C': '#76977C',
+    '#EDF6E9': '#F1F6EF', '#E8F0E2': '#E9F1E8', '#D9EBD2': '#DDEAD9',
+    '#F1F7EE': '#F7FAF5', '#1F2A3A': '#25364B', '#C9CDD3': '#D2DADF',
+    '#FDF8E6': '#F3F6F2', '#FFFCF2': '#FCFDFC', '#DCC070': '#C9D5C8',
+    '#B8901F': '#33465C', '#D08A2A': '#A6593F', '#8F7A22': '#466A96',
+    '#D4B24C': '#76977C', '#FBF3D3': '#F3F5F4',
+    '#D0E8F0': '#F1F5F7', '#F0F8F8': '#FCFDFE', '#A8C0D0': '#C8D5DF',
+    '#084868': '#33465C', '#F8F0F8': '#F5F6F8', '#5A2A5A': '#33465C',
+    '#C8A8C0': '#C8D2DD', '#7A4BA6': '#60758C', '#F3EEFA': '#EFF3F7',
+    '#2E3A8C': '#466A96', '#EEF0FA': '#EAF0F7',
+    '#1FA8A8': '#39858A', '#E6F6F6': '#EAF4F3',
+    '#FDEFE6': '#F5E8E1', '#C4287A': '#A26384', '#FBE8F1': '#F5EDF2',
+    '#8A8F98': '#637184', '#D9DEE6': '#DFE5E9',
+    '#EED0A8': '#EDF2EE', '#DCC8D8': '#EDF2EE'
+  };
+  static FIGURE_FONT = 'Arial, Helvetica, sans-serif';
+  static refineTypography(items) {
+    const labels = {
+      'Noised action & Noised video do not match': 'Noised action and noised video disagree',
+      'Clean action & Clean video match': 'Recorded action–video pair',
+      'Noised action & Noised renders match': 'Noised action and noised rendering agree',
+      'Recovered target': 'Ground-truth target',
+      'Joint Generation': 'Joint prediction',
+      'Forward Dynamics': 'Video prediction',
+      'Inverse Dynamics': 'Action prediction',
+      'Multi-agent control beyond ego': 'Control beyond the ego',
+      'Command ADE $\\downarrow$': 'Command ADE (m) $\\downarrow$',
+      '1.023 → 0.981 m': '1.023 $\\rightarrow$ 0.981', '1.023 → 0.981': '1.023 $\\rightarrow$ 0.981', '58.65 → 61.75': '58.65 $\\rightarrow$ 61.75',
+      '| Aligned Intent and Foresight': 'Aligned intent and foresight'
+    };
+    const headings = new Set(['Corrective learning', 'Flexible control', 'Driving and robotics']);
+    const modes = new Set(['Joint Generation', 'Forward Dynamics', 'Inverse Dynamics']);
+    const result = items.map(it => {
+      if (it.type !== 'text') return it;
+      const out = { ...it, ff: it.ff || Component.FIGURE_FONT };
+      if (labels[it.text]) out.text = labels[it.text];
+      if (headings.has(it.text)) { out.fs = 28; out.y += 3; }
+      if (modes.has(it.text)) out.fs = 16;
+      if (it.text.includes(' & ')) { out.fs = 18; out.fw = 600; }
+      if (it.text === '1.023 → 0.981 m' || it.text === '58.65 → 61.75') { out.fs = 27; out.y -= 3; }
+      if (it.text === '| Aligned Intent and Foresight') { out.x = 736; out.w = 420; out.fs = 31; out.y += 1; }
+      if (it.text.startsWith('Ctrl{color:')) { out.x = 506; out.w = 230; out.fs = 46; }
+      return out;
+    });
+    const logo = result.find(it => it.type === 'img' && it.label === 'logo');
+    if (logo) { logo.x = 437; }
+    return Component.refineModalityColors(result);
+  }
+  static refineModalityColors(items) {
+    const action = '#466A96', video = '#A6593F', neutral = '#33465C';
+    const cards = ['dr-card-945', 'dr-card-1195'].map(id => items.find(it => it.id === id));
+    return items.filter(it => !['driving-baseline-note', 'robotics-baseline-note'].includes(it.id)).map(it => {
+      if (['trajNoisyB', 'trajCleanB'].includes(it.id)) return { ...it, stroke: action, dashStyle: it.id === 'trajNoisyB' ? 'dashed' : 'solid' };
+      if (it.type === 'img' && /^(nb|cb)[01]-[rd]$/.test(it.id)) return { ...it, color: video, dashed: /^nb/.test(it.id) };
+      if (it.type === 'link' && ['trajNoisyB', 'trajCleanB'].includes(it.from && it.from.id)) return { ...it, stroke: '#8B9AA5' };
+      if (it.type !== 'text') return it;
+      if (['Noised state', 'Recovered target', 'Ground-truth target', 'Correct', 'together'].includes(it.text)) return { ...it, color: neutral };
+      if (it.text === 'Action noise') return { ...it, color: action };
+      if (it.text === 'Video noise') return { ...it, color: video };
+      const index = /^(Command ADE|1\.023)/.test(it.text) ? 0 : /^(WorldArena score|58\.65)/.test(it.text) ? 1 : -1;
+      const card = cards[index];
+      if (card) return { ...it, x: card.x, w: card.w, y: card.y + (/^(1\.023|58\.65)/.test(it.text) ? 290 : 264), align: 'center' };
+      return it;
+    });
+  }
+  static harmonizeColors(value, key = '') {
+    if (Array.isArray(value)) return value.map(v => Component.harmonizeColors(v));
+    if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, Component.harmonizeColors(v, k)]));
+    if (typeof value !== 'string' || !['color', 'fill', 'fill2', 'stroke', 'acol', 'track', 'tint', 'text', 'title'].includes(key)) return value;
+    return value.replace(/#[0-9a-f]{6}\b/gi, c => Component.COLOR_MAP[c.toUpperCase()] || c);
+  }
+  static curveGeom(cv) {
+    const P = cv.pts; if (!P || P.length < 2) return { d: '', arrowD: '', dotList: [] };
+    const seg = []; // catmull-rom → cubic beziers
+    for (let i = 0; i < P.length - 1; i++) { const p0 = P[i - 1] || P[i], p1 = P[i], p2 = P[i + 1], p3 = P[i + 2] || p2; seg.push([p1, [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6], p2]); }
+    const bez = (s, t) => { const u = 1 - t; return [u * u * u * s[0][0] + 3 * u * u * t * s[1][0] + 3 * u * t * t * s[2][0] + t * t * t * s[3][0], u * u * u * s[0][1] + 3 * u * u * t * s[1][1] + 3 * u * t * t * s[2][1] + t * t * t * s[3][1]]; };
+    let d = `M${P[0][0]} ${P[0][1]}`; seg.forEach(s => { d += ` C ${s[1][0].toFixed(1)} ${s[1][1].toFixed(1)} ${s[2][0].toFixed(1)} ${s[2][1].toFixed(1)} ${s[3][0]} ${s[3][1]}`; });
+    const samples = []; seg.forEach(s => { for (let k = 0; k <= 24; k++) samples.push(bez(s, k / 24)); });
+    const cum = [0]; for (let i = 1; i < samples.length; i++) cum.push(cum[i - 1] + Math.hypot(samples[i][0] - samples[i - 1][0], samples[i][1] - samples[i - 1][1]));
+    const L = cum[cum.length - 1]; const at = f => { const target = f * L; let i = cum.findIndex(c => c >= target); if (i <= 0) return samples[0]; const a = samples[i - 1], b = samples[i], r = (target - cum[i - 1]) / ((cum[i] - cum[i - 1]) || 1); return [a[0] + (b[0] - a[0]) * r, a[1] + (b[1] - a[1]) * r]; };
+    const n = cv.dots || 0, hollow = !!cv.hollow, r = cv.dotR || 5;
+    const dotList = []; const ys = Array.isArray(cv.dotYs) ? cv.dotYs : null; const nn = ys ? ys.length : n; for (let i = 0; i < nn; i++) { const span = cv.dotSpan != null ? cv.dotSpan : (cv.arrow ? 0.74 : 0.82); const f = nn === 1 ? 0.5 : 0.06 + span * i / (nn - 1); let p = at(f); if (ys) { p = samples[0]; for (const q of samples) if (Math.abs(q[1] - ys[i]) < Math.abs(p[1] - ys[i])) p = q; } dotList.push({ cx: +p[0].toFixed(1), cy: +p[1].toFixed(1), r, fill: hollow ? '#FFFFFF' : cv.stroke, stroke: hollow ? cv.stroke : '#FFFFFF', sw: hollow ? 2.5 : 2.5 }); }
+    let arrowD = ''; if (cv.arrow && L > 0) { const e = samples[samples.length - 1]; const s = (5 + (cv.sw || 3) * 2.2) * (cv.headScale || 1), headLen = s * 1.6; const base = at(Math.max(0, (L - headLen) / L)); const ang = Math.atan2(e[1] - base[1], e[0] - base[0]); const pt = (dx, dy) => `${(e[0] + dx * Math.cos(ang) - dy * Math.sin(ang)).toFixed(1)} ${(e[1] + dx * Math.sin(ang) + dy * Math.cos(ang)).toFixed(1)}`; arrowD = `M${pt(0, 0)} L${pt(-headLen, -s * 0.75)} L${pt(-headLen, s * 0.75)} Z`; const cut = Math.max(0, L - headLen * 0.8); const pts = samples.filter((p, i) => cum[i] <= cut); pts.push(at(cut / L)); d = 'M' + pts.map(p => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' L'); }
+    return { d, arrowD, dotList };
+  }
+  static linkGeom(l, items) {
+    const find = id => items.find(i => i.id === id); const a = find(l.from && l.from.id), b = find(l.to && l.to.id); if (!a || !b) return null;
+    const center = it => it.type === 'token' ? [it.x + 30, it.y + 30] : it.type === 'text' ? [it.x + (it.w || 0) / 2, it.y + (it.fs || 16) * 0.6] : [it.x + (it.w || 0) / 2, it.y + (it.h || 0) / 2];
+    const anchor = (it, ref, dot) => {
+      if (it.type === 'curve') { const g = Component.curveGeom(it); if (dot != null && g.dotList[dot]) return [it.x + g.dotList[dot].cx, it.y + g.dotList[dot].cy]; const p = it.pts[dot === 'end' ? it.pts.length - 1 : 0]; return [it.x + p[0], it.y + p[1]]; }
+      const c = center(it); if (!('w' in it) || it.type === 'text' || !ref) return c;
+      const w = it.w || 0, h = it.h || 0, dx = ref[0] - c[0], dy = ref[1] - c[1];
+      if (Math.abs(dx) * h > Math.abs(dy) * w) return [dx > 0 ? it.x + w : it.x, Math.max(it.y, Math.min(it.y + h, ref[1]))];
+      return [Math.max(it.x, Math.min(it.x + w, ref[0])), dy > 0 ? it.y + h : it.y];
+    };
+    const p1 = anchor(a, center(b), l.from.dot), p2 = anchor(b, p1, l.to.dot);
+    return { p1, p2 };
+  }
+  static perspGeom(g) {
+    const w = g.w, h = g.h, VX = w * (g.vx == null ? 0.5 : g.vx), HY = h * (g.hy == null ? 0.14 : g.hy), paths = [];
+    if (g.grid !== false) {
+      const col = g.stroke || '#8FA4BF', op = g.gop == null ? 0.14 : g.gop, sw = g.gsw || 1;
+      if (g.horizon !== false) paths.push({ d: `M0 ${HY} H${w}`, stroke: col, sw: sw * 1.2, op });
+      const rays = g.rays == null ? 13 : g.rays, base = h + 60;
+      for (let i = 0; i < rays; i++) { const x = rays === 1 ? VX : -w * 0.15 + w * 1.3 * i / (rays - 1); paths.push({ d: `M${VX} ${HY} L${x} ${base}`, stroke: col, sw, op }); }
+      const n = g.depths == null ? 10 : g.depths;
+      for (let i = 1; i <= n; i++) { const r = i / n, y = HY + (h - HY) * r * r; paths.push({ d: `M0 ${y} H${w}`, stroke: col, sw: i === n ? sw * 1.4 : sw, op }); }
+    }
+    if (g.streaks) {
+      const cnt = g.scount == null ? 22 : g.scount, sop = g.sop == null ? 0.12 : g.sop, pal = [g.color || '#8FA4BF', '#FFFFFF'];
+      for (let i = 0; i < cnt; i++) { const ratio = cnt === 1 ? 0.5 : i / (cnt - 1), ex = -w * 0.12 + w * 1.24 * ratio, ey = h + 30, sr = 0.045 + ((i * 17) % 9) * 0.012, sx = VX + (ex - VX) * sr, sy = HY + (ey - HY) * sr; paths.push({ d: `M${sx} ${sy} L${ex} ${ey}`, stroke: pal[i % 2], sw: 0.7 + (i % 5) * 0.38, op: sop * (0.5 + (i % 4) * 0.17) }); }
+    }
+    return { paths: paths.map(p => ({ fill: 'none', ...p })), vb: `0 0 ${w} ${h}`, gid: 'pg-' + g.id, gcx: String(g.vx == null ? 0.5 : g.vx), gcy: String(g.hy == null ? 0.14 : g.hy), gfill: g.glow ? 'url(#pg-' + g.id + ')' : 'none', glowOp: String(g.glow == null ? 0 : g.glow), vis: g.on === false ? 'hidden' : 'visible', radius: g.radius == null ? 0 : g.radius, cid: 'pc-' + g.id, clipRef: 'url(#pc-' + g.id + ')', clipY: String(g.padT || 0), clipH: String(Math.max(0, h - (g.padT || 0) - (g.padB || 0))) };
+  }
+  static perspDefaults() {
+    const mk = (id, x, y, w, h, color, radius, label) => ({ id, type: 'persp', label, x, y, w, h, radius, vx: 0.501, hy: -0.13, grid: true, rays: 13, depths: 10, gop: 0.2, gsw: 2.1, stroke: '#8FA4BF', horizon: true, streaks: true, scount: 22, sop: 0.12, color, glow: 0.45, on: true, padT: 64, padB: 52 });
+    return [mk('persp-row', 8, 8, 1430, 394, '#8FA4BF', 16, 'Top row (all three panels)')];
+  }
+  static arrowGeom(len, col, dir, dash) { return dir === 'v'
+      ? { w: 20, h: len, paths: [{ d: `M10 0 V${len - 10}`, stroke: col, sw: 3, dash }, { d: `M2 ${len - 12} L10 ${len} L18 ${len - 12} Z`, fill: col, stroke: 'none' }] }
+      : { w: len, h: 20, paths: [{ d: `M0 10 H${len - 10}`, stroke: col, sw: 3, dash }, { d: `M${len - 12} 2 L${len} 10 L${len - 12} 18 Z`, fill: col, stroke: 'none' }] }; }
+  static noiseDots(seed) { let sd = 0; for (const ch of String(seed)) sd = (sd * 31 + ch.charCodeAt(0)) % 2147483648; sd = sd || 7; const rnd = () => { sd = (sd * 1103515245 + 12345) % 2147483648; return sd / 2147483648; }; const out = []; let g = 0; while (out.length < 40 && g++ < 2000) { const px = rnd() * 56, py = rnd() * 56; if (px + py > 58) out.push({ cx: +px.toFixed(1), cy: +py.toFixed(1), r: +(0.7 + rnd() * 1.1).toFixed(1) }); } return out; }
+  static LOGO_SRC = 'data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20659.4%20659.4%22%3E%3Cg%20transform%3D%22translate(19.7%20-55.3)%22%3E%3Cpath%20d%3D%22M%20542.6%20623.6%20A%20313%20313%200%201%201%20542.6%20146.4%22%20fill%3D%22none%22%20stroke%3D%22%230B1A3A%22%20stroke-width%3D%2222%22%2F%3E%3Cpolygon%20points%3D%22579.8%2C183.8%20525.4%2C163.5%20559.8%2C129.3%22%20fill%3D%22%230B1A3A%22%2F%3E%3Cpolygon%20points%3D%22579.8%2C586.2%20559.8%2C640.7%20525.4%2C606.5%22%20fill%3D%22%230B1A3A%22%2F%3E%3Cpath%20d%3D%22M%20526.9%20578.5%20A%20269%20269%200%201%201%20526.9%20191.5%22%20fill%3D%22none%22%20stroke%3D%22%2388CC02%22%20stroke-width%3D%2212.1%22%20stroke-linecap%3D%22round%22%2F%3E%3Ccircle%20cx%3D%22526.9%22%20cy%3D%22191.5%22%20r%3D%2218%22%20fill%3D%22%2388CC02%22%2F%3E%3Ccircle%20cx%3D%22526.9%22%20cy%3D%22578.5%22%20r%3D%2218%22%20fill%3D%22%2388CC02%22%2F%3E%3Ccircle%20cx%3D%2227.0%22%20cy%3D%22385.0%22%20r%3D%2219.8%22%20fill%3D%22%230B1A3A%22%2F%3E%3Ccircle%20cx%3D%2271.0%22%20cy%3D%22385.0%22%20r%3D%2219.8%22%20fill%3D%22%2388CC02%22%2F%3E%3Cline%20x1%3D%22217%22%20y1%3D%22200%22%20x2%3D%22277%22%20y2%3D%22284%22%20stroke%3D%22%2388CC02%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22%2F%3E%3Cline%20x1%3D%22277%22%20y1%3D%22284%22%20x2%3D%22340%22%20y2%3D%22193%22%20stroke%3D%22%2388CC02%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22%2F%3E%3Cline%20x1%3D%22340%22%20y1%3D%22193%22%20x2%3D%22408%22%20y2%3D%22284%22%20stroke%3D%22%2388CC02%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22%2F%3E%3Cline%20x1%3D%22408%22%20y1%3D%22284%22%20x2%3D%22463%22%20y2%3D%22200%22%20stroke%3D%22%2388CC02%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22%2F%3E%3Cline%20x1%3D%22340%22%20y1%3D%22315%22%20x2%3D%22225%22%20y2%3D%22433%22%20stroke%3D%22%230B1A3A%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22%2F%3E%3Cline%20x1%3D%22340%22%20y1%3D%22315%22%20x2%3D%22463%22%20y2%3D%22433%22%20stroke%3D%22%230B1A3A%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22%2F%3E%3Cline%20x1%3D%22296%22%20y1%3D%22410%22%20x2%3D%22388%22%20y2%3D%22410%22%20stroke%3D%22%2388CC02%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22%2F%3E%3Cline%20x1%3D%22217%22%20y1%3D%22492%22%20x2%3D%22340%22%20y2%3D%22587%22%20stroke%3D%22%230B1A3A%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22%2F%3E%3Cline%20x1%3D%22340%22%20y1%3D%22587%22%20x2%3D%22463%22%20y2%3D%22492%22%20stroke%3D%22%230B1A3A%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22%2F%3E%3Cline%20x1%3D%22217%22%20y1%3D%22492%22%20x2%3D%22217%22%20y2%3D%22582%22%20stroke%3D%22%230B1A3A%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22%2F%3E%3Cline%20x1%3D%22463%22%20y1%3D%22492%22%20x2%3D%22463%22%20y2%3D%22582%22%20stroke%3D%22%230B1A3A%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22%2F%3E%3Cline%20x1%3D%22236%22%20y1%3D%22528%22%20x2%3D%22316%22%20y2%3D%22591%22%20stroke%3D%22%2388CC02%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22%2F%3E%3Cline%20x1%3D%22372%22%20y1%3D%22591%22%20x2%3D%22444%22%20y2%3D%22528%22%20stroke%3D%22%2388CC02%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22%2F%3E%3Ccircle%20cx%3D%22217%22%20cy%3D%22200%22%20r%3D%2218%22%20fill%3D%22%2388CC02%22%2F%3E%3Ccircle%20cx%3D%22277%22%20cy%3D%22284%22%20r%3D%2218%22%20fill%3D%22%2388CC02%22%2F%3E%3Ccircle%20cx%3D%22340%22%20cy%3D%22193%22%20r%3D%2218%22%20fill%3D%22%2388CC02%22%2F%3E%3Ccircle%20cx%3D%22408%22%20cy%3D%22284%22%20r%3D%2218%22%20fill%3D%22%2388CC02%22%2F%3E%3Ccircle%20cx%3D%22463%22%20cy%3D%22200%22%20r%3D%2218%22%20fill%3D%22%2388CC02%22%2F%3E%3Ccircle%20cx%3D%22340%22%20cy%3D%22315%22%20r%3D%2218%22%20fill%3D%22%230B1A3A%22%2F%3E%3Ccircle%20cx%3D%22225%22%20cy%3D%22433%22%20r%3D%2218%22%20fill%3D%22%230B1A3A%22%2F%3E%3Ccircle%20cx%3D%22463%22%20cy%3D%22433%22%20r%3D%2218%22%20fill%3D%22%230B1A3A%22%2F%3E%3Ccircle%20cx%3D%22296%22%20cy%3D%22410%22%20r%3D%2218%22%20fill%3D%22%2388CC02%22%2F%3E%3Ccircle%20cx%3D%22388%22%20cy%3D%22410%22%20r%3D%2218%22%20fill%3D%22%2388CC02%22%2F%3E%3Ccircle%20cx%3D%22217%22%20cy%3D%22492%22%20r%3D%2218%22%20fill%3D%22%230B1A3A%22%2F%3E%3Ccircle%20cx%3D%22340%22%20cy%3D%22587%22%20r%3D%2218%22%20fill%3D%22%230B1A3A%22%2F%3E%3Ccircle%20cx%3D%22463%22%20cy%3D%22492%22%20r%3D%2218%22%20fill%3D%22%230B1A3A%22%2F%3E%3Ccircle%20cx%3D%22217%22%20cy%3D%22582%22%20r%3D%2218%22%20fill%3D%22%230B1A3A%22%2F%3E%3Ccircle%20cx%3D%22463%22%20cy%3D%22582%22%20r%3D%2218%22%20fill%3D%22%230B1A3A%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E';
+  static LOGO_SRC_W = Component.LOGO_SRC.split(encodeURIComponent('#0B1A3A')).join(encodeURIComponent('#FFFFFF')).split(encodeURIComponent('#88CC02')).join(encodeURIComponent('#FFFFFF'));
+  static SCENE_SRC = 'site/media/teaser-fig/scene-720.png';
+  static SAVED = null;
+  static KEY = 'ctrlwam-teaser-figure-v5-saved';
+  static KEY_V4 = 'ctrlwam-teaser-figure-v4-saved';
+  static CROP_Y = 402;
+  static bigHeader(items) { return items.map(it => (it.type === 'img' && it.label === 'logo') ? { ...it, x: 430, y: 4, w: 64, h: 64 } : (it.type === 'text' && /^Ctrl\{color:/.test(it.text || '')) ? { ...it, x: 506, y: 6, w: 230, fs: 46 } : (it.type === 'text' && /Aligned [Ii]ntent and [Ff]oresight/.test(it.text || '')) ? { ...it, x: 736, y: 16, w: 420, fs: 31 } : it); }
+  static cropBottom(items) { const keep = new Set(); const out = []; for (const it of items) { if (it.type === 'persp') continue; if (!('y' in it)) continue; if (it.y < 400) continue; keep.add(it.id); out.push({ ...it, y: it.y - Component.CROP_Y }); } for (const it of items) { if (it.type === 'link' && keep.has(it.from && it.from.id) && keep.has(it.to && it.to.id)) out.push(it); } return out; }
+static loadSaved() { let sv = null; try { const ls = JSON.parse(localStorage.getItem(Component.KEY) || 'null'); sv = ls || Component.SAVED; } catch (e) { sv = Component.SAVED; } if (sv && sv.cropV5) { if (!sv.bigHdr) sv = { ...sv, items: Component.bigHeader(sv.items || []), bigHdr: true }; return sv; } if (!sv) { try { const v4 = JSON.parse(localStorage.getItem(Component.KEY_V4) || 'null'); if (v4 && v4.items) { const m = Component.loadSavedFull(v4); if (m) sv = { ...m, items: Component.bigHeader(Component.cropBottom(m.items)), canvasH: 496, cropV5: true, bigHdr: true }; } } catch (e) {} return sv; } return null; }
+  static loadSavedFull(sv) { if (!sv) return sv; sv = Component.migrate(sv); let changed = false; if (!sv.paletteComfortV1) { sv = { ...sv, items: Component.harmonizeColors(sv.items), paletteComfortV1: true }; changed = true; } if (!sv.typographyV1) { sv = { ...sv, items: Component.refineTypography(sv.items), typographyV1: true }; changed = true; } if (!sv.modalityColorsV3) { sv = { ...sv, items: Component.refineModalityColors(sv.items), modalityColorsV3: true }; changed = true; } if (!sv.alignedLayoutV1) { const positions = new Map(Component.defaults().filter(it => /^(ren|noi)[012]-[rd]$/.test(it.id) || it.text === 'Add noise' || (it.kind === 'arrow' && it.y < 400 && it.x >= 1180 && it.x <= 1203)).map(it => [it.id, it.x])); sv = { ...sv, items: sv.items.map(it => positions.has(it.id) ? { ...it, x: positions.get(it.id) } : it), alignedLayoutV1: true }; changed = true; } if (!sv.perspV2) { sv = { ...sv, items: [...sv.items.filter(it => it.type !== 'persp'), ...Component.perspDefaults()], perspV1: true, perspV2: true, perspV3: true, perspV4: true, perspV5: true, arrowTexV1: true, recSwapV1: true }; changed = true; } if (!sv.perspV3) { sv = { ...sv, items: sv.items.map(it => it.type === 'persp' && it.id === 'persp-row' ? { ...it, vx: 0.392 } : it), perspV3: true }; changed = true; } if (!sv.perspV4) { sv = { ...sv, items: sv.items.map(it => it.type === 'persp' && it.id === 'persp-row' ? { ...it, hy: -0.13, gop: 0.2, gsw: 2.1 } : it), perspV4: true }; changed = true; } if (!sv.perspV5) { sv = { ...sv, items: sv.items.map(it => it.type === 'persp' && it.id === 'persp-row' ? { ...it, padT: 64, padB: 52 } : it), perspV5: true }; changed = true; } if (!sv.arrowTexV1) { sv = { ...sv, items: sv.items.map(it => it.type === 'text' && (it.text === '1.023 → 0.981' || it.text === '58.65 → 61.75') ? { ...it, text: it.text.replace('→', '$\\rightarrow$') } : it), arrowTexV1: true }; changed = true; } if (!sv.recSwapV1) { sv = { ...sv, items: sv.items.map(it => { if (it.type === 'img' && /^rec[012]-[rd]$/.test(it.id)) return { ...it, x: it.x - 131 }; if (it.type === 'text' && it.text === 'Recorded action' && it.x === 488) return { ...it, x: 666 }; if (it.type === 'text' && it.text === 'Recorded video' && it.x === 636) return { ...it, x: 522 }; if (it.type === 'curve' && it.x === 552 && it.w === 32 && it.y < 120) return { ...it, x: 709 }; if (it.type === 'text' && it.x === 586 && /^\$t_[123]\$$/.test(it.text) && it.y < 400) return { ...it, x: 743 }; if (it.type === 'persp' && it.id === 'persp-row') return { ...it, vx: 0.501 }; return it; }), recSwapV1: true }; changed = true; } if (changed) { try { localStorage.setItem(Component.KEY, JSON.stringify(sv)); } catch (e) {} } return sv; }
+  static migrate(sv) { if (sv && sv.v33) { sv = { ...sv, items: (sv.items || []).map(it => (it.type === 'panel' && it.x === 8 && it.w === 470 && it.h === 394) ? { ...it, w: 483, radius: '16px 0 0 16px' } : (it.type === 'panel' && it.x === 491 && it.w === 340 && it.h === 394) ? { ...it, w: 353, radius: 0 } : (it.type === 'panel' && it.x === 844 && it.w === 594 && it.h === 394) ? { ...it, radius: '0 16px 16px 0' } : (it.type === 'panel' && it.w === 1430 && /#0B1A3A|#88CC02 100%|#8A9B78 100%|138,155,120/.test(it.fill || '')) ? { ...it, fill: 'linear-gradient(90deg,#EED0A8 0%,#EED0A8 22%,#DCC8D8 100%) no-repeat border-box' } : (it.type === 'img' && it.label === 'logo') ? { ...it, src: Component.LOGO_SRC } : (it.type === 'text' && it.color === '#FFFFFF' && (it.text === 'CtrlWAM' || it.text === '| Aligned Intent and Foresight')) ? { ...it, color: '#0B1A3A', text: it.text === 'CtrlWAM' ? 'Ctrl{color:#88CC02}WAM{/color}' : it.text } : (it.type === 'text' && it.text === 'CtrlWAM' && it.fw >= 800) ? { ...it, text: 'Ctrl{color:#88CC02}WAM{/color}' } : (it.type === 'text' && (it.text === 'Executed action' || it.text === 'Perturbed action')) ? { ...it, text: 'Noised action' } : (it.type === 'text' && it.text === 'Aligned execution') ? { ...it, text: 'Aligned noising' } : (it.type === 'text' && it.text === 'Joint Dynamics') ? { ...it, text: 'Joint Generation' } : (it.type === 'text' && it.text === 'Noisy action & Noisy video do not match') ? { ...it, text: 'Noised action & Noised video do not match' } : (it.type === 'text' && it.text === 'Execute → render → add noise') ? { ...it, text: 'Noised action & Noised renders match', fs: 18, y: it.y + 1 } : it) }; if (!sv.v26) sv = { ...sv, v26: true, items: (sv.items || []).map(it => (it.type === 'img' && /^ren\d-[rd]$/.test(it.id || '')) ? { ...it, x: it.x + 15 } : (it.type === 'text' && it.text === 'Rendered views') ? { ...it, x: it.x + 15 } : ((it.type === 'text' && it.text === 'Add noise') || (it.kind === 'arrow' && it.alen === 62 && it.acol === '#4C9A3B')) ? { ...it, x: it.x + 8 } : it) }; return sv; } const d = Component.defaults(); const srcs = {}; (sv && sv.items || []).forEach(it => { if (it.type === 'img' && it.src && !/^\.\/assets\//.test(it.src) && !/^data:image\/svg/.test(it.src)) (srcs[it.label] = srcs[it.label] || []).push(it.src); }); const items = d.map(it => (it.type === 'img' && !it.src && srcs[it.label] && srcs[it.label].length) ? { ...it, src: srcs[it.label].shift() } : it); return { ...sv, v33: true, canvasW: 1450, canvasH: 898, items }; }
+  static migrateOld(sv) { const g = Component.C.g.fg; const items = (sv.items || []).map(it => { if (it.type !== 'svg' || !it.paths || it.paths.length !== 2) return it; const [ln, hd] = it.paths; const straight = /^M\d+ \d+ [VH]\d+$/.test(ln.d || ''); if (!straight) return it; let out = it; if (ln.stroke === g && hd.fill === g && !ln.dash) out = { ...out, paths: [{ ...ln, dash: '7 5' }, hd] }; if (!out.kind) { const dir = /V/.test(ln.d) ? 'v' : 'h'; out = { ...out, kind: 'arrow', dir, alen: dir === 'v' ? out.h : out.w, acol: ln.stroke, adash: out.paths[0].dash }; } return out; }).map(it => (it.type === 'img' && it.label === 'car' && !it.src && (it.color === Component.C.g.st || it.color === Component.C.b.st)) ? Component.carIcon(it, it.color === Component.C.b.st) : (it.type === 'img' && it.label === 'robot arm' && !it.src) ? { id: it.id, type: 'svg', x: it.x, y: it.y, w: 120, h: 100, vb: '0 0 120 100', rot: 0, dots: [], paths: Component.ROBOT_PATHS } : it); const isLane = it => (it.type === 'curve' && (it.stroke === '#B4BBB0' || it.stroke === '#C3C9BF')) || (it.type === 'svg' && it.paths && it.paths[0] && it.paths[0].stroke === '#B4BBB0'); if (!items.some(isLane)) { const lanes = Component.defaults().filter(isLane); let at = items.findIndex(it => it.type === 'curve' && it.stroke === g && it.y >= 700); if (at < 0) at = items.length; items.splice(at, 0, ...lanes); }
+    return { ...sv, items: items.map(it => (it.type === 'box' && /^History\n/.test(it.title || '') && it.color === '#3A3A3A') ? { ...it, color: Component.C.y.fg } : (it.type === 'text' && it.text === 'clean condition' && it.fs === 13) ? { ...it, fs: 16, y: it.y - 2 } : (it.type === 'curve' && it.dotSpan === 0.5 && it.dashStyle === 'solid') ? { ...it, dashStyle: 'dashed' } : (it.type === 'panel' && it.fill === '#FFFFFF') ? { ...it, fill: it.stroke === Component.C.o.st ? '#FDF0E4' : it.stroke === Component.C.b.st ? '#EAF1FA' : it.stroke === Component.C.g.st ? '#EDF3E8' : it.fill } : it) }; }
+  static carIcon(it, blue) { const vert = it.h > it.w; const w = vert ? Math.round(it.h * 1.1) : Math.round(it.w * 1.1), h = Math.round(w * 64 / 120); const cx = it.x + it.w / 2, cy = it.y + it.h / 2; return { id: it.id, type: 'svg', x: Math.round(cx - w / 2), y: Math.round(cy - h / 2), w, h, vb: '0 0 120 64', rot: vert ? -90 : (blue ? -25 : 0), dots: [], paths: blue ? Component.CAR_PATHS_B : Component.CAR_PATHS }; }
+  static carPaths(p) { return [
+      { d: 'M18 2 h20 a3 3 0 0 1 3 3 v5 h-26 v-5 a3 3 0 0 1 3 -3 z M82 2 h20 a3 3 0 0 1 3 3 v5 h-26 v-5 a3 3 0 0 1 3 -3 z M15 54 h26 v5 a3 3 0 0 1 -3 3 h-20 a3 3 0 0 1 -3 -3 z M79 54 h26 v5 a3 3 0 0 1 -3 3 h-20 a3 3 0 0 1 -3 -3 z', fill: p.wheel, stroke: 'none' },
+      { d: 'M14 8 H102 Q116 8 118 22 V42 Q116 56 102 56 H14 Q5 56 5 44 V20 Q5 8 14 8 Z', fill: p.body, stroke: p.line, sw: 3 },
+      { d: 'M28 16 Q24 32 28 48 L46 51 V13 Z', fill: p.glass, stroke: p.glassLine, sw: 1.5 },
+      { d: 'M74 13 L94 18 Q98 32 94 46 L74 51 Z', fill: p.glass, stroke: p.glassLine, sw: 1.5 },
+      { d: 'M49 14 h22 a3 3 0 0 1 3 3 v30 a3 3 0 0 1 -3 3 h-22 a3 3 0 0 1 -3 -3 v-30 a3 3 0 0 1 3 -3 z', fill: p.roof, stroke: p.roofLine, sw: 1.5 },
+      { d: 'M48 9.5 h26 v3.5 h-26 z M48 51 h26 v3.5 h-26 z', fill: p.glass, stroke: 'none' },
+      { d: 'M72 3.5 h9 a2 2 0 0 1 2 2 v3.5 h-11 z M72 55 h11 v3.5 a2 2 0 0 1 -2 2 h-9 z', fill: p.body, stroke: p.line, sw: 1.5 },
+      { d: 'M110 14 h5 v10 h-5 z M110 40 h5 v10 h-5 z', fill: '#F3F1E4', stroke: p.line, sw: 1 },
+      { d: 'M6 15 h4 v9 h-4 z M6 40 h4 v9 h-4 z', fill: p.tail, stroke: p.line, sw: 1 }
+    ]; }
+  static ROBOT_PATHS = [
+      { d: 'M36 33 L50 30 L64 64 L50 67 Z', fill: '#8A9BB3', stroke: '#2E4468', sw: 2.5 },
+      { d: 'M30 82 h52 a4 4 0 0 1 4 4 v4 a3 3 0 0 1 -3 3 h-54 a3 3 0 0 1 -3 -3 v-4 a4 4 0 0 1 4 -4 z', fill: '#8A9BB3', stroke: '#2E4468', sw: 2.5 },
+      { d: 'M37 82 L47 61 Q48 58 51 58 H63 Q66 58 67 61 L77 82 Z', fill: '#F2D46A', stroke: '#A87A16', sw: 2.5 },
+      { d: 'M57 71 a4.5 4.5 0 1 0 0.01 0 z', fill: '#8A9BB3', stroke: '#2E4468', sw: 2 },
+      { d: 'M80 14 h5 a2 2 0 0 1 2 2 v10 a2 2 0 0 1 -2 2 h-5 z', fill: '#3D5578', stroke: '#2E4468', sw: 2 },
+      { d: 'M85 17 L92 7 L102 11 L99 15 L92 12 L88 19 Z', fill: '#8A9BB3', stroke: '#2E4468', sw: 2.2 },
+      { d: 'M85 25 L92 35 L102 31 L99 27 L92 30 L88 23 Z', fill: '#8A9BB3', stroke: '#2E4468', sw: 2.2 },
+      { d: 'M50 17 H74 V28 H50 Z', fill: '#F2D46A', stroke: '#A87A16', sw: 2.5 },
+      { d: 'M71 12 h8 a4 4 0 0 1 4 4 v10 a4 4 0 0 1 -4 4 h-8 a4 4 0 0 1 -4 -4 v-10 a4 4 0 0 1 4 -4 z', fill: '#F2D46A', stroke: '#A87A16', sw: 2.5 },
+      { d: 'M40 25 a12.5 12.5 0 1 0 0.01 0 z', fill: '#F2D46A', stroke: '#A87A16', sw: 2.5 },
+      { d: 'M40 25 a5.5 5.5 0 1 0 0.01 0 z', fill: '#8A9BB3', stroke: '#2E4468', sw: 2 }
+    ];
+  static CAR_PATHS = Component.carPaths({ wheel: '#2F3A22', body: '#A9BF86', line: '#4B6222', glass: '#3E5626', glassLine: '#2E4218', roof: '#BDD09F', roofLine: '#6E8A3E', tail: '#9B2A21' });
+  static CAR_PATHS_B = Component.carPaths({ wheel: '#222A3A', body: '#7C9CC8', line: '#1E2D4A', glass: '#2E3A55', glassLine: '#1E2D4A', roof: '#A3BBDB', roofLine: '#4F6A96', tail: '#D2342A' });
+  saveDefault = async () => {
+    const { items, canvasW, canvasH, bg, frame, font } = this.state; const s = { items, canvasW, canvasH, bg, frame, font, cropV5: true, bigHdr: true, v33: true, v26: true, paletteComfortV1: true, typographyV1: true, modalityColorsV3: true, alignedLayoutV1: true, perspV1: true, perspV2: true, perspV3: true, perspV4: true, perspV5: true, arrowTexV1: true, recSwapV1: true };
+    const json = JSON.stringify(s);
+    let stored = 'browser';
+    try { localStorage.setItem(Component.KEY, json); try { await Component.idbDel(); } catch (e) {} } catch (e) { try { localStorage.removeItem(Component.KEY); } catch (e2) {} try { await Component.idbSet(json); stored = 'browser (large layout stored in IndexedDB)'; } catch (e3) { stored = ''; } }
+    try {
+      let src = await (await fetch(location.href, { cache: 'no-store' })).text();
+      const re = /static SAVED = (null|\{[\s\S]*?\});\n  static KEY/; if (!re.test(src)) throw new Error('marker');
+      src = src.replace(re, () => 'static SAVED = ' + json + ';\n  static KEY');
+      const b = new Blob([src], { type: 'text/html' }); const u = URL.createObjectURL(b); this.dl(u, (location.pathname.split('/').pop() || 'CtrlWAM-Teaser-Figure-v5.html')); setTimeout(() => URL.revokeObjectURL(u), 2000);
+      this.setState({ saveMsg: (stored ? 'Saved in this ' + stored + ' · ' : 'Could not save in this browser · ') + 'downloaded HTML has this layout (incl. images) baked in — replace your file with it' });
+    } catch (e) { this.setState({ saveMsg: stored ? 'Saved in this ' + stored + ' (reopens with this layout here)' : 'Could not save: storage quota exceeded and file not reachable' }); }
+  };
+  static idb() { return new Promise((res, rej) => { const r = indexedDB.open('ctrlwam-figures', 1); r.onupgradeneeded = () => r.result.createObjectStore('layouts'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); }
+  static async idbSet(json) { const db = await Component.idb(); await new Promise((res, rej) => { const tx = db.transaction('layouts', 'readwrite'); tx.objectStore('layouts').put(json, Component.KEY); tx.oncomplete = res; tx.onerror = () => rej(tx.error); }); }
+  static async idbGet() { const db = await Component.idb(); return new Promise((res, rej) => { const r = db.transaction('layouts').objectStore('layouts').get(Component.KEY); r.onsuccess = () => res(r.result || null); r.onerror = () => rej(r.error); }); }
+  static async idbDel() { const db = await Component.idb(); await new Promise((res, rej) => { const tx = db.transaction('layouts', 'readwrite'); tx.objectStore('layouts').delete(Component.KEY); tx.oncomplete = res; tx.onerror = () => rej(tx.error); }); }
+  async loadIdb() { try { if (localStorage.getItem(Component.KEY)) return; const json = await Component.idbGet(); if (!json) return; const sv = Component.migrate(JSON.parse(json)); if (!sv || !sv.items) return; this.setState({ items: Component.siteImages(sv.items), canvasW: sv.canvasW, canvasH: sv.canvasH, frame: sv.frame, font: sv.font || '', bg: sv.bg }); } catch (e) {} }
+  static defaults() { return Component.cropBottom(Component.defaultsFull()); }
+  static defaultsFull() {
+    let n = 0; const id = () => 'i' + (++n);
+    const OR = '#E8641B', BL = '#3A6FD8', GR = '#4C9A3B', RD = '#D0312D', TAN = '#C9A86A', TX = '#1F2A3A', PB = '#C9CDD3';
+    const T = (x, y, w, text, fs, c, o = {}) => ({ id: id(), type: 'text', x, y, w, text, fs, color: c, fw: o.fw || 400, fst: o.it ? 'italic' : 'normal', align: o.al || 'center' });
+    const P = (x, y, w, h, fill, stroke, o = {}) => ({ id: id(), type: 'panel', x, y, w, h, fill, stroke: stroke || fill, ...o });
+    const I = (x, y, w, h, label, c = OR) => ({ id: id(), type: 'img', x, y, w, h, label, color: c, tint: '#FFFFFF', stack: false, radius: 4 });
+    const pair = (x, y, w = 108, c = OR, key) => { const h = Math.round(w * 0.75); const rb = I(x + Math.round(w * 0.36), y, w, h, 'robot frame', c), dv = I(x, y + Math.round(h * 0.1), w, h, 'driving frame', c); if (key) { rb.id = key + '-r'; dv.id = key + '-d'; } return [rb, dv]; };
+    const LK = (from, to, stroke, o = {}) => ({ id: id(), type: 'link', from, to, stroke, sw: 2.5, dashStyle: 'dashed', mark: '', arrow: false, ...o });
+    const S = (x, y, w, h, paths, dots = [], o = {}) => ({ id: id(), type: 'svg', x, y, w, h, paths, dots, ...o });
+    const CV = (x, y, w, h, pts, stroke, o = {}) => ({ id: id(), type: 'curve', x, y, w, h, pts, stroke, sw: 3.5, dashStyle: 'solid', arrow: false, dots: 0, dotR: 5, hollow: false, ...o });
+    const AU = (x, y, len, c = TX) => S(x, y, 20, len, [{ d: `M10 ${len} V12`, stroke: c, sw: 2.5 }, { d: 'M3 13 L10 0 L17 13 Z', fill: c, stroke: 'none' }]);
+    const AH = (x, y, len, c, dash) => ({ id: id(), type: 'svg', x, y, dots: [], kind: 'arrow', dir: 'h', alen: len, acol: c, adash: dash, ...Component.arrowGeom(len, c, 'h', dash) });
+    const XX = (x, y) => S(x, y, 22, 22, [{ d: 'M3 3 L19 19 M19 3 L3 19', stroke: RD, sw: 3.5 }]);
+    const L = (x, y, text, fill, stroke, dashed) => ({ id: id(), type: 'legend', x, y, text, fill, stroke, dashed: !!dashed });
+    const tl = (x, y, k, c = TX) => T(x, y, 40, `$t_${k}$`, 26, c);
+    const cone = (x, y, w, h) => S(x, y, w, h, [{ d: `M0 ${h / 2} L${w} 0 L${w} ${h} Z`, fill: 'rgba(110,190,90,0.32)', stroke: 'none' }]);
+    const cap = (x, y, w, h, text, fill, c, fs = 20, o = {}) => [P(x, y, w, h, fill, fill, { radius: 10 }), T(x, y + Math.round((h - fs * 1.2) / 2), w, text, fs, c, o)];
+    const slider = (x, y, w, frac, c) => [{ id: id(), type: 'slider', x, y: y - 10, w, frac, color: c }];
+    const traj = (x, y, c, o = {}) => CV(x, y, 140, 75, [[0, 70], [45, 50], [90, 28], [135, 5]], c, { sw: 5, arrow: true, dots: 3, dotR: 6, hollow: false, dotSpan: 0.7, ...o });
+    const mini = (x, y, c, o = {}) => CV(x, y, 122, 35, [[0, 30], [40, 22], [80, 12], [118, 5]], c, { sw: 4, arrow: true, dots: 3, dotR: 5, hollow: false, dotSpan: 0.7, ...o });
+    const timeCol = (ax, tx, lx, axis = true) => [...(axis ? [AU(ax, 175, 275, TX)] : []), ...(tx == null ? [] : [tl(tx - 10, 209, 3, GR), tl(tx - 10, 299, 2, GR), tl(tx - 10, 389, 1, GR)])];
+    const rows = [166, 256, 346];
+    const header = [P(8, 480, 1430, 72, 'linear-gradient(90deg,#EED0A8 0%,#EED0A8 22%,#DCC8D8 100%) no-repeat border-box', 'transparent', { radius: '14px 14px 0 0' }), { ...I(430, 484, 64, 64, 'logo', '#8A8F98'), src: Component.LOGO_SRC, borderW: 0, tbg: true, fit: 'contain', radius: 0 }, T(506, 486, 230, 'Ctrl{color:#88CC02}WAM{/color}', 46, '#0B1A3A', { fw: 800, al: 'left' }), T(736, 496, 420, '| Aligned Intent and Foresight', 31, '#0B1A3A', { al: 'left' })];
+    const body = [
+      // (a)
+      P(8, 100, 483, 394, '#FCEDE4', '#FCEDE4', { radius: '16px 0 0 16px' }), T(8, 106, 470, 'Standard noising', 26, OR, { fw: 700 }),
+      T(39, 140, 160, 'Noised recording', 18, OR), T(316, 140, 160, 'Noised action', 18, OR),
+      ...rows.flatMap((y, i) => pair(60, y, 100, OR, 'std' + i)),
+      tl(14, 209, 3, OR), tl(14, 299, 2, OR), tl(14, 389, 1, OR),
+      { ...CV(366, 160, 60, 262, [[8, 252], [40, 130], [12, 10]], OR, { sw: 5, arrow: true, dots: 3, dotR: 7, hollow: false, dotYs: [227, 137, 47] }), id: 'trajStd' },
+      ...[0, 1, 2].map(i => LK({ id: 'trajStd', dot: 2 - i }, { id: 'std' + i + '-d' }, RD, { mark: 'x' })),
+      tl(410, 209, 3, OR), tl(410, 299, 2, OR), tl(410, 389, 1, OR),
+      ...cap(18, 448, 450, 34, 'Noised action & Noised video do not match', '#F9DDCB', OR, 18),
+      P(491, 100, 353, 394, '#EAF1FB', '#EAF1FB', { radius: 0 }), T(491, 106, 340, 'Recorded reference', 26, BL, { fw: 700 }),
+      T(522, 140, 160, 'Recorded video', 18, BL), T(666, 140, 160, 'Recorded action', 18, BL),
+      ...rows.flatMap((y, i) => pair(534, y, 100, BL, 'rec' + i)),
+      CV(709, 160, 32, 262, [[16, 252], [16, 130], [16, 10]], BL, { sw: 5, arrow: true, dots: 3, dotR: 7, hollow: false, dotYs: [227, 137, 47] }),
+      tl(743, 209, 3, BL), tl(743, 299, 2, BL), tl(743, 389, 1, BL),
+      ...cap(501, 448, 320, 34, 'Clean action & Clean video match', '#D3E2F6', BL, 18),
+      P(844, 100, 594, 394, '#EDF6E9', '#EDF6E9', { radius: '0 16px 16px 0' }), T(844, 106, 594, 'Aligned noising', 26, GR, { fw: 700 }),
+      T(853, 140, 160, 'Noised action', 18, GR), T(1027, 140, 160, 'Rendered views', 18, GR), T(1258, 140, 160, 'Noised renders', 18, GR),
+      ...timeCol(846, 873, 821, false),
+      { ...CV(913, 160, 60, 262, [[8, 252], [38, 130], [12, 10]], GR, { sw: 5, arrow: true, dots: 3, dotR: 7, hollow: false, dotYs: [227, 137, 47] }), id: 'trajAli' },
+      ...rows.flatMap((y, i) => { const dx = [7, 23, 0][i]; return [...pair(1019 + dx, y, 100, GR, 'ren' + i), ...pair(1267 + dx, y, 100, GR, 'noi' + i)]; }),
+      ...[0, 1, 2].map(i => LK({ id: 'trajAli', dot: 2 - i }, { id: 'ren' + i + '-d' }, GR, { mark: 'check' })),
+      ...rows.flatMap((y, i) => { const dx = [7, 23, 0][i]; return [T(1171 + dx, y + 30, 80, 'Add noise', 17, TX), AH(1180 + dx, y + 57, 62, GR)]; }),
+      ...cap(854, 448, 574, 34, 'Noised action & Noised renders match', '#D9EBD2', GR, 18),
+      // (b) — blue theme
+      { ...P(8, 555, 461, 408, '#FDF8E6', '#FDF8E6', { radius: '0 0 0 12px' }), ns: 1 }, { ...T(8, 563, 461, 'Corrective learning', 32, '#B8901F', { fw: 700, al: 'center' }), ns: 1 },
+      { ...P(20, 605, 431, 236, '#FFFCF2', '#DCC070', { radius: 12 }), id: 'corrBox' },
+      T(20, 618, 200, 'Noised state', 20, '#D08A2A', { fw: 700 }), T(238, 618, 200, 'Recovered target', 20, '#8F7A22', { fw: 700 }),
+      // left: noised (curved) trajectory with two waypoints → frame pairs
+      { ...CV(40, 643, 50, 190, [[4, 177], [7, 103], [44, 15]], '#D08A2A', { sw: 6, arrow: true, dots: 2, dotR: 7, hollow: false, dotYs: [149, 50] }), id: 'trajNoisyB' },
+      ...pair(110, 655, 80, '#D08A2A', 'nb0'), ...pair(85, 754, 80, '#D08A2A', 'nb1'),
+      LK({ id: 'trajNoisyB', dot: 1 }, { id: 'nb0-d' }, '#D08A2A'), LK({ id: 'trajNoisyB', dot: 0 }, { id: 'nb1-d' }, '#D08A2A'),
+      // middle: correction arrows
+      AH(212, 733, 56, '#D4B24C'),
+      // right: straight clean trajectory with two waypoints → frame pairs
+      { ...CV(280, 643, 32, 190, [[16, 177], [16, 103], [16, 15]], '#8F7A22', { sw: 6, arrow: true, dots: 2, dotR: 7, hollow: false, dotYs: [149, 50] }), id: 'trajCleanB' },
+      ...pair(330, 655, 80, '#8F7A22', 'cb0'), ...pair(330, 754, 80, '#8F7A22', 'cb1'),
+      LK({ id: 'trajCleanB', dot: 1 }, { id: 'cb0-d' }, '#8F7A22'), LK({ id: 'trajCleanB', dot: 0 }, { id: 'cb1-d' }, '#8F7A22'),
+      P(20, 849, 431, 98, '#FFFCF2', '#DCC070', { radius: 12 }), T(30, 856, 420, 'Independent noise schedules', 20, '#B8901F', { fw: 700, al: 'left' }),
+      T(30, 887, 110, 'Action noise', 17, '#8F7A22'), ...slider(145, 893, 300, 0.43, '#8F7A22'),
+      T(30, 916, 110, 'Video noise', 17, '#D08A2A'), ...slider(145, 922, 300, 0.72, '#D08A2A'),
+      // (c) — lighter blue theme
+      { ...P(469, 555, 458, 408, '#D0E8F0', '#D0E8F0', { radius: 0 }), ns: 1 }, { ...T(469, 563, 458, 'Flexible control', 32, '#084868', { fw: 700, al: 'center' }), ns: 1 },
+      // token boxes: solid = given, dashed + tinted-light = predicted
+      ...(() => {
+        const BOX = (x, y, title, fill, stroke, c, dashed) => ({ id: id(), type: 'box', x, y, w: 46, h: 32, title, fill, stroke, color: c, fs: 17, fw: 600, dashed: !!dashed, radius: 8 });
+        const VF = '#F9DDCB', VFp = '#FDF3EC', AF = '#D9EBD2', AFp = '#F1F7EE';
+        const mode = (x0, title, given) => {
+          const rows = [
+            ['Video', OR, 'v', VF, VFp, given === 'video'],
+            ['Action', GR, 'a', AF, AFp, given === 'action']
+          ];
+          const items = [P(x0 - 2, 602, 144, 116, '#F0F8F8', '#A8C0D0', { radius: 12 }), T(x0 - 2, 609, 144, title, 15, '#084868', { fw: 700 })];
+          const ys = [636, 676];
+          rows.forEach(([lab, col, sym, fill, fillP, isGiven], ri) => {
+            
+            const slots = ['t', 't+1'];
+            slots.forEach((sub, ci) => {
+              if (!sub) return;
+              const g = isGiven;
+              const tex = g ? `$${sym}_{${sub}}$` : `$\\tilde{${sym}}_{${sub}}$`;
+              items.push(BOX(x0 + 18 + ci * 62, ys[ri], tex, g ? fill : fillP, col, g ? TX : '#8A8F98', !g));
+            });
+          });
+          return items;
+        };
+        return [...mode(484, 'Joint Generation', 'none'), ...mode(629, 'Forward Dynamics', 'action'), ...mode(774, 'Inverse Dynamics', 'video')];
+      })(),
+      P(482, 726, 432, 220, '#F0F8F8', '#A8C0D0', { radius: 12 }), T(492, 733, 420, 'Multi-agent control beyond ego', 20, '#084868', { fw: 700, al: 'left' }),
+      ...(() => {
+        const agents = [['ego', '#2E3A8C', '#EEF0FA'], ['agent 1', '#1FA8A8', '#E6F6F6'], ['agent 2', '#E8641B', '#FDEFE6'], ['agent 3', '#C4287A', '#FBE8F1']];
+        const out = [];
+        const netX = 640, netY = 810, netW = 64, netH = 96;
+        agents.forEach(([name, c, bg], i) => {
+          const y = 776 + i * 44; const bx = 538, bw = 56, bh = 30;
+          out.push(T(482, y + 7, 54, name, 13, c, { fw: 700 }));
+          out.push(P(bx, y, bw, bh, bg, c, { radius: 8 }));
+          const shapes = [[[0, 14], [15, 11], [27, 4], [38, 2]], [[0, 13], [12, 4], [25, 10], [38, 2]], [[0, 15], [17, 12], [30, 7], [38, 1]], [[0, 11], [10, 7], [23, 12], [38, 2]]];
+          out.push(CV(bx + 9, y + 7, 40, 17, shapes[i], c, { sw: 2, arrow: true, dots: 2, dotR: 2.6, hollow: true, dotSpan: 0.42, headScale: 0.55 }));
+          const ty = netY + netH * (0.2 + 0.6 * i / 3);
+          const sx = bx + bw, sy = y + bh / 2, ex = netX - 6, ey = ty; const x0 = Math.min(sx, ex) - 4, y0 = Math.min(sy, ey) - 8, w = Math.abs(ex - sx) + 8, h = Math.abs(ey - sy) + 16;
+          const a = [sx - x0, sy - y0], b = [ex - x0, ey - y0], c1 = a[0] + (b[0] - a[0]) * 0.55, c2 = a[0] + (b[0] - a[0]) * 0.45, hl = 7, hw = 5;
+          out.push(S(x0, y0, w, h, [
+            { d: `M${a[0]} ${a[1]} C ${c1} ${a[1]}, ${c2} ${b[1]}, ${b[0] - hl * 0.6} ${b[1]}`, stroke: c, sw: 2.5 },
+            { d: `M${b[0] + 4} ${b[1]} L${b[0] - hl} ${b[1] - hw} L${b[0] - hl} ${b[1] + hw} Z`, fill: c, stroke: 'none' }
+          ], [], { vb: `0 0 ${w} ${h}` }));
+        });
+        // network box
+        out.push(P(netX, netY, netW, netH, '#F3EEFA', '#7A4BA6', { radius: 10 }));
+        const nodes = [[14, 26], [14, 70], [32, 16], [32, 48], [32, 80], [50, 34], [50, 62]];
+        const edges = [[0, 2], [0, 3], [0, 4], [1, 2], [1, 3], [1, 4], [2, 5], [2, 6], [3, 5], [3, 6], [4, 5], [4, 6]];
+        out.push(S(netX, netY, netW, netH, edges.map(([a, b]) => ({ d: `M${nodes[a][0]} ${nodes[a][1]} L${nodes[b][0]} ${nodes[b][1]}`, stroke: '#7A4BA6', sw: 1.5 })), nodes.map(([cx, cy]) => ({ cx, cy, r: 4.5, fill: '#FFFFFF', stroke: '#7A4BA6', sw: 1.8 })), { vb: `0 0 ${netW} ${netH}` }));
+        out.push(AH(netX + netW + 4, netY + netH / 2 - 10, 22, TX));
+        // scene frame (user image goes here)
+        // per-car trajectories over the scene (image origin 718,778)
+        const ox = 732, oy = 758, TJ = (pts, c, dash) => { const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]), x0 = Math.min(...xs) - 8, y0 = Math.min(...ys) - 8; return { ...CV(ox + x0, oy + y0, Math.max(...xs) - x0 + 8, Math.max(...ys) - y0 + 8, pts.map(p => [p[0] - x0, p[1] - y0]), c, { sw: 2.5, arrow: true, dots: 0, headScale: 0.6, dashStyle: dash ? 'dashed' : 'solid' }), z: 2 }; };
+        const SF = 0.9, TJ2 = (x, y, w, h, pts, c, dash) => ({ ...CV(ox + (x - ox) * SF, oy + (y - oy) * SF, w * SF, h * SF, pts.map(p => [p[0] * SF, p[1] * SF]), c, { sw: 2.5, arrow: true, dots: 0, headScale: 0.6, dashStyle: dash ? 'dashed' : 'solid' }), z: 2 });
+        out.push(TJ2(812, 826, 34, 88, [[8, 80], [8.9, 67.4], [13.6, 56], [25.6, 52.4], [38.2, 50.9], [59, 50]], '#2E3A8C'));          // ego
+        out.push(TJ2(840, 772, 19, 44, [[11, 36], [10.4, 32], [9.8, 28.1], [9.2, 24.1], [8.9, 20.1], [8, 8]], '#C4287A', true));      // agent 3 (pink)
+        out.push(TJ2(796, 830, 48, 48, [[8, 31], [16, 30.8], [23.9, 29.1], [31.1, 25.6], [36.3, 19.6], [43, 5]], '#1FA8A8', true));    // agent 1 (teal)
+        out.push(TJ2(823, 847, 70, 25, [[62, 8], [54.6, 8.7], [47.2, 9], [39.8, 8.9], [32.4, 9.3], [17, 11]], '#E8641B', true));       // agent 2 (orange)
+        out.push({ ...I(732, 758, 180, 180, 'multi-agent scene', BL), src: Component.SCENE_SRC, fit: 'contain', tbg: true, borderW: 0, radius: 0 });
+        return out;
+      })(),
+      // (d) — lavender-pink theme
+      { ...P(927, 555, 511, 408, '#F8F0F8', '#F8F0F8', { radius: '0 0 12px 0' }), ns: 1 }, { ...T(927, 563, 511, 'Driving and robotics', 32, '#5A2A5A', { fw: 700, al: 'center' }), ns: 1 },
+      { ...P(945, 605, 232, 334, '#FFFFFF', '#C8A8C0', { radius: 12 }), id: 'dr-card-945' }, T(945, 608, 232, 'Driving', 20, '#5A2A5A', { fw: 700, al: 'center' }),
+      I(961, 635, 200, 150, 'driving scene', '#C8A8C0'), I(961, 795, 84, 64, 'driving frame', '#C8A8C0'), I(1077, 795, 84, 64, 'driving frame', '#C8A8C0'), T(1041, 811, 40, '···', 22, '#C8A8C0', { fw: 700 }),
+      T(945, 868, 232, 'Command ADE $\\downarrow$', 18, '#5A2A5A'), T(945, 891, 232, '1.023 → 0.981 m', 28, TX, { fw: 700 }),
+      { ...P(1195, 605, 232, 334, '#FFFFFF', '#C8A8C0', { radius: 12 }), id: 'dr-card-1195' }, T(1195, 608, 232, 'Robotics', 20, '#5A2A5A', { fw: 700, al: 'center' }),
+      I(1211, 635, 200, 150, 'robotics scene', '#C8A8C0'), I(1211, 795, 84, 64, 'robotics frame', '#C8A8C0'), I(1327, 795, 84, 64, 'robotics frame', '#C8A8C0'), T(1291, 811, 40, '···', 22, '#C8A8C0', { fw: 700 }),
+      T(1195, 868, 232, 'WorldArena score $\\uparrow$', 18, '#5A2A5A'), T(1195, 891, 232, '58.65 → 61.75', 28, TX, { fw: 700 })
+    ];
+    // top row up (header moved out), bottom row down to make room for the centered title band
+    const shifted = body.map(it => ('y' in it) ? { ...it, y: it.y < 550 ? it.y - 80 : it.y + 7 } : it);
+    return [...Component.refineTypography(Component.harmonizeColors([...shifted, ...header].map(it => { if (!('y' in it) || ('from' in it)) return it; const o = { ...it, y: it.y < 460 ? it.y - 12 : it.y < 550 ? it.y - 70 : it.y - 80 }; if (it.y >= 550 && !it.ns && typeof it.x === 'number') o.x = it.x + (it.x < 470 ? 3 : it.x < 925 ? 0 : -2); delete o.ns; return o; }))), ...Component.perspDefaults()];
+  }
+  state = (() => { const sv = Component.loadSaved(); return { items: Component.siteImages(sv ? sv.items : Component.defaults()), sel: null, canvasW: sv ? sv.canvasW : 1450, canvasH: sv ? sv.canvasH : 496, fit: true, frame: sv ? sv.frame : false, font: sv && sv.font || '', bg: sv ? sv.bg : '#FFFFFF', showPanel: false, scale: 1, copyMsg: '', saveMsg: '' }; })();
+  past = []; future = [];
+  snap() { this.past.push(this.state.items); if (this.past.length > 100) this.past.shift(); this.future = []; }
+  undo = () => { if (!this.past.length) return; this.future.push(this.state.items); this.setState({ items: this.past.pop(), sel: null }); };
+  redo = () => { if (!this.future.length) return; this.past.push(this.state.items); this.setState({ items: this.future.pop(), sel: null }); };
+  componentDidMount() {
+    this.loadIdb();
+    this.ro = new ResizeObserver(() => this.measure()); this.ro.observe(this.wrapRef.current); this.measure();
+    this.applyStyles();
+    this.keyHandler = e => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !this.typing()) { e.preventDefault(); e.shiftKey ? this.redo() : this.undo(); return; } if ((e.key === 'Delete' || e.key === 'Backspace') && this.state.sel && !this.typing()) { e.preventDefault(); this.delSel(); } };
+    
+  }
+  typing() { const a = document.activeElement; return !!a && (a.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)); }
+  componentWillUnmount() { this.ro && this.ro.disconnect();  }
+  componentDidUpdate() { this.applyStyles(); }
+  measure() { const el = this.wrapRef.current; const w = el ? (el.clientWidth || (el.parentElement && el.parentElement.clientWidth) || this.state.canvasW) : this.state.canvasW; const s = this.state.fit ? Math.min(1, w / this.state.canvasW) : 1; const hh = Math.round(this.state.canvasH * s) + 'px'; if (el && el.style.height !== hh) requestAnimationFrame(() => { el.style.height = hh; }); if (Math.abs(s - this.state.scale) > 0.001) this.setState({ scale: s }); }
+  // data-* attrs carry live values; apply them as styles so the template stays paint-first
+  applyStyles() {
+    const root = this.canvasRef.current; if (!root) return;
+    root.style.width = this.state.canvasW + 'px'; root.style.height = this.state.canvasH + 'px'; root.style.background = this.state.bg;
+    root.style.border = this.state.frame ? '2px solid #D9D9D9' : 'none'; root.style.borderRadius = this.state.frame ? '28px' : '0';
+    const sc = this.scaleRef.current; if (sc) { sc.style.transform = `scale(${this.state.scale})`; sc.style.width = this.state.canvasW + 'px'; sc.style.height = (this.state.canvasH * this.state.scale) + 'px'; sc.parentElement.style.height = (this.state.canvasH * this.state.scale) + 'px'; }
+    root.querySelectorAll('[data-x]').forEach(el => { const u = v => /%$/.test(v) ? v : v + 'px'; el.style.left = u(el.dataset.x); el.style.top = u(el.dataset.y); });
+    root.querySelectorAll('[data-w]').forEach(el => { el.style.width = /%$/.test(el.dataset.w) ? el.dataset.w : el.dataset.w + 'px'; });
+    root.querySelectorAll('[data-rot]').forEach(el => { const r = parseFloat(el.dataset.rot || 0); el.style.transform = r ? `rotate(${r}deg)` : ''; el.style.transformOrigin = 'center'; });
+    root.querySelectorAll('[data-h]').forEach(el => { el.style.height = /%$/.test(el.dataset.h) ? el.dataset.h : el.dataset.h + 'px'; });
+    root.querySelectorAll('[data-fs]').forEach(el => { if (+el.dataset.fs) el.style.fontSize = el.dataset.fs + 'px'; });
+    root.querySelectorAll('[data-fw]').forEach(el => { el.style.fontWeight = el.dataset.fw; });
+    root.querySelectorAll('[data-fst]').forEach(el => { el.style.fontStyle = el.dataset.fst; });
+    root.querySelectorAll('[data-ff]').forEach(el => { el.style.fontFamily = el.dataset.ff && el.dataset.ff !== 'undefined' ? el.dataset.ff : ''; });
+    root.style.fontFamily = this.state.font || "system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif";
+    root.querySelectorAll('[data-col]').forEach(el => { el.style.color = el.dataset.col; });
+    root.querySelectorAll('[data-fg]').forEach(el => { el.style.color = el.dataset.fg; });
+    root.querySelectorAll('[data-fill]').forEach(el => { el.style.background = el.dataset.fill; });
+    root.querySelectorAll('[data-bg]').forEach(el => { el.style.background = el.dataset.bg; });
+    root.querySelectorAll('[data-stroke]').forEach(el => { el.style.borderColor = el.dataset.stroke; });
+    root.querySelectorAll('[data-dash]').forEach(el => { el.style.borderStyle = el.dataset.dash === 'true' ? 'dashed' : 'solid'; });
+    root.querySelectorAll('[data-split]').forEach(el => { if (el.dataset.split !== 'true') return; const lw = parseFloat(el.dataset.line || 0); el.style.background = lw > 0 ? `linear-gradient(to bottom right, ${el.dataset.fill} calc(50% - ${lw / 2}px), rgba(46,46,46,0.45) calc(50% - ${lw / 2}px), rgba(46,46,46,0.45) calc(50% + ${lw / 2}px), ${el.dataset.split2} calc(50% + ${lw / 2}px))` : `linear-gradient(to bottom right, ${el.dataset.fill} 50%, ${el.dataset.split2} 50%)`; });
+    root.querySelectorAll('[data-src]').forEach(el => { const f = el.dataset.fit || 'cover'; const sc = parseFloat(el.dataset.scale || 100) / 100; el.style.backgroundImage = el.dataset.src ? `url("${el.dataset.src}")` : 'none'; el.style.backgroundColor = el.dataset.tbg === 'false' ? '#fff' : 'transparent'; el.style.backgroundSize = f === 'fill' ? `${sc * 100}% ${sc * 100}%` : sc === 1 ? f : f === 'cover' ? `${sc * 100}% auto` : (el.dataset.ar && parseFloat(el.dataset.ar) < (el.offsetWidth / Math.max(1, el.offsetHeight)) ? `auto ${sc * 100}%` : `${sc * 100}% auto`); el.style.borderRadius = (el.dataset.rad || 8) + 'px'; el.style.borderWidth = (el.dataset.bw === undefined ? 2 : el.dataset.bw) + 'px'; });
+    root.querySelectorAll('[data-z]').forEach(el => { el.style.zIndex = el.dataset.z; });
+    root.querySelectorAll('[data-hit]').forEach(el => { el.style.pointerEvents = el.dataset.hit; });
+    root.querySelectorAll('[data-hitsvg]').forEach(el => { const none = el.dataset.hitsvg === 'none'; el.style.pointerEvents = none ? 'none' : 'auto'; el.querySelectorAll('path,circle').forEach(c => { c.style.pointerEvents = none ? 'visiblePainted' : ''; }); });
+    root.querySelectorAll('[data-prad]').forEach(el => { if (el.dataset.prad && el.dataset.prad !== 'undefined') el.style.borderRadius = /^[\d.]+$/.test(el.dataset.prad) ? el.dataset.prad + 'px' : el.dataset.prad; });
+    root.querySelectorAll('[data-round]').forEach(el => { el.style.borderRadius = el.dataset.round === 'true' ? '50%' : '8px'; });
+    root.querySelectorAll('[data-al]').forEach(el => { el.style.textAlign = el.dataset.al; });
+    document.querySelectorAll('[data-on]').forEach(el => { const on = el.dataset.on === 'true'; el.style.background = on ? '#E3ECF7' : '#fff'; el.style.borderColor = on ? '#3A6FD8' : '#cfd5e1'; });
+    root.querySelectorAll('[data-hid]').forEach(el => { el.style.display = el.dataset.hid === 'true' ? 'none' : ''; });
+    this.renderTex(root);
+  }
+  renderTex(root) {
+    if (!window.katex) { if (!this.texPoll) this.texPoll = setInterval(() => { if (window.katex) { clearInterval(this.texPoll); this.texPoll = null; this.applyStyles(); } }, 100); return; }
+    root.querySelectorAll('[data-tex]').forEach(el => {
+      if (el.isContentEditable) return; const src = el.dataset.tex || ''; if (el.dataset.rendered === src) return;
+      el.dataset.rendered = src; el.innerHTML = Component.richHtml(src, el.dataset.field === 'tex');
+    });
+  }
+
+  static async katexCss() {
+    if (Component._kcss) return Component._kcss;
+    const base = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/';
+    let css = await (await fetch(base + 'katex.min.css')).text();
+    const urls = [...new Set([...css.matchAll(/url\((fonts\/[^)]+?\.woff2)\)/g)].map(m => m[1]))];
+    for (const u of urls) {
+      try { const b = await (await fetch(base + u)).blob(); const d = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(b); }); css = css.split('url(' + u + ')').join('url(' + d + ')'); } catch (e) {}
+    }
+    css = css.replace(/url\(fonts\/[^)]+\.(woff|ttf)\) format\("(woff|truetype)"\),?/g, '').replace(/,\s*;/g, ';');
+    return (Component._kcss = css);
+  }
+  static richHtml(src, forceMath = false) {
+    const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\n/g, '<br>').replace(/\{color:(#[0-9A-Fa-f]{3,8})\}([\s\S]*?)\{\/color\}/g, '<span style="color:$1">$2</span>').replace(/\{grad:(#[0-9A-Fa-f]{3,8}),(#[0-9A-Fa-f]{3,8})\}([\s\S]*?)\{\/grad\}/g, '<span style="background:linear-gradient(90deg,$1,$2);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent">$3</span>');
+    const math = (t, display) => { try { return window.katex.renderToString(t, { output: 'html', throwOnError: false, displayMode: display }); } catch (e) { return esc(t); } };
+    if (forceMath && !/\$/.test(src)) return math(src, false);
+    if (!/\$/.test(src)) return (/\{(color|grad):/.test(src) || (src.indexOf('\\') === -1 && !/[\^_{}]/.test(src))) ? esc(src) : math(src, false);
+    return src.split(/(\$[^$]+\$)/g).map(p => p.startsWith('$') && p.endsWith('$') && p.length > 1 ? math(p.slice(1, -1), false) : esc(p)).join('');
+  }
+  upd(id, patch) { this.setState(s => ({ items: s.items.map(it => it.id === id ? { ...it, ...patch } : it) })); }
+  listen(move) {
+    const up = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up); };
+    window.addEventListener('pointermove', move); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
+  }
+  down = it => e => {
+    if (e.target.isContentEditable) return;
+    if (e.button === 2) { e.preventDefault(); e.stopPropagation(); this.setState({ sel: it.id }, () => this.delSel()); return; }
+    e.stopPropagation(); e.preventDefault();
+    if (this.pickLink(it)) return;
+    if (document.activeElement && document.activeElement.isContentEditable) document.activeElement.blur();
+    this.setState({ sel: it.id });
+    const sx = e.clientX, sy = e.clientY, ox = it.x, oy = it.y, sc = this.state.scale; let moved = false;
+    this.listen(ev => { if (!moved) { moved = true; this.snap(); } this.upd(it.id, { x: Math.round(ox + (ev.clientX - sx) / sc), y: Math.round(oy + (ev.clientY - sy) / sc) }); });
+  };
+  editOn = e => { const el = e.currentTarget; el.textContent = el.dataset.tex || ''; el.contentEditable = 'true'; el.focus(); const r = document.createRange(); r.selectNodeContents(el); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); };
+  editOff = id => e => { const el = e.currentTarget; el.contentEditable = 'false'; const v = el.innerText.replace(/\n$/, ''); el.dataset.rendered = ''; if (v !== (el.dataset.tex || '')) this.snap(); this.upd(id, { [el.dataset.field]: v }); this.forceUpdate(); };
+  clearSel = e => { this.closeMenus(); if (e.target === this.canvasRef.current) this.setState({ sel: null }); };
+  dupSel = () => { const it = this.state.items.find(i => i.id === this.state.sel); if (!it) return; this.snap(); const c = { ...it, id: 'i' + Date.now(), x: it.x + 20, y: it.y + 20 }; this.setState(s => ({ items: [...s.items, c], sel: c.id })); };
+  delSel = () => { if (!this.state.sel) return; this.snap(); this.setState(s => ({ items: s.items.filter(i => i.id !== s.sel), sel: null })); };
+  readImg(file, cb) { if (!file || !file.type.startsWith('image/')) return; const fr = new FileReader(); fr.onload = async () => { let d = fr.result; try { d = await Component.shrinkDataUrl(d, 1600, 1600); } catch (e) {} const im = new Image(); im.onload = () => cb(d, im.naturalWidth / im.naturalHeight); im.src = d; }; fr.readAsDataURL(file); }
+  applyImg = (id, src, ar) => { const it = this.state.items.find(i => i.id === id); if (!it) return; this.snap(); const p = { src, ar }; if (it.keepAR !== false && ar) p.h = Math.round(it.w / ar); this.upd(id, p); try { const ov = JSON.parse(localStorage.getItem(Component.SITE_KEY) || '{}'); ov[id] = src; localStorage.setItem(Component.SITE_KEY, JSON.stringify(ov)); } catch (e) {} };
+  pickFor = id => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.onchange = () => this.readImg(inp.files[0], (src, ar) => this.applyImg(id, src, ar)); inp.click(); };
+  replaceWithImg = (id, src, ar) => { const it = this.state.items.find(i => i.id === id); if (!it) return; this.snap(); const w = it.w, h = ar ? Math.round(w / ar) : it.h; const cx = it.x + it.w / 2, cy = it.y + it.h / 2; const img = { id: it.id, type: 'img', x: Math.round(cx - w / 2), y: Math.round(cy - h / 2), w, h, rot: it.rot || 0, src, label: 'image', color: '#8A8F98', tint: '#F4F4F4', stack: false, borderW: 0, tbg: true, fit: 'contain', keepAR: true }; this.setState(s => ({ items: s.items.map(i => i.id === id ? img : i) })); };
+  pickReplace = id => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.onchange = () => this.readImg(inp.files[0], (src, ar) => this.replaceWithImg(id, src, ar)); inp.click(); };
+  replaceSel = () => this.state.sel && this.pickReplace(this.state.sel);
+  iconHandlers = it => ({
+    dragOver: e => { e.preventDefault(); e.stopPropagation(); },
+    drop: e => { e.preventDefault(); e.stopPropagation(); this.readImg(e.dataTransfer.files[0], (src, ar) => this.replaceWithImg(it.id, src, ar)); },
+    pick: e => { e.stopPropagation(); this.pickReplace(it.id); }
+  });
+  imgHandlers = it => ({
+    dragOver: e => { e.preventDefault(); e.stopPropagation(); },
+    drop: e => { e.preventDefault(); e.stopPropagation(); this.readImg(e.dataTransfer.files[0], (src, ar) => this.applyImg(it.id, src, ar)); },
+    pick: e => { if (e.target.isContentEditable) return; e.stopPropagation(); this.pickFor(it.id); }
+  });
+  rotDown = e => {
+    e.stopPropagation(); e.preventDefault(); const it = this.state.items.find(i => i.id === this.state.sel); if (!it) return;
+    const r = this.canvasRef.current.getBoundingClientRect(), sc = this.state.scale; const w = it.w || 60, h = it.h || 60; const cx = r.left + (it.x + w / 2) * sc, cy = r.top + (it.y + h / 2) * sc;
+    const a0 = Math.atan2(e.clientY - cy, e.clientX - cx), r0 = it.rot || 0; let moved = false;
+    this.listen(ev => { if (!moved) { moved = true; this.snap(); } let deg = r0 + (Math.atan2(ev.clientY - cy, ev.clientX - cx) - a0) * 180 / Math.PI; if (ev.shiftKey) deg = Math.round(deg / 15) * 15; deg = Math.round(((deg + 180) % 360 + 360) % 360 - 180); this.upd(it.id, { rot: deg }); });
+  };
+  ptDown = (it, i) => e => {
+    e.stopPropagation(); e.preventDefault(); this.setState({ sel: it.id });
+    const sx = e.clientX, sy = e.clientY, ox = it.pts[i][0], oy = it.pts[i][1], sc = this.state.scale; let moved = false;
+    this.listen(ev => { if (!moved) { moved = true; this.snap(); } const cur = this.state.items.find(q => q.id === it.id); if (!cur) return; const pts = cur.pts.map((p, j) => j === i ? [Math.round(ox + (ev.clientX - sx) / sc), Math.round(oy + (ev.clientY - sy) / sc)] : p); this.upd(it.id, { pts }); });
+  };
+  addPt = () => { const it = this.state.items.find(i => i.id === this.state.sel); if (!it || it.type !== 'curve') return; this.snap(); const a = it.pts[it.pts.length - 2], b = it.pts[it.pts.length - 1]; const pts = [...it.pts.slice(0, -1), [Math.round((a[0] + b[0]) / 2), Math.round((a[1] + b[1]) / 2)], b]; this.upd(it.id, { pts }); };
+  delPt = () => { const it = this.state.items.find(i => i.id === this.state.sel); if (!it || it.type !== 'curve' || it.pts.length <= 2) return; this.snap(); this.upd(it.id, { pts: [...it.pts.slice(0, -2), it.pts[it.pts.length - 1]] }); };
+  addCurve = () => { this.snap(); const c = { id: 'i' + Date.now(), type: 'curve', x: 300, y: 300, w: 200, h: 80, pts: [[0, 60], [70, 10], [140, 20], [200, 60]], stroke: '#3A63A8', sw: 3.5, dashStyle: 'solid', arrow: true, dots: 0, dotR: 5, hollow: false }; this.setState(s => ({ items: [...s.items, c], sel: c.id })); };
+  pickSel = () => this.state.sel && this.pickFor(this.state.sel);
+  clearSelImg = () => { this.snap(); this.upd(this.state.sel, { src: '' }); };
+  addImg = () => { this.snap(); const c = { id: 'i' + Date.now(), type: 'img', x: 100, y: 100, w: 160, h: 110, label: 'drop image', color: '#8A8F98', tint: '#F4F4F4', stack: false }; this.setState(s => ({ items: [...s.items, c], sel: c.id })); };
+  setF = (k, parse) => e => { const v = parse ? parse(e) : e.target.value; this.snap(); this.upd(this.state.sel, { [k]: v }); };
+  numv = e => parseFloat(e.target.value) || 0; chkv = e => e.target.checked;
+  setSelSw = this.setF('sw', this.numv); setSelDashStyle = this.setF('dashStyle'); setSelArrow = this.setF('arrow', this.chkv); setSelDots = this.setF('dots', this.numv); setSelDotR = this.setF('dotR', this.numv); setSelHollow = this.setF('hollow', this.chkv);
+  setSelBorderW = this.setF('borderW', this.numv); setSelLine = this.setF('line', this.numv); setSelFit = this.setF('fit'); setSelArrowLen = e => { const it = this.state.items.find(i => i.id === this.state.sel); if (!it || it.kind !== 'arrow') return; const len = Math.max(12, parseFloat(e.target.value) || 12); this.snap(); this.upd(it.id, { alen: len, ...Component.arrowGeom(len, it.acol, it.dir, it.adash) }); }; setSelRot = this.setF('rot', this.numv); setSelScale = this.setF('scale', this.numv); setSelTbg = this.setF('tbg', this.chkv); setSelRadius = this.setF('radius', this.numv); setSelKeepAR = this.setF('keepAR', this.chkv);
+  setSelW = e => { const it = this.state.items.find(i => i.id === this.state.sel); if (!it) return; const w = this.numv(e); const p = { w }; const r = this.ratioOf(it); if (this.lockAR(it) && r && w > 0) { p.h = Math.max(1, Math.round(w / r)); p.ar = r; } this.snap(); this.upd(it.id, p); }; setSelH = e => { const it = this.state.items.find(i => i.id === this.state.sel); if (!it) return; const h = this.numv(e); const p = { h }; const r = this.ratioOf(it); if (this.lockAR(it) && r && h > 0) { p.w = Math.max(1, Math.round(h * r)); p.ar = r; } this.snap(); this.upd(it.id, p); };
+  lockAR = it => it.type === 'img' ? it.keepAR !== false : !!it.lockAR;
+  arText = it => { if (!it || !it.w || !it.h) return ''; const r = this.lockAR(it) && it.ar > 0 ? it.ar : it.w / it.h; const common = [[1, 1], [4, 3], [3, 2], [16, 9], [16, 10], [3, 4], [2, 3], [9, 16], [21, 9], [5, 4], [4, 5]]; for (const [a, b] of common) if (Math.abs(r - a / b) < 0.004) return a + ':' + b; return r.toFixed(3); };
+  parseAR = s => { s = String(s).trim(); let m = s.match(/^(\d+(?:\.\d+)?)\s*[:\/x×]\s*(\d+(?:\.\d+)?)$/i); if (m) { const a = +m[1], b = +m[2]; return a > 0 && b > 0 ? a / b : 0; } const v = parseFloat(s); return v > 0 ? v : 0; };
+  setSelARText = e => { const it = this.state.items.find(i => i.id === this.state.sel); if (!it) return; const r = this.parseAR(e.target.value); if (!r) { e.target.value = this.arText(it); return; } const h = Math.max(1, Math.round(it.w / r)); if (h === it.h) return; this.snap(); this.upd(it.id, { h, ar: r, ...(it.type === 'img' ? { keepAR: true } : { lockAR: true }) }); };
+  arKey = e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } }; setSelLockAR = e => { const it = this.state.items.find(i => i.id === this.state.sel); if (!it) return; this.snap(); this.upd(it.id, { ...(it.type === 'img' ? { keepAR: e.target.checked } : { lockAR: e.target.checked }), ar: e.target.checked && it.w && it.h ? it.w / it.h : it.ar }); };
+  ratioOf = it => (it.ar > 0 ? it.ar : (it.w > 0 && it.h > 0 ? it.w / it.h : 0)); setSelFs = this.setF('fs', this.numv);
+  setSelBold = e => { this.snap(); this.upd(this.state.sel, { fw: e.target.checked ? 700 : 400 }); };
+  setSelStroke = this.setF('stroke'); setSelDashed = this.setF('dashed', this.chkv); setSelNoise = this.setF('noise', this.chkv); setSelStack = this.setF('stack', this.chkv); setSelRound = this.setF('round', this.chkv);
+  setSelText = e => { const it = this.state.items.find(i => i.id === this.state.sel); if (!it) return; this.snap(); this.upd(it.id, { [Component.textField(it)]: e.target.value }); };
+  static textField(it) { return it.type === 'token' ? 'tex' : it.type === 'img' ? 'label' : (it.type === 'box' || it.type === 'callout') ? 'title' : 'text'; }
+  setSelX = e => this.snap() || this.upd(this.state.sel, { x: parseFloat(e.target.value) || 0 });
+  setSelY = e => this.snap() || this.upd(this.state.sel, { y: parseFloat(e.target.value) || 0 });
+  setSelColor = e => { const it = this.state.items.find(i => i.id === this.state.sel); if (!it) return; const c = e.target.value; const p = {}; this.snap(); if ('color' in it) p.color = c; if (it.type === 'curve' || it.type === 'link') p.stroke = c; if (it.type === 'slider') p.color = c; if (it.type === 'svg') p.paths = it.paths.map(q => ({ ...q, stroke: q.stroke === 'none' ? 'none' : c, fill: q.fill && q.fill !== 'none' ? c : q.fill })), p.dots = it.dots.map(d => ({ ...d, fill: c })); this.upd(it.id, p); };
+  setSelSplit = e => this.snap() || this.upd(this.state.sel, { split: e.target.checked });
+  setSelFill = e => this.snap() || this.upd(this.state.sel, { fill: e.target.value });
+  setSelFill2 = e => this.snap() || this.upd(this.state.sel, { fill2: e.target.value });
+  resetSel = () => { const it = this.state.items.find(i => i.id === this.state.sel); if (!it) return; const d = Component.defaults().find(i => i.id === it.id); if (!d) { this.flash('No default for this component (it was added later)'); return; } this.snap(); this.setState(s => ({ items: s.items.map(i => i.id === it.id ? d : i) })); this.flash('Component reset'); };
+  knobDown = it => e => { e.stopPropagation(); e.preventDefault(); this.setState({ sel: it.id }); const sx = e.clientX, f0 = it.frac, sc = this.state.scale; let moved = false; this.listen(ev => { if (!moved) { moved = true; this.snap(); } const f = Math.max(0, Math.min(1, f0 + (ev.clientX - sx) / sc / it.w)); this.upd(it.id, { frac: +f.toFixed(3) }); }); };
+  setSelFrac = e => { this.snap(); this.upd(this.state.sel, { frac: +e.target.value }); };
+  linkDown = it => e => { if (Component.VIEW_ONLY) return; if (e.button === 2) { e.preventDefault(); e.stopPropagation(); this.setState({ sel: it.id }, () => this.delSel()); return; } e.stopPropagation(); e.preventDefault(); this.setState({ sel: it.id }); };
+  startLink = () => this.setState(s => ({ linkMode: s.linkMode ? 0 : 1, linkFrom: null, copyMsg: s.linkMode ? '' : 'Click the source element (a waypoint curve, frame, box…)' }));
+  pickLink = it => { if (this.state.linkMode === 1) { this.setState({ linkMode: 2, linkFrom: it.id, copyMsg: 'Now click the target element' }); return true; } if (this.state.linkMode === 2) { if (it.id !== this.state.linkFrom) { this.snap(); const from = this.state.items.find(i => i.id === this.state.linkFrom); const l = { id: 'i' + Date.now(), type: 'link', from: { id: this.state.linkFrom, dot: from && from.type === 'curve' ? 0 : undefined }, to: { id: it.id }, stroke: '#3A6FD8', sw: 2.5, dashStyle: 'dashed', mark: '', arrow: false }; this.setState(s => ({ items: [...s.items, l], sel: l.id, linkMode: 0, linkFrom: null, copyMsg: 'Connector added' })); } return true; } return false; };
+  setSelMark = e => { this.snap(); this.upd(this.state.sel, { mark: e.target.checked ? 'x' : '' }); };
+  panelRef = React.createRef();
+  panelDown = e => { if (e.target.tagName === 'BUTTON') return; const p = this.panelRef.current; if (!p) return; e.preventDefault(); const r = p.getBoundingClientRect(); const sx = e.clientX - r.left, sy = e.clientY - r.top; p.style.right = 'auto'; this.listen(ev => { p.style.left = Math.max(0, Math.min(window.innerWidth - r.width, ev.clientX - sx)) + 'px'; p.style.top = Math.max(0, Math.min(window.innerHeight - 40, ev.clientY - sy)) + 'px'; }); };
+  setSelItalic = e => { this.snap(); this.upd(this.state.sel, { fst: e.target.checked ? 'italic' : 'normal' }); };
+  setSelFont = this.setF('ff');
+  setGlobalFont = e => this.setState({ font: e.target.value });
+  togglePanel = () => this.setState(s => ({ showPanel: !s.showPanel }));
+  perspVals(items) {
+    const all = items.filter(i => i.type === 'persp'); const sel = this.state.perspSel || 'all'; const cur = all.find(g => g.id === sel) || all[0] || {};
+    const pct = v => Math.round((v == null ? 0 : v) * 100);
+    return { perspAnyOn: all.some(g => g.on !== false), perspSel: sel, perspOpts: all.map(g => ({ id: g.id, label: g.label || g.id })), pgOn: cur.on !== false, pgVx: pct(cur.vx == null ? 0.5 : cur.vx), pgHy: pct(cur.hy == null ? 0.14 : cur.hy), pgGrid: cur.grid !== false, pgRays: cur.rays == null ? 13 : cur.rays, pgDepths: cur.depths == null ? 10 : cur.depths, pgGop: cur.gop == null ? 0.14 : cur.gop, pgGsw: cur.gsw || 1, pgCol: cur.stroke || '#8FA4BF', pgHorizon: cur.horizon !== false, pgStreaks: !!cur.streaks, pgScount: cur.scount == null ? 22 : cur.scount, pgSop: cur.sop == null ? 0.12 : cur.sop, pgScol: cur.color || '#8FA4BF', pgGlow: cur.glow == null ? 0 : cur.glow, pgPadT: cur.padT || 0, pgPadB: cur.padB || 0, setPgPadT: e => this.updPersp(sel, { padT: Math.max(0, parseInt(e.target.value) || 0) }), setPgPadB: e => this.updPersp(sel, { padB: Math.max(0, parseInt(e.target.value) || 0) }),
+      setPerspSel: e => this.setState({ perspSel: e.target.value }), setPerspAllOn: e => this.updPersp(null, { on: e.target.checked }), setPgOn: e => this.updPersp(sel, { on: e.target.checked }),
+      setPgVx: e => this.updPersp(sel, { vx: (parseFloat(e.target.value) || 0) / 100 }), setPgHy: e => this.updPersp(sel, { hy: (parseFloat(e.target.value) || 0) / 100 }), setPgGrid: e => this.updPersp(sel, { grid: e.target.checked }), setPgRays: e => this.updPersp(sel, { rays: Math.max(0, parseInt(e.target.value) || 0) }), setPgDepths: e => this.updPersp(sel, { depths: Math.max(0, parseInt(e.target.value) || 0) }), setPgGop: e => this.updPersp(sel, { gop: Math.max(0, Math.min(1, parseFloat(e.target.value) || 0)) }), setPgGsw: e => this.updPersp(sel, { gsw: Math.max(0.2, parseFloat(e.target.value) || 1) }), setPgCol: e => this.updPersp(sel, { stroke: e.target.value }), setPgHorizon: e => this.updPersp(sel, { horizon: e.target.checked }), setPgStreaks: e => this.updPersp(sel, { streaks: e.target.checked }), setPgScount: e => this.updPersp(sel, { scount: Math.max(0, parseInt(e.target.value) || 0) }), setPgSop: e => this.updPersp(sel, { sop: Math.max(0, Math.min(1, parseFloat(e.target.value) || 0)) }), setPgScol: e => this.updPersp(sel, { color: e.target.value }), setPgGlow: e => this.updPersp(sel, { glow: Math.max(0, Math.min(1, parseFloat(e.target.value) || 0)) }),
+      addPerspToSel: () => { const p = this.state.items.find(i => i.id === this.state.sel && i.type === 'panel'); if (!p) { this.flash('Select a panel first'); return; } const g = { ...Component.perspDefaults()[1], id: 'persp-' + Date.now(), label: 'Panel @ ' + p.x + ',' + p.y, x: p.x, y: p.y, w: p.w, h: p.h, radius: p.radius == null ? 16 : p.radius, color: p.stroke && p.stroke !== p.fill ? p.stroke : '#8FA4BF' }; this.snap(); this.setState(s => ({ items: [...s.items, g], perspSel: g.id })); },
+      delPersp: () => { this.snap(); this.setState(s => ({ items: s.items.filter(i => !(i.type === 'persp' && (sel === 'all' || i.id === sel))), perspSel: 'all' })); } };
+  }
+  updPersp(sel, patch) { this.snap(); this.setState(s => ({ items: s.items.map(i => i.type === 'persp' && (!sel || sel === 'all' || i.id === sel) ? { ...i, ...patch } : i) })); }
+  imgScale() { const v = this.state.imgScale != null ? this.state.imgScale : (() => { try { return parseFloat(localStorage.getItem(Component.KEY + '-imgscale') || '2'); } catch (e) { return 2; } })(); return isNaN(v) ? 2 : v; }
+  setImgScale = e => { const v = parseFloat(e.target.value); this.setState({ imgScale: v }); try { localStorage.setItem(Component.KEY + '-imgscale', String(v)); } catch (e2) {} };
+  resetAll = () => { try { localStorage.removeItem(Component.KEY); } catch (e) {} Component.idbDel().catch(() => {}); this.snap(); this.setState({ items: Component.defaults(), sel: null, canvasW: 1450, canvasH: 898, bg: '#FFFFFF', frame: false }, () => this.measure()); };
+  setCanvasW = e => this.setState({ canvasW: Math.max(200, parseInt(e.target.value) || 1450) }, () => this.measure());
+  setCanvasH = e => this.setState({ canvasH: Math.max(200, parseInt(e.target.value) || 496) });
+  setFit = e => this.setState({ fit: e.target.checked }, () => this.measure());
+  setFrame = e => this.setState({ frame: e.target.checked });
+  setBg = e => this.setState({ bg: e.target.value });
+  async exportSvg() {
+    const css = await Component.katexCss();
+    const src = this.canvasRef.current, W = this.state.canvasW, H = this.state.canvasH;
+    const clone = src.cloneNode(true);
+    clone.querySelectorAll('[data-ui]').forEach(n => n.remove());
+    clone.querySelectorAll('[contenteditable]').forEach(n => n.removeAttribute('contenteditable'));
+    clone.querySelectorAll('*').forEach(n => { n.style.cursor = ''; });
+    await Component.inlineImages(clone); if (this.imgScale()) await Component.shrinkImages(clone, this.imgScale());
+    clone.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+    const html = new XMLSerializer().serializeToString(clone);
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><foreignObject x="0" y="0" width="${W}" height="${H}"><div xmlns="http://www.w3.org/1999/xhtml"><style>${css}</style>${html}</div></foreignObject></svg>`;
+  }
+  static async toDataUrl(url) { if (!url || /^data:/.test(url)) return url; if (Component._durl && Component._durl[url]) return Component._durl[url]; const b = await (await fetch(url)).blob(); const d = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(b); }); (Component._durl = Component._durl || {})[url] = d; return d; }
+  static async shrinkDataUrl(d, maxW, maxH, opts = {}) {
+    if (!/^data:image\/(png|jpe?g|webp)/i.test(d)) return d;
+    const im = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = d; });
+    const k = Math.min(1, maxW / im.naturalWidth, maxH / im.naturalHeight);
+    if (k >= 1 && !opts.force) return d;
+    const w = Math.max(1, Math.round(im.naturalWidth * k)), h = Math.max(1, Math.round(im.naturalHeight * k));
+    const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(im, 0, 0, w, h);
+    let alpha = false; if (!/^data:image\/jpe?g/i.test(d)) { const px = g.getImageData(0, 0, w, h).data; for (let i = 3; i < px.length; i += 4 * 7) if (px[i] < 250) { alpha = true; break; } }
+    const out = alpha ? c.toDataURL('image/png') : c.toDataURL('image/jpeg', opts.q || 0.85);
+    return out.length < d.length ? out : d;
+  }
+  static async shrinkImages(root, dpr = 2) {
+    const jobs = [];
+    const box = el => { let w = parseFloat(el.getAttribute('data-w')) || el.offsetWidth || 0, h = parseFloat(el.getAttribute('data-h')) || el.offsetHeight || 0; let p = el; while ((!w || !h) && p && p !== root) { p = p.parentElement; if (p) { w = parseFloat(p.getAttribute('data-w')) || w; h = parseFloat(p.getAttribute('data-h')) || h; } } return [Math.max(64, (w || 400) * dpr), Math.max(64, (h || 300) * dpr)]; };
+    root.querySelectorAll('[style]').forEach(el => { const bi = el.style.backgroundImage; const m = bi && bi.match(/url\(["']?(data:[^"')]+)["']?\)/); if (m && m[1].length > 20000) { const [mw, mh] = box(el); jobs.push(Component.shrinkDataUrl(m[1], mw, mh).then(d => { el.style.backgroundImage = 'url("' + d + '")'; }).catch(() => {})); } });
+    root.querySelectorAll('img').forEach(el => { const s = el.getAttribute('src'); if (s && /^data:/.test(s) && s.length > 20000) { const [mw, mh] = box(el); jobs.push(Component.shrinkDataUrl(s, mw, mh).then(d => el.setAttribute('src', d)).catch(() => {})); } });
+    await Promise.all(jobs);
+  }
+  static async inlineImages(root) {
+    const jobs = [];
+    root.querySelectorAll('[style]').forEach(el => { const bi = el.style.backgroundImage; const m = bi && bi.match(/url\(["']?([^"')]+)["']?\)/); if (m && !/^data:/.test(m[1])) jobs.push(Component.toDataUrl(m[1]).then(d => { el.style.backgroundImage = 'url("' + d + '")'; }).catch(() => {})); });
+    root.querySelectorAll('img').forEach(el => { const s = el.getAttribute('src'); if (s && !/^data:/.test(s)) jobs.push(Component.toDataUrl(s).then(d => el.setAttribute('src', d)).catch(() => {})); });
+    root.querySelectorAll('image').forEach(el => { const s = el.getAttribute('href') || el.getAttribute('xlink:href'); if (s && !/^data:/.test(s)) jobs.push(Component.toDataUrl(s).then(d => el.setAttribute('href', d)).catch(() => {})); });
+    await Promise.all(jobs);
+  }
+  static async makePdf(canvas, W, H) {
+    const pw = canvas.width, ph = canvas.height, g = canvas.getContext('2d'); const px = g.getImageData(0, 0, pw, ph).data; const rgb = new Uint8Array(pw * ph * 3);
+    for (let i = 0, j = 0; i < px.length; i += 4, j += 3) { rgb[j] = px[i]; rgb[j + 1] = px[i + 1]; rgb[j + 2] = px[i + 2]; }
+    let data, filter;
+    if (typeof CompressionStream !== 'undefined') { data = new Uint8Array(await new Response(new Blob([rgb]).stream().pipeThrough(new CompressionStream('deflate'))).arrayBuffer()); filter = '/FlateDecode'; }
+    else { const b = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.95)); data = new Uint8Array(await b.arrayBuffer()); filter = '/DCTDecode'; }
+    const enc = new TextEncoder(), parts = [], offs = []; let len = 0; const push = s => { const u = typeof s === 'string' ? enc.encode(s) : s; parts.push(u); len += u.length; };
+    push('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
+    const obj = (n, body) => { offs[n] = len; push(n + ' 0 obj\n' + body + '\nendobj\n'); };
+    obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+    obj(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+    obj(3, '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + W + ' ' + H + '] /Resources << /XObject << /Im0 5 0 R >> >> /Contents 4 0 R >>');
+    const content = 'q ' + W + ' 0 0 ' + H + ' 0 0 cm /Im0 Do Q';
+    obj(4, '<< /Length ' + content.length + ' >>\nstream\n' + content + '\nendstream');
+    offs[5] = len; push('5 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + pw + ' /Height ' + ph + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter ' + filter + ' /Length ' + data.length + ' >>\nstream\n'); push(data); push('\nendstream\nendobj\n');
+    const xref = len; let x = 'xref\n0 6\n0000000000 65535 f \n'; for (let i = 1; i <= 5; i++) x += String(offs[i]).padStart(10, '0') + ' 00000 n \n';
+    push(x + 'trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n' + xref + '\n%%EOF\n');
+    return new Blob(parts, { type: 'application/pdf' });
+  }
+  async exportParts() { return [await this.exportSvg(), this.state.canvasW, this.state.canvasH, 3]; }
+  async toPngBlob(svg, W, H, k) { const im = new Image(); await new Promise((r, j) => { im.onload = r; im.onerror = j; im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); }); const c = document.createElement('canvas'); c.width = W * k; c.height = H * k; const g = c.getContext('2d'); g.scale(k, k); g.drawImage(im, 0, 0); return new Promise(r => c.toBlob(r, 'image/png')); }
+  copyPng = async () => { this.closeMenus(); try { const [svg, W, H, k] = await this.exportParts(); const p = this.toPngBlob(svg, W, H, k); await navigator.clipboard.write([new ClipboardItem({ 'image/png': p })]); this.flash('PNG copied'); } catch (e) { this.flash('Copy failed: ' + e.message); } };
+  copySvg = async () => { this.closeMenus(); try { const [svg] = await this.exportParts(); await navigator.clipboard.writeText(svg); this.flash('SVG copied'); } catch (e) { this.flash('Copy failed: ' + e.message); } };
+  flash(m) { this.setState({ copyMsg: m }); clearTimeout(this._fl); this._fl = setTimeout(() => this.setState({ copyMsg: '' }), 2500); }
+  dl(url, name) { const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); }
+  toggleSaveMenu = () => this.setState(s => ({ saveMenu: !s.saveMenu, copyMenu: false }));
+  toggleCopyMenu = () => this.setState(s => ({ copyMenu: !s.copyMenu, saveMenu: false }));
+  closeMenus() { if (this.state.saveMenu || this.state.copyMenu) this.setState({ saveMenu: false, copyMenu: false }); }
+  savePdf = async () => {
+    this.closeMenus();
+    try {
+      this.flash('Building PDF…');
+      const [svg, W, H, k] = await this.exportParts();
+      const im = new Image(); await new Promise((r, j) => { im.onload = r; im.onerror = j; im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); });
+      const c = document.createElement('canvas'); c.width = W * k; c.height = H * k; const g = c.getContext('2d'); g.fillStyle = '#FFFFFF'; g.fillRect(0, 0, c.width, c.height); g.scale(k, k); g.drawImage(im, 0, 0);
+      const blob = await Component.makePdf(c, W, H); const url = URL.createObjectURL(blob); this.dl(url, 'CtrlWAM-teaser-figure-v5.pdf'); setTimeout(() => URL.revokeObjectURL(url), 5000);
+      this.flash('PDF saved (' + Math.round(blob.size / 1024) + ' KB)');
+    } catch (e) { this.flash('PDF failed: ' + e.message); }
+  };
+  savePdfVector = async () => {
+    this.closeMenus();
+    try {
+      const css = await Component.katexCss();
+      const src = this.canvasRef.current, W = this.state.canvasW, H = this.state.canvasH;
+      const clone = src.cloneNode(true);
+      clone.querySelectorAll('[data-ui]').forEach(n => n.remove());
+      clone.querySelectorAll('[contenteditable]').forEach(n => n.removeAttribute('contenteditable'));
+      clone.querySelectorAll('*').forEach(n => { n.style.cursor = ''; });
+      await Component.inlineImages(clone); if (this.imgScale()) await Component.shrinkImages(clone, this.imgScale());
+      clone.style.position = 'relative'; clone.style.left = '0'; clone.style.top = '0'; clone.style.margin = '0'; clone.style.transform = 'none'; clone.style.border = 'none'; clone.style.borderRadius = '0';
+      const font = this.state.font || "system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif";
+      const win = window.open('', '_blank'); if (!win) throw new Error('popup blocked');
+      win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>CtrlWAM teaser figure</title><style>' + css + '@page{size:' + W + 'px ' + H + 'px;margin:0}html,body{margin:0;padding:0;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}body{width:' + W + 'px;height:' + H + 'px;overflow:hidden;font-family:' + font + '}.katex{line-height:1 !important}.katex .strut{display:none !important}</style></head><body></body></html>');
+      win.document.body.appendChild(win.document.importNode(clone, true));
+      win.document.close();
+      const go = () => setTimeout(() => win.print(), 400);
+      if (win.document.fonts && win.document.fonts.ready) win.document.fonts.ready.then(go); else go();
+      this.flash('In the print dialog choose “Save as PDF”, paper = default, margins = none');
+    } catch (e) { this.flash('PDF failed: ' + e.message); }
+  };
+  saveSvg = async () => { this.closeMenus(); const b = new Blob([await this.exportSvg()], { type: 'image/svg+xml' }); const u = URL.createObjectURL(b); this.dl(u, 'CtrlWAM-teaser-figure-v5.svg'); setTimeout(() => URL.revokeObjectURL(u), 2000); };
+  savePng = async () => {
+    this.closeMenus();
+    const svg = await this.exportSvg(), W = this.state.canvasW, H = this.state.canvasH, k = 3;
+    const im = new Image();
+    im.onload = () => { const c = document.createElement('canvas'); c.width = W * k; c.height = H * k; const g = c.getContext('2d'); g.scale(k, k); g.drawImage(im, 0, 0); this.dl(c.toDataURL('image/png'), 'CtrlWAM-teaser-figure-v5.png'); };
+    im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  };
+  renderVals() {
+    const { items, sel, canvasW, canvasH, fit, frame, bg, showPanel } = this.state; const C2 = Component.C;
+    const wrap = it => ({ ...it, down: this.down(it), editOn: this.editOn, editOff: this.editOff(it.id) });
+    const by = t => items.filter(i => i.type === t).map(wrap);
+    const tokens = by('token').map(k => ({ ...k, dashed: String(k.dashed), round: String(!!k.round), split: String(!!k.split), line: k.line || 0, stack: !!k.stack, noise: !!k.noise, dots: k.dots || Component.noiseDots(k.id), fill2: k.fill2 || C2.b.fill }));
+    const boxes = by('box').map(b => ({ ...b, hasSub: !!b.sub, dashed: String(!!b.dashed), radius: b.radius == null ? 12 : b.radius }));
+    const legends = by('legend').map(l => ({ ...l, dashed: String(l.dashed), fs: l.fs || 19 }));
+    const svgs = by('svg').map(s => ({ ...s, ...(s.vb ? this.iconHandlers(s) : {}), rot: s.rot || 0, z: s.z || 0, hit: s.z ? 'none' : 'auto', vb: s.vb || `0 0 ${s.w} ${s.h}`, paths: s.paths.map(p => ({ fill: 'none', dash: undefined, ...p })) }));
+    const selIt = items.find(i => i.id === sel);
+    const dims = it => { if (!it) return { x: 0, y: 0, w: 0, h: 0 }; if (it.type === 'link') { const b = this._linkBox && this._linkBox[it.id]; return b || { w: 0, h: 0 }; } if (it.type === 'slider') return { w: it.w, h: 32 }; if (it.type === 'token') return { w: 60, h: 60 }; if (it.type === 'panel') return { w: it.w, h: it.h }; if (it.type === 'text') return { w: it.w, h: it.fs * 1.3 }; if (it.type === 'legend') return { w: 220, h: 30 }; return { w: it.w, h: it.h }; };
+    const d = dims(selIt);
+    this._linkBox = {};
+    const links = items.filter(i => i.type === 'link').map(l => { const g = Component.linkGeom(l, items); if (!g) return null; const [p1, p2] = [g.p1, g.p2]; const x = Math.min(p1[0], p2[0]) - 12, y = Math.min(p1[1], p2[1]) - 12, w = Math.abs(p2[0] - p1[0]) + 24, h = Math.abs(p2[1] - p1[1]) + 24; this._linkBox[l.id] = { x: x + 8, y: y + 8, w: w - 16, h: h - 16 }; const a = [p1[0] - x, p1[1] - y], b = [p2[0] - x, p2[1] - y]; const sw = l.sw || 2.5; const ang = Math.atan2(b[1] - a[1], b[0] - a[0]); const hl = l.arrow ? 6 + sw * 2 : 0; const e = [b[0] - Math.cos(ang) * hl * 0.8, b[1] - Math.sin(ang) * hl * 0.8]; const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2, r = 9; const ds = l.dashStyle === 'dashed' ? `${sw * 3} ${sw * 2.2}` : l.dashStyle === 'dotted' ? `0.1 ${sw * 2.6}` : undefined; const hs = hl * 0.6; const pt = (dx, dy) => `${(b[0] + dx * Math.cos(ang) - dy * Math.sin(ang)).toFixed(1)} ${(b[1] + dx * Math.sin(ang) + dy * Math.cos(ang)).toFixed(1)}`; return { ...l, down: this.linkDown(l), x, y, w, h, z: sel === l.id ? 3 : 0, vb: `0 0 ${w} ${h}`, d: `M${a[0].toFixed(1)} ${a[1].toFixed(1)} L${e[0].toFixed(1)} ${e[1].toFixed(1)}`, dashArr: ds, sw, markD: l.mark === 'x' ? `M${mx - r} ${my - r} L${mx + r} ${my + r} M${mx + r} ${my - r} L${mx - r} ${my + r}` : l.mark === 'check' ? `M${mx - r} ${my} L${mx - r * 0.3} ${my + r * 0.8} L${mx + r} ${my - r * 0.8}` : '', arrowD: l.arrow ? `M${pt(0, 0)} L${pt(-hl, -hs)} L${pt(-hl, hs)} Z` : '' }; }).filter(Boolean);
+    return {
+      sliders: by('slider').map(s => ({ ...s, h: 32, vb: `0 0 ${s.w} 32`, track: s.track || '#D9DEE6', fillW: Math.round(s.w * (s.frac == null ? 0.5 : s.frac)), down: this.down(s), knobDown: this.knobDown(s) })), selIsSlider: !!selIt && selIt.type === 'slider', selFrac: selIt && selIt.frac != null ? selIt.frac : 0.5, setSelFrac: this.setSelFrac,
+      links, selIsLink: !!selIt && selIt.type === 'link', selMark: !!(selIt && selIt.mark === 'x'), setSelMark: this.setSelMark, startLink: this.startLink, linkMode: String(!!this.state.linkMode), linkLabel: this.state.linkMode ? 'Cancel link' : '+ Link',
+      curves: by('curve').map(cv => { const g = Component.curveGeom(cv); const ds = cv.dashStyle === 'dashed' ? `${cv.sw * 3} ${cv.sw * 2.2}` : cv.dashStyle === 'dotted' ? `0.1 ${cv.sw * 2.6}` : undefined; return { ...cv, ...g, vb: `0 0 ${cv.w} ${cv.h}`, dashArr: ds, z: sel === cv.id ? 3 : (cv.z || 0), handles: sel === cv.id ? cv.pts.map((p, i) => ({ x: p[0], y: p[1], down: this.ptDown(cv, i) })) : [] }; }),
+      panels: by('panel').map(p => ({ ...p, dashed: String(!!p.dashed) })), texts: by('text').map(t => ({ ...t, rot: t.rot || 0 })), tokens, imgs: by('img').map(m => { const ic = m.icon || (/driving/i.test(m.label || '') ? 'car' : /robot/i.test(m.label || '') ? 'robot' : ''); const ip = ic === 'car' ? Component.CAR_PATHS_B : ic === 'robot' ? Component.ROBOT_PATHS : []; const sm = ic === 'robot' && /frame/i.test(m.label || '') && m.iconSmall !== false && (m.iconSmall === true || m.y < 550); return { ...m, ...this.imgHandlers(m), hasIcon: !!ic, iconX: sm ? '60%' : '15%', iconY: sm ? '3%' : '15%', iconW: sm ? '38%' : '70%', iconH: sm ? '38%' : '70%', iconVb: ic === 'car' ? '0 0 120 64' : '0 0 120 100', iconPaths: ip.map(p => ({ fill: 'none', ...p })), dashed: String(!!m.dashed), phDash: m.dashed == null ? (ic ? 'false' : 'true') : String(!!m.dashed), phFill: ic ? '#FFFFFF' : 'rgba(255,255,255,0.85)', hasSrc: !!m.src, noSrc: !m.src, rot: m.rot || 0, scale: m.scale == null ? 100 : m.scale, tbg: String(m.tbg !== false), borderW: m.borderW == null ? 2 : m.borderW, fit: m.fit || 'cover', radius: m.radius == null ? 8 : m.radius }; }), svgs, boxes, callouts: by('callout'), legends,
+      persps: items.filter(i => i.type === 'persp').map(g => ({ ...g, ...Component.perspGeom(g) })), ...this.perspVals(items),
+      addCurve: this.addCurve, addPt: this.addPt, delPt: this.delPt, selIsCurve: !!selIt && selIt.type === 'curve', selSw: selIt && selIt.sw || 3, selDashStyle: selIt && selIt.dashStyle || 'solid', selArrow: !!(selIt && selIt.arrow), selDots: selIt && selIt.dots || 0, selDotR: selIt && selIt.dotR || 5, selHollow: !!(selIt && selIt.hollow), setSelSw: this.setSelSw, setSelDashStyle: this.setSelDashStyle, setSelArrow: this.setSelArrow, setSelDots: this.setSelDots, setSelDotR: this.setSelDotR, setSelHollow: this.setSelHollow, addImg: this.addImg, pickSel: this.pickSel, clearSelImg: this.clearSelImg, selIsImg: !!selIt && selIt.type === 'img', selBorderW: selIt && selIt.borderW != null ? selIt.borderW : 2, setSelBorderW: this.setSelBorderW, selFit: selIt && selIt.fit || 'cover', selRadius: selIt && selIt.radius != null ? selIt.radius : 8, selKeepAR: !selIt || selIt.keepAR !== false, selLockAR: !!selIt && this.lockAR(selIt), setSelLockAR: this.setSelLockAR, selARText: this.arText(selIt), setSelARText: this.setSelARText, arKey: this.arKey, setSelFit: this.setSelFit, setSelRadius: this.setSelRadius, setSelKeepAR: this.setSelKeepAR,
+      selIsIcon: !!selIt && selIt.type === 'svg' && !!selIt.vb, replaceSel: this.replaceSel, selIsArrow: !!selIt && selIt.kind === 'arrow', selArrowLen: selIt && selIt.alen || 0, setSelArrowLen: this.setSelArrowLen, selScale: selIt && selIt.scale != null ? selIt.scale : 100, selCanRot: !!selIt && (selIt.type === 'img' || selIt.type === 'svg' || selIt.type === 'text'), selRot: selIt && selIt.rot || 0, selTbg: !!selIt && selIt.tbg !== false, hasSel: !!selIt, selType: selIt ? selIt.type : '', selHasSize: !!selIt && 'w' in selIt && 'h' in selIt && selIt.type !== 'text', selHasFs: !!selIt && (('fs' in selIt) || selIt.type === 'legend'), selHasColor: !!selIt && (('color' in selIt) || selIt.type === 'svg' || selIt.type === 'curve' || selIt.type === 'link'), selHasStroke: !!selIt && ('stroke' in selIt) && selIt.type !== 'curve' && selIt.type !== 'link', selHasFill: !!selIt && ('fill' in selIt), selHasDash: !!selIt && (('dashed' in selIt) || selIt.type === 'panel' || selIt.type === 'box'), selHasText: !!selIt && selIt.type !== 'panel' && selIt.type !== 'svg' && selIt.type !== 'curve' && selIt.type !== 'link' && selIt.type !== 'slider',
+      selW: selIt && selIt.w || 0, selH: selIt && selIt.h || 0, selFs: selIt && (selIt.fs || (selIt.type === 'legend' ? 19 : 0)) || 0, selBold: !!selIt && +selIt.fw >= 600, selStroke: selIt && selIt.stroke || '#000000', selDashed: !!(selIt && selIt.dashed), selNoise: !!(selIt && selIt.noise), selStack: !!(selIt && selIt.stack), selRound: !!(selIt && selIt.round), selText: selIt ? (selIt[Component.textField(selIt)] || '') : '',
+      setSelW: this.setSelW, setSelH: this.setSelH, setSelRot: this.setSelRot, setSelScale: this.setSelScale, setSelTbg: this.setSelTbg, setSelFs: this.setSelFs, setSelBold: this.setSelBold, setSelStroke: this.setSelStroke, setSelDashed: this.setSelDashed, setSelNoise: this.setSelNoise, setSelStack: this.setSelStack, setSelRound: this.setSelRound, setSelText: this.setSelText, selIsToken: !!selIt && selIt.type === 'token', selLine: selIt && selIt.line || 0, setSelLine: this.setSelLine, selSplit: !!(selIt && selIt.split), selFill: selIt && selIt.fill || '#ffffff', selFill2: selIt && selIt.fill2 || C2.b.fill, setSelSplit: this.setSelSplit, setSelFill: this.setSelFill, setSelFill2: this.setSelFill2, selX: selIt ? selIt.x : 0, selY: selIt ? selIt.y : 0, selColor: selIt ? (selIt.color || selIt.stroke || '#000000') : '#000000',
+      selBox: selIt ? { x: (selIt.type === 'link' ? d.x : selIt.x) - 4, y: (selIt.type === 'link' ? d.y : selIt.y) - 4, w: d.w + 8, h: d.h + 8, rot: selIt.rot || 0 } : { x: 0, y: 0, w: 0, h: 0, rot: 0 }, rotDown: this.rotDown,
+      canvasW, canvasH, fit, frame, bg, showPanel,
+      saveDefault: this.saveDefault, saveMsg: this.state.saveMsg, undo: this.undo, redo: this.redo, noUndo: !this.past.length, noRedo: !this.future.length, saveSvg: this.saveSvg, savePng: this.savePng, savePdfVector: this.savePdfVector, imgScale: String(this.imgScale()), setImgScale: this.setImgScale, savePdf: this.savePdf, saveMenu: !!this.state.saveMenu, copyMenu: !!this.state.copyMenu, toggleSaveMenu: this.toggleSaveMenu, toggleCopyMenu: this.toggleCopyMenu, copyPng: this.copyPng, copySvg: this.copySvg, copyMsg: this.state.copyMsg, togglePanel: this.togglePanel, resetAll: this.resetAll,
+      setCanvasW: this.setCanvasW, setCanvasH: this.setCanvasH, setFit: this.setFit, setFrame: this.setFrame, setBg: this.setBg,
+      dupSel: this.dupSel, delSel: this.delSel, resetSel: this.resetSel, panelRef: this.panelRef, panelDown: this.panelDown, selItalic: !!selIt && selIt.fst === 'italic', setSelItalic: this.setSelItalic, selFont: selIt && selIt.ff || '', setSelFont: this.setSelFont, globalFont: this.state.font || '', setGlobalFont: this.setGlobalFont, noSelDefault: !selIt || !Component.defaults().some(i => i.id === selIt.id), setSelX: this.setSelX, setSelY: this.setSelY, setSelColor: this.setSelColor, clearSel: this.clearSel, noMenu: e => e.preventDefault(),
+      wrapRef: this.wrapRef, scaleRef: this.scaleRef, canvasRef: this.canvasRef
+    };
+  }
+}
+</script>
+</body>
+</html>
