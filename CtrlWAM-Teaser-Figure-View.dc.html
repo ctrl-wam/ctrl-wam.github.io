@@ -16,10 +16,10 @@
 
 <div ref="{{ wrapRef }}" style="margin:0;overflow:hidden;width:100%;display:block">
 <div style="transform-origin:0 0" ref="{{ scaleRef }}">
-<div ref="{{ canvasRef }}" data-screen-label="CtrlWAM Teaser Figure v5 (bottom)" onPointerDown="{{ clearSel }}" onContextMenu="{{ noMenu }}" style="position:relative;width:1450px;height:496px;box-sizing:border-box;background:#FFFFFF;border:1px solid #DCE2EC;border-radius:16px;overflow:hidden;font-family:system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;color:#2E2E2E;user-select:none">
+<div ref="{{ canvasRef }}" data-screen-label="CtrlWAM Teaser Figure v5 (bottom)" style="position:relative;width:1450px;height:496px;box-sizing:border-box;background:#FFFFFF;border:1px solid #DCE2EC;border-radius:16px;overflow:hidden;font-family:system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;color:#2E2E2E;user-select:text">
 
   <sc-for list="{{ panels }}" as="pn" hint-placeholder-count="4">
-    <div onPointerDown="{{ pn.down }}" data-x="{{ pn.x }}" data-y="{{ pn.y }}" data-w="{{ pn.w }}" data-h="{{ pn.h }}" data-fill="{{ pn.fill }}" data-stroke="{{ pn.stroke }}" data-prad="{{ pn.radius }}" data-dash="{{ pn.dashed }}" style="position:absolute;box-sizing:border-box;border-width:2px;border-style:solid;border-radius:16px;touch-action:none"></div>
+    <div data-x="{{ pn.x }}" data-y="{{ pn.y }}" data-w="{{ pn.w }}" data-h="{{ pn.h }}" data-fill="{{ pn.fill }}" data-stroke="{{ pn.stroke }}" data-prad="{{ pn.radius }}" data-dash="{{ pn.dashed }}" style="position:absolute;box-sizing:border-box;border-width:2px;border-style:solid;border-radius:16px;touch-action:auto"></div>
   </sc-for>
   <sc-for list="{{ persps }}" as="pg" hint-placeholder-count="0">
     <svg xmlns="http://www.w3.org/2000/svg" data-x="{{ pg.x }}" data-y="{{ pg.y }}" data-prad="{{ pg.radius }}" width="{{ pg.w }}" height="{{ pg.h }}" viewBox="{{ pg.vb }}" visibility="{{ pg.vis }}" style="position:absolute;overflow:hidden;pointer-events:none">
@@ -33,13 +33,13 @@
     </svg>
   </sc-for>
   <sc-for list="{{ texts }}" as="t" hint-placeholder-count="4">
-    <div onPointerDown="{{ t.down }}" style="position:absolute;z-index:2;box-sizing:border-box;touch-action:none;text-align:center;line-height:1.2;white-space:nowrap" data-x="{{ t.x }}" data-y="{{ t.y }}" data-w="{{ t.w }}" data-rot="{{ t.rot }}" data-fs="{{ t.fs }}" data-fw="{{ t.fw }}" data-fst="{{ t.fst }}" data-ff="{{ t.ff }}" data-col="{{ t.color }}" data-al="{{ t.align }}">
-      <span data-field="text" data-tex="{{ t.text }}" onDoubleClick="{{ t.editOn }}" onBlur="{{ t.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text;padding:0 2px"></span>
+    <div style="position:absolute;z-index:2;box-sizing:border-box;touch-action:auto;text-align:center;line-height:1.2;white-space:nowrap" data-x="{{ t.x }}" data-y="{{ t.y }}" data-w="{{ t.w }}" data-rot="{{ t.rot }}" data-fs="{{ t.fs }}" data-fw="{{ t.fw }}" data-fst="{{ t.fst }}" data-ff="{{ t.ff }}" data-col="{{ t.color }}" data-al="{{ t.align }}">
+      <span data-field="text" data-tex="{{ t.text }}" style="cursor:text;padding:0 2px"></span>
     </div>
   </sc-for>
 
   <sc-for list="{{ tokens }}" as="k" hint-placeholder-count="4">
-    <div onPointerDown="{{ k.down }}" data-x="{{ k.x }}" data-y="{{ k.y }}" style="position:absolute;width:60px;height:60px;touch-action:none">
+    <div data-x="{{ k.x }}" data-y="{{ k.y }}" style="position:absolute;width:60px;height:60px;touch-action:auto">
       <sc-if value="{{ k.stack }}" hint-placeholder-val="{{ false }}">
         <div data-fill="{{ k.fill }}" data-stroke="{{ k.stroke }}" data-dash="{{ k.dashed }}" style="position:absolute;left:30px;top:-30px;width:60px;height:60px;box-sizing:border-box;border-width:2px;border-radius:8px"></div>
         <div data-fill="{{ k.fill }}" data-stroke="{{ k.stroke }}" data-dash="{{ k.dashed }}" style="position:absolute;left:20px;top:-20px;width:60px;height:60px;box-sizing:border-box;border-width:2px;border-radius:8px"></div>
@@ -53,13 +53,13 @@
             </g>
           </svg>
         </sc-if>
-        <span data-field="tex" data-tex="{{ k.tex }}" onDoubleClick="{{ k.editOn }}" onBlur="{{ k.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text;white-space:nowrap;min-width:10px;position:relative;display:flex;align-items:center;justify-content:center;height:100%;width:100%;text-align:center"></span>
+        <span data-field="tex" data-tex="{{ k.tex }}" style="cursor:text;white-space:nowrap;min-width:10px;position:relative;display:flex;align-items:center;justify-content:center;height:100%;width:100%;text-align:center"></span>
       </div>
     </div>
   </sc-for>
 
   <sc-for list="{{ curves }}" as="cv" hint-placeholder-count="2">
-    <svg onPointerDown="{{ cv.down }}" xmlns="http://www.w3.org/2000/svg" data-x="{{ cv.x }}" data-y="{{ cv.y }}" data-z="{{ cv.z }}" width="{{ cv.w }}" height="{{ cv.h }}" viewBox="{{ cv.vb }}" style="position:absolute;overflow:visible;touch-action:none">
+    <svg xmlns="http://www.w3.org/2000/svg" data-x="{{ cv.x }}" data-y="{{ cv.y }}" data-z="{{ cv.z }}" width="{{ cv.w }}" height="{{ cv.h }}" viewBox="{{ cv.vb }}" style="position:absolute;overflow:visible;touch-action:auto">
       <path d="{{ cv.d }}" fill="none" stroke="transparent" stroke-width="14"></path>
       <path d="{{ cv.d }}" fill="none" stroke="{{ cv.stroke }}" stroke-width="{{ cv.sw }}" stroke-dasharray="{{ cv.dashArr }}" stroke-linecap="round" stroke-linejoin="round"></path>
       <path d="{{ cv.arrowD }}" fill="{{ cv.stroke }}" stroke="none"></path>
@@ -67,13 +67,13 @@
         <circle cx="{{ d.cx }}" cy="{{ d.cy }}" r="{{ d.r }}" fill="{{ d.fill }}" stroke="{{ d.stroke }}" stroke-width="{{ d.sw }}"></circle>
       </sc-for>
       <sc-for list="{{ cv.handles }}" as="hd" hint-placeholder-count="0">
-        <circle data-ui="1" onPointerDown="{{ hd.down }}" cx="{{ hd.x }}" cy="{{ hd.y }}" r="7" fill="#FFFFFF" stroke="#4A72B5" stroke-width="2" style="cursor:grab"></circle>
+        <circle data-ui="1" cx="{{ hd.x }}" cy="{{ hd.y }}" r="7" fill="#FFFFFF" stroke="#4A72B5" stroke-width="2" style="cursor:default"></circle>
       </sc-for>
     </svg>
   </sc-for>
 
   <sc-for list="{{ links }}" as="lk" hint-placeholder-count="0">
-    <svg onPointerDown="{{ lk.down }}" xmlns="http://www.w3.org/2000/svg" data-x="{{ lk.x }}" data-y="{{ lk.y }}" data-z="{{ lk.z }}" width="{{ lk.w }}" height="{{ lk.h }}" viewBox="{{ lk.vb }}" style="position:absolute;overflow:visible;cursor:pointer;touch-action:none">
+    <svg xmlns="http://www.w3.org/2000/svg" data-x="{{ lk.x }}" data-y="{{ lk.y }}" data-z="{{ lk.z }}" width="{{ lk.w }}" height="{{ lk.h }}" viewBox="{{ lk.vb }}" style="position:absolute;overflow:visible;cursor:default;touch-action:auto">
       <path d="{{ lk.d }}" fill="none" stroke="transparent" stroke-width="12"></path>
       <path d="{{ lk.d }}" fill="none" stroke="{{ lk.stroke }}" stroke-width="{{ lk.sw }}" stroke-dasharray="{{ lk.dashArr }}" stroke-linecap="round"></path>
       <path d="{{ lk.markD }}" fill="none" stroke="{{ lk.stroke }}" stroke-width="3.5" stroke-linecap="round"></path>
@@ -82,7 +82,7 @@
   </sc-for>
 
   <sc-for list="{{ imgs }}" as="m" hint-placeholder-count="3">
-    <div title="Drop an image here or double-click to replace" onPointerDown="{{ m.down }}" onDragOver="{{ m.dragOver }}" onDrop="{{ m.drop }}" onDoubleClick="{{ m.pick }}" data-x="{{ m.x }}" data-y="{{ m.y }}" data-w="{{ m.w }}" data-h="{{ m.h }}" data-rot="{{ m.rot }}" style="position:absolute;touch-action:none;z-index:1">
+    <div  data-x="{{ m.x }}" data-y="{{ m.y }}" data-w="{{ m.w }}" data-h="{{ m.h }}" data-rot="{{ m.rot }}" style="position:absolute;touch-action:auto;z-index:1">
       <sc-if value="{{ m.hasSrc }}" hint-placeholder-val="{{ false }}">
 <div data-src="{{ m.src }}" data-stroke="{{ m.color }}" data-dash="{{ m.dashed }}" data-fit="{{ m.fit }}" data-rad="{{ m.radius }}" data-bw="{{ m.borderW }}" data-tbg="{{ m.tbg }}" data-scale="{{ m.scale }}" data-ar="{{ m.ar }}" style="position:absolute;inset:0;box-sizing:border-box;border-width:2px;border-style:solid;border-radius:8px;background-color:transparent;background-repeat:no-repeat;background-position:center;background-size:cover;pointer-events:none"></div>
       </sc-if>
@@ -93,22 +93,22 @@
               <sc-for list="{{ m.iconPaths }}" as="p" hint-placeholder-count="0"><path d="{{ p.d }}" fill="{{ p.fill }}" stroke="{{ p.stroke }}" stroke-width="{{ p.sw }}" stroke-linecap="round" stroke-linejoin="round"></path></sc-for>
             </svg>
           </sc-if>
-          <span data-field="label" data-hid="{{ m.hasIcon }}" data-tex="{{ m.label }}" onDoubleClick="{{ m.editOn }}" onBlur="{{ m.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text"></span>
+          <span data-field="label" data-hid="{{ m.hasIcon }}" data-tex="{{ m.label }}" style="cursor:text"></span>
         </div>
       </sc-if>
     </div>
   </sc-for>
 
   <sc-for list="{{ sliders }}" as="sl" hint-placeholder-count="0">
-    <svg onPointerDown="{{ sl.down }}" xmlns="http://www.w3.org/2000/svg" data-x="{{ sl.x }}" data-y="{{ sl.y }}" width="{{ sl.w }}" height="{{ sl.h }}" viewBox="{{ sl.vb }}" style="position:absolute;overflow:visible;touch-action:none">
+    <svg xmlns="http://www.w3.org/2000/svg" data-x="{{ sl.x }}" data-y="{{ sl.y }}" width="{{ sl.w }}" height="{{ sl.h }}" viewBox="{{ sl.vb }}" style="position:absolute;overflow:visible;touch-action:auto">
       <rect x="0" y="12" width="{{ sl.w }}" height="8" rx="4" fill="{{ sl.track }}"></rect>
       <rect x="0" y="12" width="{{ sl.fillW }}" height="8" rx="4" fill="{{ sl.color }}"></rect>
-      <circle onPointerDown="{{ sl.knobDown }}" cx="{{ sl.fillW }}" cy="16" r="8" fill="{{ sl.color }}" stroke="#FFFFFF" stroke-width="2.5" style="cursor:ew-resize"></circle>
+      <circle cx="{{ sl.fillW }}" cy="16" r="8" fill="{{ sl.color }}" stroke="#FFFFFF" stroke-width="2.5" style="cursor:default"></circle>
     </svg>
   </sc-for>
 
   <sc-for list="{{ svgs }}" as="s" hint-placeholder-count="3">
-    <svg onPointerDown="{{ s.down }}" onDragOver="{{ s.dragOver }}" onDrop="{{ s.drop }}" onDoubleClick="{{ s.pick }}" xmlns="http://www.w3.org/2000/svg" data-x="{{ s.x }}" data-y="{{ s.y }}" data-rot="{{ s.rot }}" data-z="{{ s.z }}" data-hitsvg="{{ s.hit }}" width="{{ s.w }}" height="{{ s.h }}" viewBox="{{ s.vb }}" style="position:absolute;overflow:visible;touch-action:none">
+    <svg xmlns="http://www.w3.org/2000/svg" data-x="{{ s.x }}" data-y="{{ s.y }}" data-rot="{{ s.rot }}" data-z="{{ s.z }}" data-hitsvg="{{ s.hit }}" width="{{ s.w }}" height="{{ s.h }}" viewBox="{{ s.vb }}" style="position:absolute;overflow:visible;touch-action:auto">
       <rect x="0" y="0" width="{{ s.w }}" height="{{ s.h }}" fill="transparent" data-hit="{{ s.hit }}"></rect>
       <sc-for list="{{ s.paths }}" as="p" hint-placeholder-count="1">
         <path d="{{ p.d }}" fill="{{ p.fill }}" stroke="{{ p.stroke }}" stroke-width="{{ p.sw }}" stroke-dasharray="{{ p.dash }}" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -120,30 +120,30 @@
   </sc-for>
 
   <sc-for list="{{ boxes }}" as="b" hint-placeholder-count="2">
-    <div onPointerDown="{{ b.down }}" data-x="{{ b.x }}" data-y="{{ b.y }}" data-w="{{ b.w }}" data-h="{{ b.h }}" data-fill="{{ b.fill }}" data-stroke="{{ b.stroke }}" data-fg="{{ b.color }}" data-dash="{{ b.dashed }}" data-prad="{{ b.radius }}" style="position:absolute;box-sizing:border-box;border-width:2px;border-style:solid;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;text-align:center;padding:4px 10px">
-      <span data-field="title" data-tex="{{ b.title }}" data-fs="{{ b.fs }}" data-fw="{{ b.fw }}" data-ff="{{ b.ff }}" onDoubleClick="{{ b.editOn }}" onBlur="{{ b.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text;line-height:1.15;white-space:pre-wrap"></span>
+    <div data-x="{{ b.x }}" data-y="{{ b.y }}" data-w="{{ b.w }}" data-h="{{ b.h }}" data-fill="{{ b.fill }}" data-stroke="{{ b.stroke }}" data-fg="{{ b.color }}" data-dash="{{ b.dashed }}" data-prad="{{ b.radius }}" style="position:absolute;box-sizing:border-box;border-width:2px;border-style:solid;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:auto;text-align:center;padding:4px 10px">
+      <span data-field="title" data-tex="{{ b.title }}" data-fs="{{ b.fs }}" data-fw="{{ b.fw }}" data-ff="{{ b.ff }}" style="cursor:text;line-height:1.15;white-space:pre-wrap"></span>
       <sc-if value="{{ b.hasSub }}" hint-placeholder-val="{{ false }}">
-        <span data-field="sub" data-tex="{{ b.sub }}" data-fs="{{ b.subFs }}" onDoubleClick="{{ b.editOn }}" onBlur="{{ b.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text;line-height:1.2;margin-top:6px;color:#3A3A3A"></span>
+        <span data-field="sub" data-tex="{{ b.sub }}" data-fs="{{ b.subFs }}" style="cursor:text;line-height:1.2;margin-top:6px;color:#3A3A3A"></span>
       </sc-if>
     </div>
   </sc-for>
 
   <sc-for list="{{ callouts }}" as="c" hint-placeholder-count="2">
-    <div onPointerDown="{{ c.down }}" data-x="{{ c.x }}" data-y="{{ c.y }}" data-w="{{ c.w }}" data-h="{{ c.h }}" style="position:absolute;box-sizing:border-box;border:2px solid #C9CCD1;border-radius:12px;background:#FAFAFA;display:flex;align-items:center;gap:10px;padding:0 12px;touch-action:none">
+    <div data-x="{{ c.x }}" data-y="{{ c.y }}" data-w="{{ c.w }}" data-h="{{ c.h }}" style="position:absolute;box-sizing:border-box;border:2px solid #C9CCD1;border-radius:12px;background:#FAFAFA;display:flex;align-items:center;gap:10px;padding:0 12px;touch-action:auto">
       <div style="flex:none;width:36px;height:36px;border-radius:50%;box-sizing:border-box;border:2px solid #C9A227;background:#FBF3D3;color:#B8901F;font-size:19px;font-weight:600;display:flex;align-items:center;justify-content:center">
-        <span data-field="num" data-tex="{{ c.num }}" onDoubleClick="{{ c.editOn }}" onBlur="{{ c.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text"></span>
+        <span data-field="num" data-tex="{{ c.num }}" style="cursor:text"></span>
       </div>
       <div style="display:flex;flex-direction:column;justify-content:flex-start;line-height:1.3;font-size:13px;gap:4px;height:100%;box-sizing:border-box;padding-top:9px">
-        <span data-field="title" data-tex="{{ c.title }}" data-fg="{{ c.color }}" data-fw="{{ c.fw }}" data-fs="{{ c.fs }}" data-ff="{{ c.ff }}" onDoubleClick="{{ c.editOn }}" onBlur="{{ c.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text"></span>
-        <span data-field="body" data-tex="{{ c.body }}" onDoubleClick="{{ c.editOn }}" onBlur="{{ c.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text;color:#3A3A3A"></span>
+        <span data-field="title" data-tex="{{ c.title }}" data-fg="{{ c.color }}" data-fw="{{ c.fw }}" data-fs="{{ c.fs }}" data-ff="{{ c.ff }}" style="cursor:text"></span>
+        <span data-field="body" data-tex="{{ c.body }}" style="cursor:text;color:#3A3A3A"></span>
       </div>
     </div>
   </sc-for>
 
   <sc-for list="{{ legends }}" as="l" hint-placeholder-count="3">
-    <div onPointerDown="{{ l.down }}" data-x="{{ l.x }}" data-y="{{ l.y }}" data-ff="{{ l.ff }}" data-fs="{{ l.fs }}" style="position:absolute;display:flex;align-items:center;gap:14px;touch-action:none;font-size:19px;color:#3A3A3A;white-space:nowrap">
+    <div data-x="{{ l.x }}" data-y="{{ l.y }}" data-ff="{{ l.ff }}" data-fs="{{ l.fs }}" style="position:absolute;display:flex;align-items:center;gap:14px;touch-action:auto;font-size:19px;color:#3A3A3A;white-space:nowrap">
       <div data-fill="{{ l.fill }}" data-stroke="{{ l.stroke }}" data-dash="{{ l.dashed }}" style="width:34px;height:26px;box-sizing:border-box;border-width:2px;border-radius:6px"></div>
-      <span data-field="text" data-tex="{{ l.text }}" onDoubleClick="{{ l.editOn }}" onBlur="{{ l.editOff }}" suppressContentEditableWarning="{{ true }}" style="cursor:text"></span>
+      <span data-field="text" data-tex="{{ l.text }}" style="cursor:text"></span>
     </div>
   </sc-for>
 
@@ -151,7 +151,7 @@
     <div data-ui="1" data-rot="{{ selBox.rot }}" style="position:absolute;pointer-events:none;border:1.5px dashed #4A72B5;border-radius:6px;box-sizing:border-box" data-x="{{ selBox.x }}" data-y="{{ selBox.y }}" data-w="{{ selBox.w }}" data-h="{{ selBox.h }}">
       <sc-if value="{{ selCanRot }}" hint-placeholder-val="{{ false }}">
         <div style="position:absolute;left:50%;top:-26px;width:1.5px;height:20px;margin-left:-0.75px;background:#4A72B5"></div>
-        <div onPointerDown="{{ rotDown }}" title="Drag to rotate" style="position:absolute;left:50%;top:-36px;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:#fff;border:2px solid #4A72B5;box-sizing:border-box;cursor:grab;pointer-events:auto;touch-action:none"></div>
+        <div  style="position:absolute;left:50%;top:-36px;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:#fff;border:2px solid #4A72B5;box-sizing:border-box;cursor:default;pointer-events:auto;touch-action:auto"></div>
       </sc-if>
     </div>
   </sc-if>
@@ -536,7 +536,7 @@ static loadSaved() { let sv = null; try { const ls = JSON.parse(localStorage.get
     this.loadIdb();
     this.ro = new ResizeObserver(() => this.measure()); this.ro.observe(this.wrapRef.current); this.measure();
     this.applyStyles();
-    this.keyHandler = e => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !this.typing()) { e.preventDefault(); e.shiftKey ? this.redo() : this.undo(); return; } if ((e.key === 'Delete' || e.key === 'Backspace') && this.state.sel && !this.typing()) { e.preventDefault(); this.delSel(); } };
+    this.keyHandler = e => { if (Component.VIEW_ONLY) return; if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !this.typing()) { e.preventDefault(); e.shiftKey ? this.redo() : this.undo(); return; } if ((e.key === 'Delete' || e.key === 'Backspace') && this.state.sel && !this.typing()) { e.preventDefault(); this.delSel(); } };
     
   }
   typing() { const a = document.activeElement; return !!a && (a.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)); }
@@ -607,7 +607,7 @@ static loadSaved() { let sv = null; try { const ls = JSON.parse(localStorage.get
     const up = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up); };
     window.addEventListener('pointermove', move); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
   }
-  down = it => e => {
+  down = it => e => { if (Component.VIEW_ONLY) return;
     if (e.target.isContentEditable) return;
     if (e.button === 2) { e.preventDefault(); e.stopPropagation(); this.setState({ sel: it.id }, () => this.delSel()); return; }
     e.stopPropagation(); e.preventDefault();
@@ -638,13 +638,13 @@ static loadSaved() { let sv = null; try { const ls = JSON.parse(localStorage.get
     drop: e => { e.preventDefault(); e.stopPropagation(); this.readImg(e.dataTransfer.files[0], (src, ar) => this.applyImg(it.id, src, ar)); },
     pick: e => { if (e.target.isContentEditable) return; e.stopPropagation(); this.pickFor(it.id); }
   });
-  rotDown = e => {
+  rotDown = e => { if (Component.VIEW_ONLY) return;
     e.stopPropagation(); e.preventDefault(); const it = this.state.items.find(i => i.id === this.state.sel); if (!it) return;
     const r = this.canvasRef.current.getBoundingClientRect(), sc = this.state.scale; const w = it.w || 60, h = it.h || 60; const cx = r.left + (it.x + w / 2) * sc, cy = r.top + (it.y + h / 2) * sc;
     const a0 = Math.atan2(e.clientY - cy, e.clientX - cx), r0 = it.rot || 0; let moved = false;
     this.listen(ev => { if (!moved) { moved = true; this.snap(); } let deg = r0 + (Math.atan2(ev.clientY - cy, ev.clientX - cx) - a0) * 180 / Math.PI; if (ev.shiftKey) deg = Math.round(deg / 15) * 15; deg = Math.round(((deg + 180) % 360 + 360) % 360 - 180); this.upd(it.id, { rot: deg }); });
   };
-  ptDown = (it, i) => e => {
+  ptDown = (it, i) => e => { if (Component.VIEW_ONLY) return;
     e.stopPropagation(); e.preventDefault(); this.setState({ sel: it.id });
     const sx = e.clientX, sy = e.clientY, ox = it.pts[i][0], oy = it.pts[i][1], sc = this.state.scale; let moved = false;
     this.listen(ev => { if (!moved) { moved = true; this.snap(); } const cur = this.state.items.find(q => q.id === it.id); if (!cur) return; const pts = cur.pts.map((p, j) => j === i ? [Math.round(ox + (ev.clientX - sx) / sc), Math.round(oy + (ev.clientY - sy) / sc)] : p); this.upd(it.id, { pts }); });
@@ -677,7 +677,7 @@ static loadSaved() { let sv = null; try { const ls = JSON.parse(localStorage.get
   setSelFill = e => this.snap() || this.upd(this.state.sel, { fill: e.target.value });
   setSelFill2 = e => this.snap() || this.upd(this.state.sel, { fill2: e.target.value });
   resetSel = () => { const it = this.state.items.find(i => i.id === this.state.sel); if (!it) return; const d = Component.defaults().find(i => i.id === it.id); if (!d) { this.flash('No default for this component (it was added later)'); return; } this.snap(); this.setState(s => ({ items: s.items.map(i => i.id === it.id ? d : i) })); this.flash('Component reset'); };
-  knobDown = it => e => { e.stopPropagation(); e.preventDefault(); this.setState({ sel: it.id }); const sx = e.clientX, f0 = it.frac, sc = this.state.scale; let moved = false; this.listen(ev => { if (!moved) { moved = true; this.snap(); } const f = Math.max(0, Math.min(1, f0 + (ev.clientX - sx) / sc / it.w)); this.upd(it.id, { frac: +f.toFixed(3) }); }); };
+  knobDown = it => e => { if (Component.VIEW_ONLY) return; e.stopPropagation(); e.preventDefault(); this.setState({ sel: it.id }); const sx = e.clientX, f0 = it.frac, sc = this.state.scale; let moved = false; this.listen(ev => { if (!moved) { moved = true; this.snap(); } const f = Math.max(0, Math.min(1, f0 + (ev.clientX - sx) / sc / it.w)); this.upd(it.id, { frac: +f.toFixed(3) }); }); };
   setSelFrac = e => { this.snap(); this.upd(this.state.sel, { frac: +e.target.value }); };
   linkDown = it => e => { if (Component.VIEW_ONLY) return; if (e.button === 2) { e.preventDefault(); e.stopPropagation(); this.setState({ sel: it.id }, () => this.delSel()); return; } e.stopPropagation(); e.preventDefault(); this.setState({ sel: it.id }); };
   startLink = () => this.setState(s => ({ linkMode: s.linkMode ? 0 : 1, linkFrom: null, copyMsg: s.linkMode ? '' : 'Click the source element (a waypoint curve, frame, box…)' }));
