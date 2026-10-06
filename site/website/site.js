@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CtrlWAM project page — behaviour
+   CtrlWAM project page — behavior
    Reveal-on-scroll, animated counters, Remotion Player embeds (autoplay in view,
    scroll-scrubbed denoising section), the scrollytelling "problem" scene, and three
    interactive explorers (warp schedule, ego counterfactuals, RoboTwin roll-outs).
@@ -190,7 +190,7 @@
     function build() {
       const info = R[ep]; grid.innerHTML = METHODS.map(m => { const acc = info.traj[m.key]; const best = acc != null && acc === Math.max(...Object.values(info.traj)); return `<div class="rt-col"><div class="hd"><span><span class="sw" style="background:${m.color}"></span>${m.label}</span>${acc != null ? `<span class="acc ${best ? 'best' : ''}">traj ${acc.toFixed(2)}</span>` : ''}</div><div class="rt-view" style="border-color:${m.color}">${info.frames.map((f, i) => `<img data-i="${i}" src="${MEDIA}robotwin/ep${ep}/${m.key}/f${String(f).padStart(4, '0')}.jpg" alt="">`).join('')}<span class="f"></span></div></div>`; }).join('');
       slider.max = info.frames.length - 1; k = Math.min(k, info.frames.length - 1); show();
-      instr.innerHTML = `<b>Task ·</b> ${info.instr} <span style="color:var(--ink-2)">— episode ${ep}, forward dynamics with the recorded actions, matching frame indices. Trajectory accuracy = normalised DTW score for this episode.</span>`;
+      instr.innerHTML = `<b>Task ·</b> ${info.instr} <span style="color:var(--ink-2)">— episode ${ep}, forward dynamics with the recorded actions, matching frame indices. Trajectory accuracy = normalized DTW score for this episode.</span>`;
     }
     function show() { const info = R[ep]; $$('.rt-view', grid).forEach(v => { $$('img', v).forEach(im => im.classList.toggle('on', +im.dataset.i === k)); $('.f', v).textContent = `frame ${info.frames[k]}`; }); slider.value = k; }
     function tick() { const n = R[ep].frames.length; timer = setTimeout(() => { k = (k + 1) % n; show(); tick(); }, k === n - 1 ? 1000 : 165); }   // every 5th frame of a 30 fps video -> real time; hold the end state 1 s

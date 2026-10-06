@@ -1,13 +1,13 @@
 /* ==========================================================================
    CtrlWAM project page — styles (shares tokens, fonts and media with the deck)
    ========================================================================== */
-@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;src:url('site/vendor/fonts/inter-latin-400-normal.woff2') format('woff2')}
-@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:swap;src:url('site/vendor/fonts/inter-latin-500-normal.woff2') format('woff2')}
-@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;src:url('site/vendor/fonts/inter-latin-600-normal.woff2') format('woff2')}
-@font-face{font-family:'Inter';font-style:normal;font-weight:700;font-display:swap;src:url('site/vendor/fonts/inter-latin-700-normal.woff2') format('woff2')}
-@font-face{font-family:'Inter';font-style:normal;font-weight:800;font-display:swap;src:url('site/vendor/fonts/inter-latin-800-normal.woff2') format('woff2')}
-@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url('site/vendor/fonts/jetbrains-mono-latin-400-normal.woff2') format('woff2')}
-@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:600;font-display:swap;src:url('site/vendor/fonts/jetbrains-mono-latin-600-normal.woff2') format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;src:url('../vendor/fonts/inter-latin-400-normal.woff2') format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:swap;src:url('../vendor/fonts/inter-latin-500-normal.woff2') format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;src:url('../vendor/fonts/inter-latin-600-normal.woff2') format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:700;font-display:swap;src:url('../vendor/fonts/inter-latin-700-normal.woff2') format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:800;font-display:swap;src:url('../vendor/fonts/inter-latin-800-normal.woff2') format('woff2')}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url('../vendor/fonts/jetbrains-mono-latin-400-normal.woff2') format('woff2')}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:600;font-display:swap;src:url('../vendor/fonts/jetbrains-mono-latin-600-normal.woff2') format('woff2')}
 
 :root{
   --navy:#0B1A3A;--navy-2:#16305F;--green:#88CC02;--green-dark:#5E8F00;--green-soft:#EEF7DA;--green-mid:#B7E36A;
@@ -42,6 +42,7 @@ button{font:inherit}
 .nav.on-dark .brand,.nav.on-dark .links a{color:#fff}.nav.on-dark .links a:hover{color:var(--green)}
 .nav.on-dark .brand img{filter:brightness(0) invert(1)}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;font-weight:700;font-size:14px;border:1.5px solid var(--navy);background:var(--navy);color:#fff;cursor:pointer;transition:transform .15s var(--ease),background .2s,color .2s;text-decoration:none;line-height:1.2}
+.btn-icon{flex-shrink:0;display:block}
 .btn:hover{transform:translateY(-1px);text-decoration:none;background:var(--navy-2)}
 .btn.ghost{background:transparent;color:var(--navy)}.btn.ghost:hover{background:var(--soft-navy)}
 .btn.green{background:var(--green);border-color:var(--green);color:var(--navy)}.btn.green:hover{background:#9BDD1A}
@@ -245,7 +246,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 .rt-col .hd .acc{font-family:var(--mono);font-size:12px;font-weight:600;padding:2px 7px;border-radius:6px;background:var(--soft-grey);color:var(--ink-2)}
 .rt-col .hd .acc.best{background:var(--green-soft);color:var(--green-dark)}
 .rt-view{position:relative;aspect-ratio:300/222;border-radius:12px;overflow:hidden;border:3px solid var(--line-2);background:#fff}
-/* Swap sequence frames immediately: fading both layers exposes the white background. */
+/* Switch video frames directly: fading overlapping images exposes the background. */
 .rt-view img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}
 .rt-view img.on{opacity:1}
 .rt-view .f{position:absolute;left:8px;top:6px;padding:2px 8px;border-radius:6px;background:rgba(11,26,58,.8);color:#fff;font-family:var(--mono);font-size:12px}
@@ -337,3 +338,21 @@ pre.bib{background:var(--navy);color:#E6EBF5;padding:20px 22px;border-radius:14p
 
 .scene .frame.seq{width:100%}
 @media (max-width:900px){.scene .title-row + div{grid-template-columns:minmax(0,1fr) !important}.scene .frame.seq{width:100% !important;height:auto !important}}
+
+/* ---- noise-level explorer (Method › 01; site/website/noise-levels.js) ---- */
+#nl-explorer .nl-slider{flex:1;display:flex;flex-direction:column;min-width:220px}
+#nl-explorer .nl-ticks{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--muted);padding:2px 10px 0}
+#nl-explorer .nl-grid{display:grid;grid-template-columns:1.7333fr 1.7333fr 1.7333fr 1fr;gap:14px;align-items:end}
+#nl-explorer .nl-hd{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;color:var(--navy);margin-bottom:8px}
+#nl-explorer .nl-hd .sw{width:10px;height:10px;border-radius:3px;display:inline-block}
+#nl-explorer .nl-view{position:relative;aspect-ratio:832/480;border-radius:12px;overflow:hidden;border:3px solid var(--line-2);background:#0B1A3A}
+#nl-explorer .nl-view.gt{border-color:var(--gt)}#nl-explorer .nl-view.ren{border-color:var(--video)}#nl-explorer .nl-view.noi{border-color:var(--noise)}
+#nl-explorer .nl-view img{position:absolute;inset:0;width:100%;height:100%;display:block}
+#nl-explorer .nl-view .noise{position:absolute;inset:0;pointer-events:none;background-repeat:no-repeat;background-size:150% 150%}
+#nl-explorer .nl-view .f{position:absolute;left:8px;top:6px;padding:2px 8px;border-radius:6px;background:rgba(11,26,58,.8);color:#fff;font-family:var(--mono);font-size:12px}
+#nl-explorer .nl-bev{position:relative;aspect-ratio:1/1;border-radius:12px;border:3px solid var(--line-2);background:#fff;overflow:hidden}
+#nl-explorer .nl-bev canvas{width:100%;height:100%;display:block}
+#nl-explorer .nl-legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--ink-2);margin-left:auto}
+#nl-explorer .nl-legend span{display:inline-flex;align-items:center;gap:6px}#nl-explorer .nl-legend i{width:18px;height:3px;border-radius:2px;display:inline-block}
+#nl-explorer .nl-note{font-size:14px;color:var(--ink-2);line-height:1.55;margin:0}#nl-explorer .nl-note b{color:var(--navy)}
+@media (max-width:900px){#nl-explorer .nl-hd{font-size:12px}#nl-explorer .nl-legend{margin-left:0}}

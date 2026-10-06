@@ -122,7 +122,7 @@
     <div data-ui="1" data-rot="{{ selBox.rot }}" style="position:absolute;pointer-events:none;border:1.5px dashed #4A72B5;border-radius:6px;box-sizing:border-box" data-x="{{ selBox.x }}" data-y="{{ selBox.y }}" data-w="{{ selBox.w }}" data-h="{{ selBox.h }}">
       <sc-if value="{{ selCanRot }}" hint-placeholder-val="{{ false }}">
         <div style="position:absolute;left:50%;top:-26px;width:1.5px;height:20px;margin-left:-0.75px;background:#4A72B5"></div>
-        <div  style="position:absolute;left:50%;top:-36px;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:#fff;border:2px solid #4A72B5;box-sizing:border-box;cursor:default;pointer-events:auto;touch-action:auto"></div>
+        <div style="position:absolute;left:50%;top:-36px;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:#fff;border:2px solid #4A72B5;box-sizing:border-box;cursor:default;pointer-events:auto;touch-action:auto"></div>
       </sc-if>
     </div>
   </sc-if>
@@ -339,7 +339,7 @@ class Component extends DCLogic {
       A(CX[0] - 10, 688, 16, 'o'), B(CX[0] - 110, 704, 220, 38, 'Video VAE Decoder', '', 'o', 17, 0, 700, { fill: '#FFF3EA' }), A(CX[0] - 10, 742, 18, 'o'),
       A(CX[1] - 10, 688, 16, 'b'), B(CX[1] - 120, 704, 240, 38, 'Primary Action Decoder', '', 'b', 17, 0, 700, { fill: '#EAF1FA' }), A(CX[1] - 10, 742, 18, 'b'),
       A(CX[2] - 10, 718, 14, 'g'), { ...B(CX[2] - 140, 732, 280, 38, 'Shared Agent Action Decoder', '', 'g', 16, 0, 700, { fill: '#EDF3E8' }), dashed: true }, A(CX[2] - 10, 770, 15, 'g'),
-      { ...I(X[0] + 36, 789, 130, 96, 'driving frames', 'o'), stack3: true, keepAR: true, src: 'site/media/model-fig/driving.jpg' }, T(X[0] + 180, 828, 40, 'or', 20, '#444', { it: true }), { ...I(X[0] + 234, 789, 130, 96, 'manipulation frames', 'o'), stack3: true, keepAR: true, src: 'site/media/model-fig/manipulation.png' },
+      { ...I(X[0] + 36, 789, 130, 96, 'driving frames', 'o'), src: 'site/media/teaser-fig/driving/frames/main.jpg', stack3: true, keepAR: true }, T(X[0] + 180, 828, 40, 'or', 20, '#444', { it: true }), { ...I(X[0] + 234, 789, 130, 96, 'manipulation frames', 'o'), src: 'site/media/teaser-fig/robo/frames/main.png', stack3: true, keepAR: true },
       { ...I(X[1] + 26, 774, 140, 112, 'intersection scene', 'b'), src: Component.SCENE_SRC, borderW: 0, tbg: true, fit: 'contain', radius: 0 },
       { ...CV(X[1] + 26, 774, 140, 112, [[70, 67], [70, 54], [73, 46], [81, 42], [94, 40], [118, 40]], 'b', { sw: 3.5, dashStyle: 'dotted', dots: 0, arrow: true, headScale: 0.7 }), z: 2 }, T(X[1] + 180, 813, 40, 'or', 20, '#444', { it: true }), { ...I(X[1] + 234, 762, 140, 134, 'robot arm', 'b'), src: Component.ROBOT_SRC, borderW: 0, tbg: true, fit: 'contain', radius: 0 }, { ...CV(X[1] + 343, 818, 50, 60, [[6, 6], [16, 16], [16, 28], [3, 41]], 'b', { sw: 3.5, dashStyle: 'dotted', dots: 0, arrow: true, headScale: 0.7 }), z: 2 },
       CV(X[2] + 70, 785, 560, 1, [[0, 0], [280, 0], [560, 0]], 'g', { stroke: '#B4BBB0', sw: 2.5 }),

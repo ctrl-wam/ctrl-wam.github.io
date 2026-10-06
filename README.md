@@ -1,6 +1,6 @@
 # CtrlWAM project page — minimal pack
 
-Open `CtrlWAM-Site-Full.dc.html` from this folder — double-click works (`file://`) because the three live figures are inlined into the page as `window.__resourceBlobs` entries (the first `<script>` in the file). A static server (`python -m http.server`) also works. If you edit one of the `*-View.dc.html` figures, re-inline it: replace the corresponding string in that inline script with the new file text (the inline copy always wins; delete the entry to fall back to fetching the sibling file over HTTP). `support.js` is the component runtime.
+Open `index.html` from this folder. The overview teaser and model figures load their sibling `*-View.dc.html` files directly in iframes, so edits appear after saving and reloading. The schedule figure remains embedded in the first script; update that embedded entry when changing its file. `support.js` is the component runtime. Deploy the HTML files, `support.js`, and `site/` together, preserving the folder structure.
 
 ```
 pack-site/
@@ -8,8 +8,9 @@ pack-site/
   CtrlWAM-Teaser-Figure-View.dc.html   Overview figure (live)
   CtrlWAM-Model-Figure-View.dc.html    Model figure with token-flow overlay (live)
   CtrlWAM-Warp-Schedule-A-View.dc.html Motivation schedule plot with denoising sweep (live)
+  CtrlWAM-Noise-Levels.html            Separate showcase page: rendering of the noised command vs. noise level (slider)
   support.js
-  site/website/   site.css  site.js  teaser.js  data.js  teaser-data.js
+  site/website/   site.css  site.js  teaser.js  data.js  teaser-data.js  noise-levels.js (noise-level explorer, shared by the main page and CtrlWAM-Noise-Levels.html)
   site/deck/      charts.js (SVG charts + hover tooltips)
   site/vendor/    ctrlwam-anim.js (Remotion animation bundle, patched)  katex/  fonts/
   site/media/     all images (see per-section map below)
@@ -24,10 +25,12 @@ Conventions used below: **static** = the `src` is literally in the file named; *
 | Asset | Path | Where referenced | Notes |
 |---|---|---|---|
 | Logo (nav) | `site/media/logo/logo-site.png` | `CtrlWAM-Site-Full.dc.html` (`a.brand img`) | static |
+| Nav colour | `<nav class="nav on-dark">` in the markup (dark glass over the hero); `site.js` `onScroll()` toggles `on-dark` per section afterwards | | starts dark so the bar is right before the scripts have loaded |
 | Favicon | `site/media/logo/icon.png` | page `<helmet>` | static |
 | Backdrop animation `TitleBackdrop` | driving strip: `site/media/egocf/real/raw/f08.jpg … f40.jpg` (33 frames, 5 Hz) | `site/vendor/ctrlwam-anim.js`, defaults `FE.driveFrames` | data-driven; the 440×326 driving panel is center-cropped |
 | | robot strip: `site/media/robotwin/ep232/ctrlwam/f0000, f0010, … f0450.jpg` (every other shipped episode-232 frame, 46 frames, 6 Hz = 2× real time) | `FE.robotFrames`, `FE.robotHz` | data-driven; to use another episode change the list in the bundle (frames must exist in `site/media/robotwin`) |
 | Buttons arXiv / Paper / Video / Code | placeholder URLs | `div.actions` in the page | replace `href`s |
+| Nav `Paper` button | removed 2026-10-05 (`div.cta` in the nav is gone); re-add inside `nav .wrap` if a PDF link is wanted | | |
 
 ## 2. Overview (`section#overview`)
 
@@ -41,7 +44,7 @@ Conventions used below: **static** = the `src` is literally in the file named; *
 | Middle card scene (transparent cut-out) | `site/media/teaser-fig/scene-720.png` | embedded item `src` in `defaults()` | static |
 | Logo inside the figure | embedded data-URI in the View file | item label `logo` | leave as is |
 
-To replace any slot without editing code: drag an image onto the slot or double-click it in the page; the choice is stored in the browser under `ctrlwam-teaser-figure-view-images` (per slot id). To change the shipped default, edit `SITE_IMG`.
+The deployed teaser is view-only. Update `static SITE_IMG` in `CtrlWAM-Teaser-Figure-View.dc.html` to replace its frame images; update `SCENE_SRC` for the middle scene. Browser-saved images and layouts are ignored in view-only mode.
 
 ## 3. Motivation (`section#motivation`)
 
@@ -78,6 +81,11 @@ Regenerate (other sample, other step subset): `alpamayo/projects/alpax/docs/pape
 | Noise texture | `site/media/schematic/noise.png` | `teaser.js` |
 Layout/curves come from `site/website/teaser-data.js` (exported from the figure editor).
 
+#### Noise-level explorer (`div#nl-explorer`, `site/website/noise-levels.js`) — the full explorer of §8, same markup and script in both pages
+| Asset | Path | Where referenced | Notes |
+|---|---|---|---|
+| All windows of both domains | everything under `site/media/noise-levels/` (see §8: rendered frames, decoded-latent folders for ς ∈ {1,2,3,5}, `noise.png`, per-window `index.js`, catalog `index.js`) | `noise-levels.js` loads the catalog and the selected window's `index.js` with script tags | Domain (Driving / Manipulation), Example N, action-noise slider, Warp ς; four panels: recorded video, rendering of the noised command, noised rendering (decoded latent; pixel cross-fade only as fallback), top-down action; plays only while visible, pauses when the Method tab is hidden. The two `<input type=range>` carry **no `value` attribute** on purpose: the page body is rendered by React (DC runtime), which keeps writing a markup `value` back into the slider on every re-render (the thumb snaps back) — `noise-levels.js` sets min/max/value itself |
+
 ### 02 Warped schedules — `WarpSchedule` animation
 Vector only (bundle `_E` defaults: ς ∈ {1,2,3,5}, probe ς = 5). Poster `site/media/site/denoising.png`.
 
@@ -101,16 +109,29 @@ Vector only (bundle `VE`, phases in `Xd`). Poster `site/media/site/model.png`.
 ### Multi-agent — static
 `site/media/figures/CtrlWAM_multiagent_qualitative.png` (page `img.zoomable`).
 
-### Manipulation — `RoboTwinRollout` animation + explorer (`#rt-explorer`)
+### Manipulation — episode explorer (`#rt-explorer`; the `RoboTwinRollout` animation card was removed 2026-10-05 as a duplicate of the explorer)
 | Asset | Path | Where referenced | Notes |
 |---|---|---|---|
-| Poster | `site/media/site/robotwin.png` | `data-poster` | static |
-| Episode frames (the 4 episodes where CtrlWAM's trajectory accuracy beats both baselines by the largest margin: 104, 232, 782, 215) | `site/media/robotwin/ep<N>/{gt,cosmos_sft,gtswap,ctrlwam}/fNNNN.jpg`, every 5th video frame (30 fps → 6 frames/s, the densest the WorldArena dumps hold) from 0000 to the last frame; 600×444 JPEG (2× the panel size, for HiDPI); 27–91 frames per method, 852 JPEGs / 15 MB | animation: bundle `BE` (episode 104, 64 frames); explorer: `data.js` → `CTRLWAM_DATA.robotwin[<N>]` with `complete: true` (the other 7 dumped episodes stay listed with `complete: false` and are hidden), plays at 165 ms per frame (real time) and holds the last frame 1 s before looping | data-driven; the explorer only creates `<img>` tags for the selected episode |
+| Episode frames (the 4 episodes where CtrlWAM's trajectory accuracy beats both baselines by the largest margin: 104, 232, 782, 215) | `site/media/robotwin/ep<N>/{gt,cosmos_sft,gtswap,ctrlwam}/fNNNN.jpg`, every 5th video frame (30 fps → 6 frames/s, the densest the WorldArena dumps hold) from 0000 to the last frame; 600×444 JPEG (2× the panel size, for HiDPI); 27–91 frames per method, 852 JPEGs / 15 MB | (bundle `BE` is no longer mounted; the page uses only the explorer) explorer: `data.js` → `CTRLWAM_DATA.robotwin[<N>]` with `complete: true` (the other 7 dumped episodes stay listed with `complete: false` and are hidden), plays at 165 ms per frame (real time) and holds the last frame 1 s before looping | data-driven; the explorer only creates `<img>` tags for the selected episode |
 | Changing the selection / density | `alpamayo/projects/alpax/docs/paper/figures/scripts/export_robotwin_frames.py --pack . --ours-best --top 4` (or `--episodes`; `--stride`, default 1 = every 5th video frame, 2 = every 10th; `--size`, default 600x444; `--anim-episode`) | rewrites the JPEGs (prunes dropped episodes and denser frames), `meta.json`, the `robotwin` block of `data.js` and `BE.frames`; then set the explorer interval in `site.js` to 165 ms × stride | source: WorldArena `slurm/generations/side_by_side/frames/episode_<N>/<method>/frame_<i>.png` |
 | Index | `site/media/robotwin/meta.json` | reference only (`frames` = 4/6/8-column presets, `all` = exported frames) | |
 | Bar chart | inline `data-chart` JSON on `div.chart` | page; rendered by `charts.js` | numbers live in the JSON |
 
 ## 7. Citation (`section#cite`) — text only.
+
+## 8. Noise-level showcase — separate page `CtrlWAM-Noise-Levels.html` (the same explorer as Method › 01 of the main page, standalone; both pages host the identical `div#nl-explorer` markup and load `site/website/noise-levels.js`)
+
+Opens from this folder like the main page (file:// works; uses `site/website/site.css`, the KaTeX bundle and the fonts). A `Domain` switch (Driving / Manipulation) and an `Example` selector labelled `Example 1 … N` (no descriptions; the default key of the domain is listed first). Driving: two forward-driving AlpaSim export windows, both with the ego going straight and the fully noised command deviating 25–30 m, nine levels t ∈ {0, 0.125, …, 1}. Manipulation: two RoboTwin flow-noised windows from the BEAST tree (`flow_noised_pkg` schema flow-beast-v1: the noise is drawn in the normalized B-spline control-point space and decoded to joint targets, so the executed excursions are smooth and the arms stay in view; 33-frame window, frame 0 = the clean conditioning frame, branch frame k realizes window frame k+1; five levels t ∈ {0, 0.25, 0.5, 0.75, 1}; head camera 320×240 stored at 640×480); a slider over the nine action-noise levels t ∈ {0, 0.125, …, 1} (σ_a = 1 − t) shows in one aligned row (never wraps) the recorded frame, the simulator rendering of the executed noised command a_t = t·a* + (1−t)·ε with flow-matching noise at σ_v = warp(σ_a; ς) = ς·σ_a / (1 + (ς−1)·σ_a) added (`Warp ς` selector 1 / 2 / 3 / 5; ς = 1 is the shared schedule σ_v = σ_a), and a square top-down action panel; the clean rendering before noise is always shown as a third video panel (history, recorded path, executed path of the selected level with the ego marker at the current time, other levels faint); below, the 32 future frames (t₀ + 0.2 s … t₀ + 6.4 s at 5 Hz; the 9 history frames are exported but not shown) play in a loop from page load (▶/❚❚ pauses, the time slider scrubs); the noise field changes every frame.
+
+| Asset | Path | Where referenced | Notes |
+|---|---|---|---|
+| Frames | driving `site/media/noise-levels/<key>/{gt,t0p000,t0p125,…,t1p000}/f00.jpg … f40.jpg` (416×240 JPEG, downscaled from the 832×480 export; 410 rendered files per window plus 30 decoded-latent folders × 32 frames; 23–27 MB per window); manipulation `…/<key>/{gt,t0p000,t0p250,…,t1p000}/f00.jpg … f32.jpg` (320×240, downscaled from 640×480; 198 rendered files plus 14 decoded-latent folders × 32 frames; ~10 MB per window; 73 MB for the four windows of both domains). The panels are drawn at ~270 px wide, so half resolution is still above display size; `downscale_noise_levels.py` does the in-place pass and updates `size` in each `index.js` | built at runtime from the window's `index.js` (`levels[].dir`, `frames`); only the selected window is loaded | data-driven |
+| Video noise (latent; no switch in the UI) | `site/media/noise-levels/<key>/<t dir>/lat_sv<σ_v>/f09.jpg … f40.jpg`: the training input clip (recorded history ⊕ rendered future of that level) encoded with the Wan 2.2 VAE the model uses, future latents noised with x_σ = σ_v·ε + (1−σ_v)·z (conditioning latents clean), decoded; one seeded ε per window; equal σ_v values share a folder | `latent.dirs[<level>][<ς>]` in the window's `index.js` | GPU script `export_noise_levels_latent.py` via `submit_noise_levels_latent.sh` (1 GPU, QoS low, alpamayo-core container; driving job 7689432 took 6 min for six windows, ~45 s each, four removed afterwards; manipulation (BEAST tree) job 7693052 took 3 min for three windows); this is what the model actually sees |
+| Pixel fallback (internal, used only for a window without decoded frames) | `site/media/noise-levels/<key>/noise.png` = 127.5·(1 + ε), one Gaussian field at 1.5× the (downscaled) frame size (seed 1234567, `--seed` to change), clipped to 8 bit | page stacks a different seeded crop + flip of it per video frame over the rendering at opacity σ_v (warped), which equals σ·ε + (1−σ)·render in [−1, 1] pixel units up to the clipping of ε (about 32 % of samples exceed ±1), so it is a visualisation, not the exact model input | history frames (t ≤ t₀) are exported but not shown |
+| Index | `site/media/noise-levels/index.js` → `window.CTRLWAM_NOISE_WINDOWS` (catalog: key, title, domain, scene, window) and `site/media/noise-levels/<key>/index.js` → `window.CTRLWAM_NOISE_LEVELS` (generic: `domain`, `size`, `vaeSize`, `frames`, `hz`, `t0`, `frameT`, `bev` = `ego` (x forward up, y left) or `xy` (robot base, x right, y forward up), `grid`, `frameToTraj`, `history`, `gtPaths`, `levels[].paths` (driving: ego path; robot: left/right gripper paths from forward kinematics of the realized joints, `cmdPaths` = commanded), `latent`) | catalog via `<script src>`; a window's index is injected as a script when selected | the exporter rewrites the catalog on every run; delete a window's folder and re-run any export to drop it |
+| Windows | Driving: Example 1 = `e4cc26ed_w2` (default; highway at dusk, 128 m), Example 2 = `132a4562_w1` (fast straight, 113 m) — both from export root `alpaomni_gt_egoonly_multinode_4_2003`. Manipulation: Example 1 = `pick_dual_bottles_e0_s0016_beast` (default), Example 2 = `place_empty_cup_e7_s0116_beast` — from `RoboWAM/robotwin-demo-flow2/demo_flow/<task>/aloha_agilex/flow_beast/episode_NNNNNNN.hdf5` (the joint-space tree `flow/` is available with `--tree flow`; its arms leave the view at mid noise). The catalog carries ids, `domain` and the `--title` strings (not shown); the defaults are `DEFAULT_KEY` in the page | | |
+
+Add / regenerate a driving window: `alpamayo/projects/alpax/docs/paper/figures/scripts/export_noise_levels.py --window <scene>/<window> --pack . --title "<label>"`; a manipulation window: `RoboWAM/cosmos-framework/.venv/bin/python …/export_noise_levels_robot.py --window <task>/<episode>/<window> --pack . --title "<label>" [--tree flow_beast|flow|flow_ee]` (h5py + cv2 + the RoboTwin URDF for forward kinematics) (`--quality`, `--size`, `--seed`, `--key`; slider bounds, defaults and panel aspect follow `index.js`, so other level counts, frame counts and sizes work; windows with all nine levels are listed in the root's `alpax_window_index_v2.json`). The page picks the new window up from the catalog; no edit needed. To drop a window delete its folder and run the exporter with `--rebuild-catalog`.
 
 ---
 
@@ -132,12 +153,20 @@ Every image on the page is either **a file under `site/media/` that you overwrit
 | Ego-counterfactual poster | `site/media/figures/CtrlWAM_counterfactual_qualitative_ego_3x6.png` | nothing (or the `data-poster` on the `EgoCounterfactual` div) | ≤1600 px |
 | Multi-agent qualitative figure | `site/media/figures/CtrlWAM_multiagent_qualitative.png` | nothing (page `img.zoomable`) | ≤1600 px |
 | RoboTwin roll-outs (6, animation + explorer) | `site/media/robotwin/ep<N>/{gt,cosmos_sft,gtswap,ctrlwam}/fNNNN.jpg` | explorer: `CTRLWAM_DATA.robotwin["<N>"]` in `data.js` (`frames` = your NNNN list, `last`, `instr`, `traj` scores, `complete: true`; add a new key for a new episode); animation: `BE.frames` (and `BE.episode`, `BE.instruction`, the `acc` values) in the bundle. Or regenerate from the WorldArena dumps with `export_robotwin_frames.py` (see 6) | same NNNN list for all four methods; 600×444 JPEG; frame-rate assumption 165 ms per listed frame in `site.js` |
-| Animation posters | `site/media/site/denoising.png`, `model.png`, `robotwin.png` | nothing (or the `data-poster` attributes in the page) | ≤1600 px, same aspect as the animation |
+| Animation posters | `site/media/site/denoising.png`, `model.png` | nothing (or the `data-poster` attributes in the page) | ≤1600 px, same aspect as the animation |
 | Noise texture (3a, Method-01) | `site/media/schematic/noise.png` | nothing | tiling PNG |
+| Noise-level showcase (separate page) | `site/media/noise-levels/<key>/…` (see §8) | the `index.js` script tag in `CtrlWAM-Noise-Levels.html` | regenerate with `export_noise_levels.py` rather than editing by hand |
 
 Rules of thumb:
 1. Keep the filename pattern for data-driven sets (`fNN.jpg`, `fNNNN.jpg`, `stepNN_vid.jpg`/`_act.png`, `tN.jpg`); swap the files, no code change.
 2. If a list in `data.js` or the bundle names a file that is missing, that frame renders blank — check the browser console (404s) after editing.
 3. Recommended sizes: video frames 800–1000 px wide JPEG q≈82 (RoboTwin frames 600×444 q85, denoising panels 400×280); posters ≤1600 px; PNG only where transparency or line art needs it.
 4. Media base for the bundle and scripts is `site/media/` (`window.CTRLWAM_MEDIA_BASE` in `site.js`, `data-media` on `#teaser`, `MEDIA` in `site.js`); change all if you move the folder.
-5. The three live figures are inlined into the page as `window.__resourceBlobs`; editing a `*-View.dc.html` file alone changes nothing until you re-inline it (see the top of this file).
+5. The teaser and model figures load directly from their sibling HTML files. Only the schedule figure uses an embedded `window.__resourceBlobs` entry that must be updated after edits.
+6. Range inputs inside the React-rendered page body must not carry a `value` attribute (React keeps restoring it); `#nl-level`, `#nl-time`, `#cf-time` and `#rt-frame` are initialised from JavaScript. Font files are referenced from `site.css` relative to the stylesheet (`../vendor/fonts/`), and a copy lives in `site/media/fonts/` for the animation bundle.
+
+## Updating the overview teaser
+
+`index.html` loads `CtrlWAM-Teaser-Figure-View.dc.html` directly in an iframe. Edit the image paths in that file's `static SITE_IMG`, save, and reload the main page. There is no embedded teaser copy to synchronize. Browser-saved image replacements do not override the configured paths. This works both when opening the HTML files locally and when serving them from a website. Deploy the teaser HTML alongside `index.html`, `support.js`, and its referenced images, preserving relative paths.
+
+The model figure also loads directly from `CtrlWAM-Model-Figure-View.dc.html`. Its driving and manipulation frame paths are the `src` properties on the corresponding image entries in `defaults()`. Save that file and reload the main page; no embedded copy needs updating. The schedule figure still uses an embedded copy.

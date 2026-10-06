@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CtrlWAM — rendering the noised command</title>
+<link rel="icon" href="site/media/logo/icon.png">
+<link rel="stylesheet" href="site/vendor/katex/katex.min.css">
+<link rel="stylesheet" href="site/website/site.css">
+</head>
+<body>
+<nav class="nav"><div class="wrap">
+  <a class="brand" href="CtrlWAM-Site-Full.dc.html"><img src="site/media/logo/logo-site.png" alt=""> CtrlWAM</a>
+  <div class="links"><a href="CtrlWAM-Site-Full.dc.html#method">Method</a><a href="CtrlWAM-Site-Full.dc.html#results">Results</a></div>
+</div></nav>
+
+<section class="section tint" style="padding-top:64px">
+  <div class="wrap">
+    <p class="eyebrow">Physically aligned noising · training data</p>
+    <h2>Rendering the noised command</h2>
+    <p class="lead">Standard flow matching noises the <em>video</em> with Gaussian noise. CtrlWAM also noises the <em>action</em> and executes it in the simulator, so the training video shows what the noised command would actually produce. Move the slider: the rendering on the right is what the model sees at that noise level.</p>
+
+        <div class="explorer" id="nl-explorer" >
+          <div class="row"><span class="lab">Domain</span><div class="seg" id="nl-dom"><button data-dom="driving" class="on">Driving</button><button data-dom="robot">Manipulation</button></div><span class="lab" style="margin-left:14px">Example</span><div class="seg" id="nl-win"></div></div>
+          <div class="row"><span class="lab">Action noise</span>
+            <div class="nl-slider"><input type="range" id="nl-level" min="0" max="8" step="1" aria-label="action noise level"><div class="nl-ticks" id="nl-ticks"></div></div>
+            <span class="readout" id="nl-read" style="min-width:250px"></span></div>
+          <div class="row"><span class="lab">Warp ς</span><div class="seg" id="nl-shift"></div><span class="readout" id="nl-sv" style="min-width:150px"></span></div>
+          <div class="nl-grid">
+            <div><div class="nl-hd"><span class="sw" style="background:var(--gt)"></span>Recorded video</div><div class="nl-view gt"><img id="im-gt" alt=""><span class="f"></span></div></div>
+            <div><div class="nl-hd"><span class="sw" style="background:var(--video)"></span>Rendering of the noised command</div><div class="nl-view ren"><img id="im-ren" alt=""><span class="f"></span></div></div>
+            <div><div class="nl-hd"><span class="sw" style="background:var(--noise)"></span>Noised rendering</div><div class="nl-view noi"><img id="im-noi" alt=""><div class="noise" id="im-eps"></div><span class="f"></span></div></div>
+            <div><div class="nl-hd"><span class="sw" style="background:var(--navy)"></span>Action, top-down</div><div class="nl-bev"><canvas id="cv-bev"></canvas></div></div>
+          </div>
+          <div class="row" style="margin-top:14px;margin-bottom:8px"><button class="play" id="nl-play" aria-label="play">▶</button><input type="range" id="nl-time" min="9" max="40" step="1" aria-label="time"><span class="readout" id="nl-t" style="min-width:90px"></span>
+            <div class="nl-legend"><span><i style="background:#1E2126"></i>history</span><span><i style="background:var(--gt)"></i>recorded a* (driving: ego path · manipulation: gripper paths)</span><span><i style="background:var(--noise)"></i>executed a<sub>t</sub></span><span><i style="background:#CFD5DE"></i>other levels</span></div></div>
+          <p class="nl-note" id="nl-note"></p>
+        </div>
+  </div>
+</section>
+
+<script src="site/vendor/katex/katex.min.js"></script>
+<script src="site/website/noise-levels.js"></script>
+</body>
+</html>

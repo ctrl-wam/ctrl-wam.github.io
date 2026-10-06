@@ -44,7 +44,7 @@
         const box = { l: m.l, t: m.t, pw: w - m.l - m.r, ph: h - m.t - m.b };
         const svg = mk('svg', { viewBox: `0 0 ${w} ${h}` });
         const { X, Y } = axes(svg, spec, box);
-        (spec.annotations || []).forEach(a => svg.appendChild(text(X(a.x), box.t + box.ph - 14, a.text, { anchor: 'middle', italic: true, fs: 17, fill: '#8B919C' })));
+        (spec.annotations || []).forEach(a => svg.appendChild(text(X(a.x) + (a.dx || 0), box.t + box.ph - 14, a.text, { anchor: a.anchor || 'middle', italic: true, fs: 17, fill: '#8B919C' })));   // anchor/dx: keep a label at the axis edge inside the plot
         const ends = [];
         spec.series.forEach(s => {
           const pts = s.points.map(p => [X(p[0]), Y(p[1])]);
@@ -71,7 +71,7 @@
           const r = mk('path', { d: `M${x0} ${y0 + hh} V${y0 + 4} Q${x0} ${y0} ${x0 + 4} ${y0} H${x0 + bw - 4} Q${x0 + bw} ${y0} ${x0 + bw} ${y0 + 4} V${y0 + hh} Z`, fill: col, opacity: hl || spec.highlight == null ? 1 : 0.55 });
           r.setAttribute('data-tip', `${spec.categories[i].replace(/\n/g, ' ')}\n${fmt(v, spec.decimals)}`); r.setAttribute('data-color', col); svg.appendChild(r);
           svg.appendChild(text(cx, y0 - 16, (spec.valuePrefix || '') + fmt(v, spec.decimals) + (spec.valueSuffix || ''), { anchor: 'middle', fill: hl ? INK : INK2, fw: hl ? 800 : 600, fs: hl ? 24 : 20 }));
-          const lab = spec.categories[i].split('\n'); lab.forEach((ln, k) => svg.appendChild(text(cx, box.t + box.ph + 24 + k * 22, ln, { anchor: 'middle', fill: hl ? INK : INK2, fw: hl ? 700 : 500, fs: 19 })));
+          const lab = spec.categories[i].split('\n'); lab.forEach((ln, k) => svg.appendChild(text(cx, box.t + box.ph + 24 + k * 22, ln, { anchor: 'middle', fill: hl ? INK : INK2, fw: hl ? 700 : 500, fs: spec.catFs || 19 })));   // catFs: smaller category labels for narrow slots
         });
         if (y.label) svg.appendChild(text(0, 0, y.label, { anchor: 'middle', fill: INK, fs: 20, fw: 600, transform: `translate(${box.l - 60} ${box.t + box.ph / 2}) rotate(-90)` }));
         return svg;
